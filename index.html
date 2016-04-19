@@ -1,48 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GuessWhat</title>
-	  <!-- Google Fonts -->
-	  <link href='https://fonts.googleapis.com/css?family=Montserrat:700' rel='stylesheet' type='text/css'>
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:700' rel='stylesheet' type='text/css'>
     <!-- Bootstrap CSS-->
     <link href="libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-	  <!-- Custom CSS -->
-	<link href="stylesheets/gwStylesheet.css" rel="stylesheet">
-  </head>
-  <body>
-    <nav class="navbar navbar-inverse navbar-fixed ">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">GuessWhat</a>
-    </div>
+    <!-- Font Awesome CSS -->
+    <link href="libraries/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="stylesheets/gwStylesheet.css" rel="stylesheet">
+</head>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Link</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Link</a></li>
-		<li><a href="#">Link</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed ">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">GuessWhat</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li><a href="#">Link</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">Link</a>
+                    </li>
+                    <li><a href="#">Link</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-2">
+                <div class="btn-group-vertical" role="group">
+                    <button id="gwBlack" type="button" class="btn btn-default">Black</button>
+                    <button id="gwRed" type="button" class="btn btn-danger">Red</button>
+                    <button id="gwGreen" type="button" class="btn btn-success">Green</button>
+                    <button id="gwBlue" type="button" class="btn btn-primary">Blue</button>
+                    <button type="button" class="btn btn-default"><i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-8" id="divCanvas">
+                <canvas id="gw_Canvas" style="border:1px solid #d3d3d3;"></canvas>
+            </div>
+            <div class="col-xs-12 col-sm-2">
+                <!-- other stuff goes here -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-8">
+                <!-- some more contents-->
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                <!-- other stuff goes here -->
+            </div>
+        </div>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- jQuery Libraries -->
+    <script src="libraries/jquery/jquery-2.2.2.min.js"></script>
+    <!-- Script for Handling Sockets -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+    </script>
     <!-- Bootstrap JS -->
     <script src="libraries/bootstrap/js/bootstrap.min.js"></script>
-  </body>
+    <!-- Custom JS -->
+    <script src="js/gwJScript.js"></script>
+</body>
+
 </html>

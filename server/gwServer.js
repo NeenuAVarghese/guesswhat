@@ -12,6 +12,7 @@ app.use(express.static('./libraries/bootstrap/'));
 var server;
 var io;
 var line_history = [];
+var chat_history = [];
 
 
 server = app.listen(gw.port, function() {
@@ -27,13 +28,17 @@ io.sockets.on('connection', function(socket) {
         });
     }
 
-
     socket.on('draw_line', function(data) {
         line_history.push(data.line);
         io.emit('draw_line', {
             line: data.line
         });
     });
+	
+	socket.on('chat message', function(msg){
+		chat_history.push(msg);
+    	io.emit('chat message',msg);
+  });
 
 
     socket.on('disconnect', function() {

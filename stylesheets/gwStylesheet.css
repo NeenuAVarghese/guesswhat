@@ -1,0 +1,49 @@
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.navbar img {
+  display: inline;
+  padding: 0 0.5em 0 0;
+}
+
+.navbar-inverse{
+	background: #444;
+	padding: 15px;
+}
+.navbar-brand {
+  margin: 0 0 0 2em;
+}
+
+.navbar-toggle, .navbar-toggle:active {
+  color: #FE7300;
+}
+
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+  color: #FFA400;
+}
+
+.navbar-inverse .navbar-brand {
+  color: white;
+	font-size: 22px;
+}
+
+.navbar-inverse .navbar-nav > li >a {
+  color: white;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.navbar-inverse .navbar-nav > .active > a
+{
+  color: #FE7300;
+  background: #444;
+}
+
+.navbar-inverse .navbar-nav >li > a:hover,
+.navbar-inverse .navbar-nav > .active > a:hover
+{
+  color: #FFA400;
+  background: #444;
+}

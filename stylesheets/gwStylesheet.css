@@ -47,3 +47,8 @@ body {
   color: #FFA400;
   background: #444;
 }
+
+canvas {
+  width: 100%;
+  height: auto;
+}

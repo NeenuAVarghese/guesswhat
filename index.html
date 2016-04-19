@@ -52,9 +52,9 @@
 
 
     <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-1">
-                <div class="btn-group-vertical" role="group">
+		<div class="row">
+			<div class="col-xs-12 col-sm-6 col-sm-offset 4">
+				<div class="btn-group" role="group" id="gwColorPicker">
                     <button id="gwBlack" type="button" class="btn btn-default">Black</button>
                     <button id="gwRed" type="button" class="btn btn-danger">Red</button>
                     <button id="gwGreen" type="button" class="btn btn-success">Green</button>
@@ -62,13 +62,18 @@
                     <button type="button" class="btn btn-default"><i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                 </div>
-            </div>
-            <div class="col-xs-12 col-sm-8" id="divCanvas">
+			</div>
+		</div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-7" id="divCanvas">
                 <canvas id="gw_Canvas" style="border:1px solid #d3d3d3;"></canvas>
             </div>
-            <div class="col-xs-12 col-sm-3">
-                <ul id="messages"></ul>
-    
+			<div class="col-xs-12 col-sm-1">
+				<h5>Active Users</h5>
+				<ul id="gwActiveUsers"></ul>
+			</div>
+            <div class="col-xs-12 col-sm-3 chatDiv" >
+                <ul id="gwMessages"></ul>
             </div>
         </div>
         <div class="row">
@@ -79,8 +84,8 @@
                 <!-- other stuff goes here -->
             </div>
 			<div class="col-xs-12 col-sm-3">
-                <form action="">
-      <input id="gwChat" autocomplete="off" /><button>Send</button>
+                <form action="" id="gwChatForm">
+      <input id="gwChatButton" autocomplete="off" /><button>Send</button>
     </form>
             </div>
         </div>
@@ -92,7 +97,7 @@
                 <!-- other stuff goes here -->
             </div>
 			<div class="col-xs-12 col-sm-4">
-               
+				<!-- other stuff goes here -->
             </div>
         </div>
     </div>
@@ -103,9 +108,6 @@
     <script src="libraries/jquery/jquery-2.2.2.min.js"></script>
     <!-- Script for Handling Sockets -->
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io();
-    </script>
     <!-- Bootstrap JS -->
     <script src="libraries/bootstrap/js/bootstrap.min.js"></script>
     <!-- Custom JS -->

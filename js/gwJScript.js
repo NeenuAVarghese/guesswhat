@@ -48,8 +48,8 @@ var main = function() {
         //Function to handle Black Color
         $(gw.landpage.action.black).on('click', function() {
                 context.strokeStyle = "#000000";
-            }
-            //Function to handle Green Color						  );
+            });
+            //Function to handle Green Color						  
             $(gw.landpage.action.green).on('click', function() {
                 context.strokeStyle = "#006600";
             });
@@ -105,6 +105,16 @@ var main = function() {
             }
 
             handleDrawEvent();
+	
+	 $('form').submit(function(){
+    socket.emit('chat message', $('#gwChat').val());
+    $('#gwChat').val('');
+    return false;
+  });
+  socket.on('chat message', function(msg){
+	  console.log(msg);
+    $('#messages').append($('<li>').text(msg));
+  });
         }
 
         $(document).ready(main);

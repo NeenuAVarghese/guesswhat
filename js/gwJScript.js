@@ -20,7 +20,7 @@ var main = function() {
                             sendButton: "#gwChatButton"
                         }
                     },
-                    activeusersList: "#gwActiveUsers",
+                    activeusersList: "#gwActiveUser",
                     colorPicker: "#gwColorPicker",
                     chatMessages: "#gwMessages"
                 },
@@ -30,7 +30,8 @@ var main = function() {
                 red: "#gwRed",
                 black: "#gwBlack",
                 green: "#gwGreen",
-                blue: "#gwBlue"
+                blue: "#gwBlue",
+                clearCanvas: "#gwClear"
             },
         },
         canvas: {
@@ -43,45 +44,50 @@ var main = function() {
                 x: 0,
                 y: 0
             },
-            pos_prev: false
-        }
+            pos_prev: {
+                x:0,
+                y:0
+            }
+        },
+        color: "#000000"
     };
 
     var context = $(gw.canvas.handle)[0].getContext('2d');
     var width = $(gw.landpage.section.content.canvasDiv).width();
     var height = $(gw.landpage.section.content.canvasDiv).height();
 
+    //Function to handle Clear Canvas
+    $(gw.landpage.action.clearCanvas).on('click', function(){
+        context.clearRect(0, 0, width, height);
+    });
     //Function to handle Red Color
     $(gw.landpage.action.red).on('click', function() {
-        context.strokeStyle = "#990000";
+        gw.color = "#990000";
     });
     //Function to handle Black Color
     $(gw.landpage.action.black).on('click', function() {
-        context.strokeStyle = "#000000";
+        gw.color = "#000000";
     });
     //Function to handle Green Color						  
     $(gw.landpage.action.green).on('click', function() {
-        context.strokeStyle = "#006600";
+        gw.color = "#006600";
     });
     //Function to handle blue Color
     $(gw.landpage.action.blue).on('click', function() {
-        context.strokeStyle = "#0000ff";
+        gw.color = "#0000ff";
     });
 
     //Function to HandleSocket Emit on mouse movements
     function handleSocketEmit() {
         // check if the user is drawing
-        if (gw.mouse.click && gw.mouse.move && gw.mouse.pos_prev) {
-            // send line to to the server
+        if (gw.mouse.click && gw.mouse.move) {
+           
             socket.emit('draw_line', {
-                line: [gw.mouse.pos, gw.mouse.pos_prev]
+                x: gw.mouse.pos.x, y: gw.mouse.pos.y, prevX: gw.mouse.pos_prev.x, prevY: gw.mouse.pos_prev.y, color: gw.color
             });
             gw.mouse.move = false;
         }
-        gw.mouse.pos_prev = {
-            x: gw.mouse.pos.x,
-            y: gw.mouse.pos.y
-        };
+        
         setTimeout(handleSocketEmit, 25);
     }
     // Function to track User mouse events on canvas
@@ -98,18 +104,27 @@ var main = function() {
         };
 
         $(gw.canvas.handle)[0].onmousemove = function(e) {
-            gw.mouse.pos.x = e.clientX / width;
-            gw.mouse.pos.y = e.clientY / height;
+
+            gw.mouse.pos_prev.x = gw.mouse.pos.x,
+            gw.mouse.pos_prev.y = gw.mouse.pos.y
+ 
+            var offset = $(this).offset();
+            gw.mouse.pos.x = e.pageX - offset.left;
+            gw.mouse.pos.y = e.pageY - offset.top;
             gw.mouse.move = true;
         }
+        function Draw(x, y, pX, pY, c){
+                context.beginPath();
+                context.lineWidth = 2;
+                context.strokeStyle = c;
+                context.moveTo(pX, pY);
+                context.lineTo(x, y);
+                context.closePath();
+                context.stroke();
 
+        }
         socket.on('draw_line', function(data) {
-            var line = data.line;
-            context.beginPath();
-            context.lineWidth = 2;
-            context.moveTo(line[0].x * width, line[0].y * height);
-            context.lineTo(line[1].x * width, line[1].y * height);
-            context.stroke();
+            Draw(data.x, data.y, data.prevX, data.prevY, data.color);
         });
         handleSocketEmit();
     }
@@ -128,13 +143,13 @@ var main = function() {
 
     // listener, whenever the server emits 'updatechat', this updates the chat body
     socket.on('updatechat', function(username, data) {
-        $(gw.landpage.section.content.chatMessages).append('<li><strong>' + username + ':</strong> ' + data + '<br></li>');
+        $(gw.landpage.section.content.chatMessages).append('<span class="glyphicon glyphicon-asterisk"></span><strong>' + username + ':</strong> ' + data + '<br>');
     });
 
     socket.on('updateusers', function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
         $.each(data, function(key, value) {
-            $(gw.landpage.section.content.activeusersList).append('<div>' + key + '</div>');
+            $(gw.landpage.section.content.activeusersList).append('<span class="label label-info">' + key +'</span><div>');
         });
     });
 

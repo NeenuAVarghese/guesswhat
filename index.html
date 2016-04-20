@@ -52,28 +52,48 @@
 
 
     <div class="container">
-		<div class="row">
-			<div class="col-xs-12 col-sm-6 col-sm-offset 4">
+		<!--<div class="row">
+			<div class="col-xs-12 col-sm-6 col-sm-offset 5">
 				<div class="btn-group" role="group" id="gwColorPicker">
+                    <div class="well well-sm"><h1> Score Board goes here</h1></div>
+                </div>
+			</div>
+		</div>-->
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-5">
+                <div class="btn-group" role="group" id="gwColorPicker">
                     <button id="gwBlack" type="button" class="btn btn-default">Black</button>
                     <button id="gwRed" type="button" class="btn btn-danger">Red</button>
                     <button id="gwGreen" type="button" class="btn btn-success">Green</button>
                     <button id="gwBlue" type="button" class="btn btn-primary">Blue</button>
-                    <button type="button" class="btn btn-default"><i class="fa fa-trash" aria-hidden="true"></i>
+                    <button id="gwClear"type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                 </div>
-			</div>
-		</div>
+            </div>
+        </div>
         <div class="row">
-            <div class="col-xs-12 col-sm-7" id="divCanvas">
+            <div class="col-xs-12 col-sm-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Active Users</div>
+                    <div class="panel-body"><div id="gwActiveUser"></div></div>
+                </div>
+                
+            </div>
+            <div class="col-xs-12 col-sm-8" id="divCanvas">
                 <canvas id="gw_Canvas" style="border:1px solid #d3d3d3;"></canvas>
             </div>
-			<div class="col-xs-12 col-sm-1">
-				<h5>Active Users</h5>
-				<ul id="gwActiveUsers"></ul>
-			</div>
-            <div class="col-xs-12 col-sm-3 chatDiv" >
-                <ul id="gwMessages"></ul>
+            <div class="col-xs-12 col-sm-2 chatDiv" >
+                <div class="panel panel-primary" ><div class="panel-heading">Chat board</div><div class="panel-body chatPanel"><div id="gwMessages"></div></div></div>
+                <form action="" id="gwChatForm">
+                                   <div class="input-group gw-input-chat">
+                    <input id="gwChatButton" type="text" class="form-control"  autocomplete="off" placeholder="Search" >
+                    <span class="input-group-addon">
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-send"></span>
+                        </button>  
+                    </span>
+                </div>
+    </form>
             </div>
         </div>
         <div class="row">
@@ -84,9 +104,7 @@
                 <!-- other stuff goes here -->
             </div>
 			<div class="col-xs-12 col-sm-3">
-                <form action="" id="gwChatForm">
-      <input id="gwChatButton" autocomplete="off" /><button>Send</button>
-    </form>
+                
             </div>
         </div>
 		<div class="row">

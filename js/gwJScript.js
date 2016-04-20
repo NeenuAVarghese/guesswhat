@@ -1,12 +1,14 @@
 // Client-side code
 /* jshint browser: true, jquery: true, curly: true, eqeqeq: true, forin: true, immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double, undef: true, unused: true, strict: true, trailing: true */
-/* global console: true, _: true, Clipboard: true */
+/* global io: true, prompt: true, console: true */
+
 var main = function() {
     "use strict";
+
     var socket = io.connect();
 
-    var hostname = "http://" + window.location.hostname;
-    var port = location.port;
+    //var hostname = "http://" + window.location.hostname;
+    //var port = location.port;
 
     var gw = {
         landpage: {
@@ -52,28 +54,28 @@ var main = function() {
         color: "#000000"
     };
 
-    var context = $(gw.canvas.handle)[0].getContext('2d');
+    var context = $(gw.canvas.handle)[0].getContext("2d");
     var width = $(gw.landpage.section.content.canvasDiv).width();
     var height = $(gw.landpage.section.content.canvasDiv).height();
 
     //Function to handle Clear Canvas
-    $(gw.landpage.action.clearCanvas).on('click', function(){
+    $(gw.landpage.action.clearCanvas).on("click", function(){
         context.clearRect(0, 0, width, height);
     });
     //Function to handle Red Color
-    $(gw.landpage.action.red).on('click', function() {
+    $(gw.landpage.action.red).on("click", function() {
         gw.color = "#990000";
     });
     //Function to handle Black Color
-    $(gw.landpage.action.black).on('click', function() {
+    $(gw.landpage.action.black).on("click", function() {
         gw.color = "#000000";
     });
-    //Function to handle Green Color						  
-    $(gw.landpage.action.green).on('click', function() {
+    //Function to handle Green Color
+    $(gw.landpage.action.green).on("click", function() {
         gw.color = "#006600";
     });
     //Function to handle blue Color
-    $(gw.landpage.action.blue).on('click', function() {
+    $(gw.landpage.action.blue).on("click", function() {
         gw.color = "#0000ff";
     });
 
@@ -81,13 +83,12 @@ var main = function() {
     function handleSocketEmit() {
         // check if the user is drawing
         if (gw.mouse.click && gw.mouse.move) {
-           
-            socket.emit('draw_line', {
+            socket.emit("draw_line", {
                 x: gw.mouse.pos.x, y: gw.mouse.pos.y, prevX: gw.mouse.pos_prev.x, prevY: gw.mouse.pos_prev.y, color: gw.color
             });
             gw.mouse.move = false;
         }
-        
+
         setTimeout(handleSocketEmit, 25);
     }
     // Function to track User mouse events on canvas
@@ -97,23 +98,34 @@ var main = function() {
 
         $(gw.canvas.handle)[0].onmousedown = function(e) {
             gw.mouse.click = true;
+            if (e) {
+                console.log("error", "onmousedown", e);
+            }
         };
 
         $(gw.canvas.handle)[0].onmouseup = function(e) {
             gw.mouse.click = false;
+            if (e) {
+                console.log("error", "onmouseup", e);
+            }
         };
 
         $(gw.canvas.handle)[0].onmousemove = function(e) {
 
-            gw.mouse.pos_prev.x = gw.mouse.pos.x,
-            gw.mouse.pos_prev.y = gw.mouse.pos.y
- 
+            if (e) {
+                console.log("error", "onmousemove", e);
+            }
+
+            gw.mouse.pos_prev.x = gw.mouse.pos.x;
+            gw.mouse.pos_prev.y = gw.mouse.pos.y;
+
             var offset = $(this).offset();
             gw.mouse.pos.x = e.pageX - offset.left;
             gw.mouse.pos.y = e.pageY - offset.top;
             gw.mouse.move = true;
-        }
-        function Draw(x, y, pX, pY, c){
+        };
+
+        function drawCanvas(x, y, pX, pY, c) {
                 context.beginPath();
                 context.lineWidth = 2;
                 context.strokeStyle = c;
@@ -123,38 +135,41 @@ var main = function() {
                 context.stroke();
 
         }
-        socket.on('draw_line', function(data) {
-            Draw(data.x, data.y, data.prevX, data.prevY, data.color);
+        socket.on("draw_line", function(data) {
+            drawCanvas(data.x, data.y, data.prevX, data.prevY, data.color);
         });
+
         handleSocketEmit();
     }
 
 
     $(gw.landpage.section.content.chatform.handle).submit(function() {
-        socket.emit('sendchat', $(gw.landpage.section.content.chatform.field.sendButton).val());
-        $(gw.landpage.section.content.chatform.field.sendButton).val('');
+        socket.emit("sendchat", $(gw.landpage.section.content.chatform.field.sendButton).val());
+        $(gw.landpage.section.content.chatform.field.sendButton).val("");
         return false;
     });
 
-    // call the server-side function 'adduser' and send one parameter (value of prompt)
-    socket.on('connect', function() {
-        socket.emit('adduser', prompt("What's your name?"));
+    // call the server-side function "adduser" and send one parameter (value of prompt)
+    socket.on("connect", function() {
+        console.log("adduser");
+        socket.emit("adduser", prompt("What's your name?"));
     });
 
-    // listener, whenever the server emits 'updatechat', this updates the chat body
-    socket.on('updatechat', function(username, data) {
-        $(gw.landpage.section.content.chatMessages).append('<span class="glyphicon glyphicon-asterisk"></span><strong>' + username + ':</strong> ' + data + '<br>');
+    // listener, whenever the server emits "updatechat", this updates the chat body
+    socket.on("updatechat", function(username, data) {
+        console.log("updatechat", username, data);
+        $(gw.landpage.section.content.chatMessages).append("<span class='glyphicon glyphicon-asterisk'></span><strong>" + username + ":</strong> " + data + "<br>");
     });
 
-    socket.on('updateusers', function(data) {
+    socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
         $.each(data, function(key, value) {
-            $(gw.landpage.section.content.activeusersList).append('<span class="label label-info">' + key +'</span><div>');
+            console.log("updateusers", key, value);
+            $(gw.landpage.section.content.activeusersList).append("<span class='label label-info'>" + key +"</span><div>");
         });
     });
 
-
     handleDrawEvent();
-}
+};
 
 $(document).ready(main);

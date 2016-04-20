@@ -4,9 +4,10 @@
 "use strict";
 
 // Config
-var port = 8000;
+var port = 8080;
 var line_history = [];
 var usernames = {};
+var magic = "elephant";
 
 // Depends
 var express = require("express");
@@ -15,7 +16,7 @@ var io = require("socket.io");
 // Initialize
 var app = express();
 
-app.use(express.static('./'));
+app.use(express.static("./"));
 
 // Run server
 var server = io.listen(app.listen(port, function() {
@@ -30,7 +31,7 @@ function userLogin(socket) {
         socket.username = username;
         // add the client"s username to the global list
         usernames[username] = username;
-        // echo to client they"ve connected
+        // echo to client they've connected
         socket.emit("updatechat", "SERVER", "you have connected");
         // echo globally (all clients) that a person has connected
         socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
@@ -57,8 +58,8 @@ function recordDraw(socket) {
         // FIXME
         if (line_history[i] !== null) {
             // Debugging
-            console.log("Record draw", line_history[i]);
-            socket.emit('draw_line', line_history[i]);
+            //console.log("Record draw", line_history[i]);
+            socket.emit("draw_line", line_history[i]);
         }
     }
 }
@@ -66,8 +67,28 @@ function recordDraw(socket) {
 function transmitDraw(socket) {
     socket.on("draw_line", function(data) {
         line_history.push(data);
-        socket.emit('draw_line', data);
+        socket.emit("draw_line", data);
     });
+}
+
+function parseChat(socket, data) {
+    var line = Array.prototype.join.call(data, "");
+    var words = line.split(" ");
+
+    for (var i = 0; i < words.length; ++i) {
+        // Debugging
+        //console.log("word", words[i]);
+
+        if (words[i] === magic) {
+            console.log("Winner", socket.username);
+            // echo to client they've won
+            socket.emit("updatechat", "SERVER", "you win!");
+            socket.emit("updatechat", "SERVER", "the word was: " + magic);
+            // echo globally (all clients) that a person has won
+            socket.broadcast.emit("updatechat", "SERVER", "the word was: " + magic);
+            socket.broadcast.emit("updatechat", "SERVER", "player " + socket.username + " was the winner");
+        }
+    }
 }
 
 function transmitChat(socket) {
@@ -75,6 +96,8 @@ function transmitChat(socket) {
     socket.on("sendchat", function(data) {
         // we tell the client to execute "updatechat" with 2 parameters
         server.sockets.emit("updatechat", socket.username, data);
+        // check for magic word
+        parseChat(socket, data);
     });
 }
 

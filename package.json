@@ -2,10 +2,10 @@
   "name": "guesswhat",
   "version": "0.1.0",
   "description": "A multiplayer Pictionary-like webapp game",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server/server.js"
   },
   "repository": {
     "type": "git",

@@ -153,6 +153,21 @@ var main = function() {
         handleSocketEmit();
     }
 
+    function autoScroll() {
+        // get height of chat box
+        var h = 0;
+        $(".gwMsg").each(function(i, value) {
+            h += parseInt($(this).height()) + 20;
+        });
+        h = h.toString();
+
+        // debugging
+        console.log("scroll to", h);
+
+        // scroll to bottom of chat
+        $(".chatPanel").animate({scrollTop: h});
+    }
+
 
     $(gw.landpage.section.content.chatform.handle).submit(function() {
         socket.emit("sendchat", $(gw.landpage.section.content.chatform.field.sendButton).val());
@@ -167,9 +182,18 @@ var main = function() {
 
     // listener, whenever the server emits "updatechat", this updates the chat body
     socket.on("updatechat", function(username, data) {
-        $(gw.landpage.section.content.chatMessages).append("<span class='glyphicon glyphicon-asterisk'></span><strong>" + username + ":</strong> " + data + "<br>");
+        $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + username + ":</strong> " + data + "</p>");
+        autoScroll();
     });
 
+    // listener, whenever the server emits "updateword", this updates the game round
+    socket.on("updateword", function(data) {
+        $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + data + "</strong></p>");
+        context.clearRect(0, 0, width, height);
+        autoScroll();
+    });
+
+    // listener, whenever the server emits "updateusers", this updates the user list
     socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
         $.each(data, function(key, value) {

@@ -1,5 +1,6 @@
 body {
   font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
 }
 
 .navbar img {
@@ -8,8 +9,8 @@ body {
 }
 
 .navbar-inverse{
-	background: #444;
-	padding: 15px;
+  background: #444;
+  padding: 15px;
 }
 .navbar-brand {
   margin: 0 0 0 2em;
@@ -26,24 +27,22 @@ body {
 
 .navbar-inverse .navbar-brand {
   color: white;
-	font-size: 22px;
+  font-size: 22px;
 }
 
-.navbar-inverse .navbar-nav > li >a {
+.navbar-inverse .navbar-nav > li > a {
   color: white;
   font-size: 18px;
   margin-right: 10px;
 }
 
-.navbar-inverse .navbar-nav > .active > a
-{
+.navbar-inverse .navbar-nav > .active > a {
   color: #FE7300;
   background: #444;
 }
 
 .navbar-inverse .navbar-nav >li > a:hover,
-.navbar-inverse .navbar-nav > .active > a:hover
-{
+.navbar-inverse .navbar-nav > .active > a:hover {
   color: #FFA400;
   background: #444;
 }
@@ -54,24 +53,30 @@ canvas {
 }
 
 .chatPanel {
-height: 300px;
-width: 100%;
-overflow-y: scroll;
+  height: 300px;
+  width: 100%;
+  overflow-y: scroll;
 }
 
 .gw-input-chat .input-group-addon{
-    background: white !important; 
+  background: white;
 }
 .gw-input-chat .form-control{
-  border-right:0; 
-  box-shadow:0 0 0; 
-  border-color:#ccc;
+  border-right: 0;
+  box-shadow:0 0 0;
+  border-color: #CCC;
 }
 .gw-input-chat button{
-    border:0;
-    background:transparent;
+  border:0;
+  background:transparent;
 }
 
 .row{
   padding-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  canvas {
+    width: 300px;
+  }
 }

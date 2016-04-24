@@ -75,8 +75,18 @@ canvas {
   padding-bottom: 20px;
 }
 
-@media (max-width: 600px) {
+@media (min-width: 1000px) {
   canvas {
-    width: 300px;
+    height: 700px;
+  }
+  .chatPanel {
+    height: 600px;
+  }
+}
+
+@media (max-width: 900px) {
+  canvas {
+    /* testing */
+    background-color: #FF0000;
   }
 }

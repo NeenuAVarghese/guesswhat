@@ -103,6 +103,7 @@ var main = function() {
                 console.log("error", "onTouchstart", e);
             }
         }, false);
+
         touchcanvas.addEventListener('touchmove', function(e){
             if (e) {
                 console.log("error", "ontouchmove", e);
@@ -115,7 +116,7 @@ var main = function() {
             gw.mouse.pos.x = e.pageX - offset.left;
             gw.mouse.pos.y = e.pageY - offset.top;
             gw.mouse.move = true;
-        }, false); 
+        }, false);
 
         $(gw.canvas.handle)[0].onmousedown = function(e) {
             gw.mouse.click = true;
@@ -126,7 +127,6 @@ var main = function() {
         };
 
         $(gw.canvas.handle)[0].onmousemove = function(e) {
-        
             gw.mouse.pos_prev.x = gw.mouse.pos.x;
             gw.mouse.pos_prev.y = gw.mouse.pos.y;
 

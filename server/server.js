@@ -68,7 +68,12 @@ function userLogout(socket) {
 
 function recordDraw(socket) {
     for (var i in line_history) {
-        socket.emit("draw_line", line_history[i]);
+        if (line_history[i] !== null) {
+            socket.emit("draw_line", line_history[i]);
+        }
+        else {
+            console.log("Drawing null");
+        }
     }
 }
 

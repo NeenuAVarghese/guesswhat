@@ -20,10 +20,16 @@ reset="\e[0m"
 run_utility() {
   if checkdep $cmd; then
     echo -e "${alert}==>${reset} ${notice}Running '${cmd}' ${what} validation${reset}"
+    # filenames stored in array
     for file in ${input[@]}; do
       if [ -f "$file" ]; then
+        # capture output to variable
         output=$($cmd $params "$file" 2>&1)
-        [ ! -z "$output" ] && error="true" && echo -e "${fail}==> FAIL${reset} $file" && echo "$output"
+        if [ ! -z "$output" ]; then
+          echo -e "${fail}==> FAIL${reset} $file"
+          echo "$output"
+          error="true"
+        fi
       else
         echo -e "${warn}==> WARN${reset} Not a file: $file"
       fi
@@ -36,7 +42,10 @@ run_utility() {
 whitespace() {
   if checkdep grep; then
     if [ -f "$1" ]; then
+      # trailing spaces
       GREP_COLOR="1;30;41" grep -n --color=always " $" "$1"
+      # any tab characters
+      GREP_COLOR="1;30;41" grep -n --color=always $'\t' "$1"
     else
       echo -e "${warn}==> WARN${reset} Not a file: $1"
     fi
@@ -72,7 +81,9 @@ parse_utils() {
     fi
   done
 
-  #[ "$error" = "true" ] && exit 1
+  if [ "$error" = "true" ]; then
+    exit 1
+  fi
 }
 
 if [ -f ".webapp" ]; then

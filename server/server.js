@@ -12,9 +12,10 @@ var magic = "elephant";
 // Depends
 var express = require("express");
 var io = require("socket.io");
+var redis = require("redis");
 
 // Initialize
-
+var redisClient = redis.createClient();
 var app = express();
 app.use(express.static("./"));
 var server = null;
@@ -24,6 +25,9 @@ function startServer() {
     var process = io.listen(app.listen(port).on("error", function(err) {
         if (!err) {
             console.log("Starting express server on port", port);
+            redisClient.on("connect", function() {
+                console.log("Connected to Redis Server");
+            });
         }
         else if (err.errno === "EADDRINUSE") {
             console.log("Port", port, "busy. Unable to start express server");
@@ -42,12 +46,29 @@ function userLogin(socket) {
     socket.on("adduser", function(username) {
         // we store the username in the socket session for this client
         socket.username = username;
+        redisClient.exists(username, function(err, object){
+            if (object !== 1) {
+                //Initialized coinsflip hash value to 0
+                redisClient.hmset(username, {
+                    "wins": 0
+                });
+                redisClient.rpush("users", username);
+        }
+    });
         // add the client"s username to the global list
-        usernames[username] = username;
         // echo to client they've connected
         socket.emit("updatechat", "SERVER", "you have connected");
         // echo globally (all clients) that a person has connected
         socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
+
+        redisClient.lrange("users", 0, -1, function(err, items){
+            if(err){
+                console.log("Error in getting elements of user list");
+            }
+            items.forEach(function(item){
+                usernames[username] = username;
+            });
+        });
         // update the list of users in chat, client-side
         server.sockets.emit("updateusers", usernames);
     });
@@ -58,6 +79,11 @@ function userLogout(socket) {
     socket.on("disconnect", function() {
         console.log("User:", socket.username, "Disconnected");
         // remove the username from global usernames list
+        redisClient.lrem("users",1,  socket.username, function(err){
+            if(err){
+                console.log("User Removed form list");
+            }
+        });
         delete usernames[socket.username];
         // update list of users in chat, client-side
         server.sockets.emit("updateusers", usernames);

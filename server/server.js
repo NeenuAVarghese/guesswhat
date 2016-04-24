@@ -14,16 +14,29 @@ var express = require("express");
 var io = require("socket.io");
 
 // Initialize
+
 var app = express();
-
 app.use(express.static("./"));
-
-// Run server
-var server = io.listen(app.listen(port, function() {
-    console.log("Start express server on port", port);
-}));
+var server = null;
 
 // Functions
+function startServer() {
+    var process = io.listen(app.listen(port).on("error", function(err) {
+        if (!err) {
+            console.log("Starting express server on port", port);
+        }
+        else if (err.errno === "EADDRINUSE") {
+            console.log("Port", port, "busy. Unable to start express server");
+            console.log("To debug: $ lsof -i :" + port);
+        }
+        else {
+            console.log(err);
+        }
+    }));
+
+    return process;
+}
+
 function userLogin(socket) {
     // when the client emits "adduser", this listens and executes
     socket.on("adduser", function(username) {
@@ -100,6 +113,10 @@ function transmitChat(socket) {
         parseChat(socket, data);
     });
 }
+
+
+// Run server
+server = startServer();
 
 // Main
 server.sockets.on("connection", function(socket) {

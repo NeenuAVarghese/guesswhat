@@ -54,6 +54,19 @@ whitespace() {
   fi
 }
 
+stylish() {
+  if checkdep grep; then
+    if [ -f "$1" ]; then
+      # compact curly brace
+      GREP_COLOR="1;30;41" grep -n --color=always "){" "$1"
+    else
+      echo -e "${warn}==> WARN${reset} Not a file: $1"
+    fi
+  else
+    echo -e "${warn}Missing grep${reset}. Skipping ${what} validation"
+  fi
+}
+
 parse_utils() {
   for cmd in $list; do
     if [ $cmd = "tidy" ]; then
@@ -76,6 +89,11 @@ parse_utils() {
       params=""
       input=("${html[@]}" "${css[@]}" "${js[@]}")
       run_utility
+    elif [ "$cmd" = "stylish" ]; then
+      what="Styling"
+      params=""
+      input=("${html[@]}" "${css[@]}" "${js[@]}")
+      run_utility
     else
       echo -e "${fail}==> FAIL${reset} Unknown command $cmd"
     fi
@@ -93,7 +111,7 @@ else
   echo -e "${warn}==>${reset} ${notice}Config file ($PWD/.webapp) not found${reset}"
 fi
 
-list="jshint csslint tidy whitespace"
+list="jshint csslint tidy whitespace stylish"
 parse_utils
 
 ### END ###

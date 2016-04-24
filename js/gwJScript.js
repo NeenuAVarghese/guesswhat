@@ -59,7 +59,7 @@ var main = function() {
     var height = $(gw.landpage.section.content.canvasDiv).height();
 
     //Function to handle Clear Canvas
-    $(gw.landpage.action.clearCanvas).on("click", function(){
+    $(gw.landpage.action.clearCanvas).on("click", function() {
         context.clearRect(0, 0, width, height);
     });
     //Function to handle Red Color
@@ -97,14 +97,14 @@ var main = function() {
         $(gw.canvas.handle)[0].width = width;
         $(gw.canvas.handle)[0].height = height;
 
-        touchcanvas.addEventListener('touchstart', function(e){
+        touchcanvas.addEventListener('touchstart', function(e) {
             gw.mouse.click = true;
             if (e) {
                 console.log("error", "onTouchstart", e);
             }
         }, false);
 
-        touchcanvas.addEventListener('touchmove', function(e){
+        touchcanvas.addEventListener('touchmove', function(e) {
             if (e) {
                 console.log("error", "ontouchmove", e);
             }

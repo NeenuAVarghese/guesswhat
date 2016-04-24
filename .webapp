@@ -1,0 +1,3 @@
+html=("index.html")
+css=("stylesheets/gwStylesheet.css")
+js=("server/server.js" "js/gwJScript.js")

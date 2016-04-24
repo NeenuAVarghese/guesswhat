@@ -4,7 +4,7 @@
 "use strict";
 
 // Config
-var port = 8080;
+var port = 3000;
 var line_history = [];
 var usernames = {};
 var magic = "elephant";
@@ -68,19 +68,14 @@ function userLogout(socket) {
 
 function recordDraw(socket) {
     for (var i in line_history) {
-        // FIXME
-        if (line_history[i] !== null) {
-            // Debugging
-            //console.log("Record draw", line_history[i]);
-            socket.emit("draw_line", line_history[i]);
-        }
+        socket.emit("draw_line", line_history[i]);
     }
 }
 
 function transmitDraw(socket) {
     socket.on("draw_line", function(data) {
         line_history.push(data);
-        socket.emit("draw_line", data);
+        server.sockets.emit("draw_line", data);
     });
 }
 

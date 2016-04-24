@@ -96,6 +96,27 @@ var main = function() {
         $(gw.canvas.handle)[0].width = width;
         $(gw.canvas.handle)[0].height = height;
 
+        $(gw.canvas.handle)[0].bind('touchstart', function(e){
+            gw.mouse.click = true;
+            if (e) {
+                console.log("error", "onTouchstart", e);
+            }
+        });
+
+        $(gw.canvas.handle)[0].bind('touchmove', function(e){
+            if (e) {
+                console.log("error", "ontouchmove", e);
+            }
+
+            gw.mouse.pos_prev.x = gw.mouse.pos.x;
+            gw.mouse.pos_prev.y = gw.mouse.pos.y;
+
+            var offset = $(this).offset();
+            gw.mouse.pos.x = e.pageX - offset.left;
+            gw.mouse.pos.y = e.pageY - offset.top;
+            gw.mouse.move = true;
+        });
+
         $(gw.canvas.handle)[0].onmousedown = function(e) {
             gw.mouse.click = true;
             if (e) {

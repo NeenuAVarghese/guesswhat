@@ -93,17 +93,17 @@ var main = function() {
     }
     // Function to track User mouse events on canvas
     function handleDrawEvent() {
-        var canvas = document.getElementById('gw_Canvas');
+        var touchcanvas = document.getElementById('gw_Canvas');
         $(gw.canvas.handle)[0].width = width;
         $(gw.canvas.handle)[0].height = height;
 
-        canvas.addEventListener('touchstart', function(e){
+        touchcanvas.addEventListener('touchstart', function(e){
             gw.mouse.click = true;
             if (e) {
                 console.log("error", "onTouchstart", e);
             }
-        });
-        canvas.addEventListener('touchmove', function(e){
+        }, false);
+        touchcanvas.addEventListener('touchmove', function(e){
             if (e) {
                 console.log("error", "ontouchmove", e);
             }
@@ -115,29 +115,18 @@ var main = function() {
             gw.mouse.pos.x = e.pageX - offset.left;
             gw.mouse.pos.y = e.pageY - offset.top;
             gw.mouse.move = true;
-        })
-        
+        }, false); 
 
         $(gw.canvas.handle)[0].onmousedown = function(e) {
             gw.mouse.click = true;
-            if (e) {
-                console.log("error", "onmousedown", e);
-            }
         };
 
         $(gw.canvas.handle)[0].onmouseup = function(e) {
             gw.mouse.click = false;
-            if (e) {
-                console.log("error", "onmouseup", e);
-            }
         };
 
         $(gw.canvas.handle)[0].onmousemove = function(e) {
-
-            if (e) {
-                console.log("error", "onmousemove", e);
-            }
-
+        
             gw.mouse.pos_prev.x = gw.mouse.pos.x;
             gw.mouse.pos_prev.y = gw.mouse.pos.y;
 
@@ -173,20 +162,17 @@ var main = function() {
 
     // call the server-side function "adduser" and send one parameter (value of prompt)
     socket.on("connect", function() {
-        console.log("adduser");
         socket.emit("adduser", prompt("What's your name?"));
     });
 
     // listener, whenever the server emits "updatechat", this updates the chat body
     socket.on("updatechat", function(username, data) {
-        console.log("updatechat", username, data);
         $(gw.landpage.section.content.chatMessages).append("<span class='glyphicon glyphicon-asterisk'></span><strong>" + username + ":</strong> " + data + "<br>");
     });
 
     socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
         $.each(data, function(key, value) {
-            console.log("updateusers", key, value);
             $(gw.landpage.section.content.activeusersList).append("<span class='label label-info'>" + key +"</span><div>");
         });
     });

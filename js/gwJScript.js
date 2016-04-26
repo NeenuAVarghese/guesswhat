@@ -155,8 +155,8 @@ var main = function() {
                 context.lineTo(x, y);
                 context.closePath();
                 context.stroke();
-
         }
+
         socket.on("draw_line", function(data) {
             drawCanvas(data.x, data.y, data.prevX, data.prevY, data.color);
         });
@@ -171,49 +171,10 @@ var main = function() {
             h += parseInt($(this).height()) + 20;
         });
         h = h.toString();
-
         // debugging
-        console.log("scroll to", h);
-
+        //console.log("scroll to", h);
         // scroll to bottom of chat
         $(".chatPanel").animate({scrollTop: h});
-    }
-
-    function connectSocket(username, gamemode) {
-        console.log("gamemode", gamemode);
-
-        // call the server-side function "adduser" and send one parameter (value of prompt)
-        socket.on("connect", function() {
-            socket.emit("adduser", username);
-        });
-
-        // listener, whenever the server emits "updatechat", this updates the chat body
-        socket.on("updatechat", function(username, data) {
-            $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + username + ":</strong> " + data + "</p>");
-            autoScroll();
-        });
-
-        // listener, whenever the server emits "updateword", this updates the game round
-        socket.on("updateword", function(data) {
-            $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + data + "</strong></p>");
-            context.clearRect(0, 0, width, height);
-            autoScroll();
-        });
-
-        // listener, whenever the server emits "updateusers", this updates the user list
-        socket.on("updateusers", function(data) {
-            $(gw.landpage.section.content.activeusersList).empty();
-            $.each(data, function(key, value) {
-                $(gw.landpage.section.content.activeusersList).append("<span class='label label-info'>" + key +"</span><div>");
-            });
-        });
-
-        // handle chat message input
-        $(gw.landpage.section.content.chatform.handle).submit(function() {
-            socket.emit("sendchat", $(gw.landpage.section.content.chatform.field.sendButton).val());
-            $(gw.landpage.section.content.chatform.field.sendButton).val("");
-            return false;
-        });
     }
 
     // load modal when page loads
@@ -225,30 +186,66 @@ var main = function() {
         $(this).addClass("active");
         $(gw.landpage.section.content.playCard.btn2).removeClass("active");
     });
-
     $(gw.landpage.section.content.playCard.btn2).on("click", function() {
         $(this).addClass("active");
         $(gw.landpage.section.content.playCard.btn1).removeClass("active");
     });
 
     // handle username input
-    $("form").submit(function(event) {
+    $("#playForm").submit(function(event) {
         var newuser = $("#screen-name").val();
+
         if (newuser.length > 2) {
             $("#playFooter").addClass("alert-success");
             $("#playStatus").html("<strong>Success!</strong> Joining a game").show().fadeOut(2000);
-            if ($("#btn-teams").hasClass("active")) {
-                connectSocket(newuser, "team");
+
+            if ($("#btn-solo").hasClass("active")) {
+                console.log("connect socket #1");
+                //connectSocket(newuser, "solo");
             }
-            else if ($("#btn-solo").hasClass("active")) {
-                connectSocket(newuser, "solo");
+            else if ($("#btn-teams").hasClass("active")) {
+                console.log("connect socket #2");
+                //connectSocket(newuser, "team");
             }
             $("#playCard").modal("hide");
-            return;
+            return false;
         }
 
-        $("#playFooter").append("<div class='alert alert-danger'><strong>Error!</strong> Unable to join game</div>").show();
+        $("#playFooter").append("<div class='alert alert-danger'><strong>Error!</strong> Unable to join game</div>").show().fadeOut(2000);
         event.preventDefault();
+     });
+
+
+    // handle chat message input
+    $(gw.landpage.section.content.chatform.handle).submit(function() {
+        socket.emit("sendchat", $(gw.landpage.section.content.chatform.field.sendButton).val());
+        $(gw.landpage.section.content.chatform.field.sendButton).val("");
+        return false;
+    });
+
+    // call the server-side function "adduser" and send one parameter (value of prompt)
+    socket.on("connect", function() {
+        socket.emit("adduser", prompt("What's your name?"));
+    });
+
+    // listener, whenever the server emits "updatechat", this updates the chat body
+    socket.on("updatechat", function(username, data) {
+        $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + username + ":</strong> " + data + "</p>");
+        autoScroll();
+    });
+
+    // listener, whenever the server emits "updateword", this updates the game round
+    socket.on("updateword", function(data) {
+        $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + data + "</strong></p>");
+        context.clearRect(0, 0, width, height);
+        autoScroll();
+    });
+
+    socket.on("updateusers", function(data) {
+        $(gw.landpage.section.content.activeusersList).empty();
+        $.each(data, function(key, value) {
+            $(gw.landpage.section.content.activeusersList).append("<span class='label label-info'>" + key +"</span><div>");
+        });
     });
 
     handleDrawEvent();

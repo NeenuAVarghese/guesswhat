@@ -3,6 +3,16 @@ body {
   font-weight: 400;
 }
 
+.modal {
+  text-align: center;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
 .navbar img {
   display: inline;
   padding: 0 0.5em 0 0;
@@ -52,16 +62,20 @@ canvas {
   height: 100%;
 }
 
+.sticker {
+  max-width: 150px;
+}
+
 .chatPanel {
   height: 300px;
   width: 100%;
   overflow-y: scroll;
 }
 
-.gw-input-chat .input-group-addon{
+.gw-input-chat .input-group-addon {
   background: white;
 }
-.gw-input-chat .form-control{
+.gw-input-chat .form-control {
   border-right: 0;
   box-shadow:0 0 0;
   border-color: #CCC;
@@ -75,7 +89,17 @@ canvas {
   padding-bottom: 20px;
 }
 
-@media (min-width: 1000px) {
+.game-mode button {
+  height: 200px;
+}
+
+@media screen and (min-width: 768px) {
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
   canvas {
     height: 700px;
   }

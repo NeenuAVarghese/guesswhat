@@ -113,8 +113,85 @@
         </div>
     </div>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+
+    <!-- Play Modal -->
+    <div id="playCard" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h2 class="modal-title">Play a Game</h2>
+                </div>
+
+                <div class="modal-body">
+                    <h4>Welcome to GuessWhat!?</h4>
+                    <div class="container col-md-12">
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4">
+                                <img src="images/framed-artwork.png" alt="flower" class="sticker" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <span>The fun party game you know and love</span>
+                                <ul>
+                                    <li>So you think you can draw?</li>
+                                    <li>Pretty quick on uptake?</li>
+                                </ul>
+                                <span>Battle against your friends and the clock!</span>
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="btn-group btn-group-lg col-md-4" role="group" aria-label="game mode">
+                                <button id="btn-solo" class="btn btn-default active" type="button">Solo
+                                    <i class="glyphicon glyphicon-user">&nbsp;</i>
+                                </button>
+                                <button id="btn-teams" class="btn btn-default" type="button">Teams
+                                    <i class="glyphicon glyphicon-flag">&nbsp;</i>
+                                </button>
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>
+
+                        <div class="row">
+                            <form id="playForm" class="form-group">
+                                <div class="col-md-4">
+                                    <label for="screen-name">What's your name?</label>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <input id="screen-name" class="form-control" type="text" placeholder="Clue">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary btn-md" type="submit">Play!</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="container col-md-12">
+                        <div class="row">
+                            <div id="playFooter" class="alert alert-dismissable">
+                                <span id="playStatus"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
     <!-- jQuery Libraries -->
     <script src="libraries/jquery/jquery-2.2.2.min.js"></script>
     <!-- Script for Handling Sockets -->

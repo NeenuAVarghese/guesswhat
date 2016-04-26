@@ -28,7 +28,8 @@ var main = function() {
                         form: "#playForm",
                         btn1: "#btn-solo",
                         btn2: "#btn-teams",
-                        status: "#playFooter"
+                        status: "#playFooter",
+						playSubmitBtn: "#playSubmit"
                     },
                     activeusersList: "#gwActiveUser",
                     colorPicker: "#gwColorPicker",
@@ -179,8 +180,8 @@ var main = function() {
     }
 
     // load modal when page loads
-    $(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
-    $(gw.landpage.section.content.playCard.handle).modal("show");
+    //$(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
+    
 
     // handle button toggle
     $(gw.landpage.section.content.playCard.btn1).on("click", function() {
@@ -232,8 +233,14 @@ var main = function() {
 
     // call the server-side function "adduser" and send one parameter (value of prompt)
     socket.on("connect", function() {
-        socket.emit("adduser", prompt("What's your name?"));
+		$(gw.landpage.section.content.playCard.handle).modal("show");
+		$(gw.landpage.section.content.playCard.playSubmitBtn).on("click", function(){
+			socket.emit("adduser", $(gw.landpage.section.content.playCard.input).val());
+			$(gw.landpage.section.content.playCard.handle).modal("hide");
     });
+		
+		});
+        
 
     // listener, whenever the server emits "updatechat", this updates the chat body
     socket.on("updatechat", function(username, data) {

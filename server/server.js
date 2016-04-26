@@ -17,7 +17,6 @@ var io = require("socket.io");
 var redis = require("redis");
 
 // Initialize
-
 var app = express();
 app.use(express.static("./"));
 var server = null;
@@ -49,7 +48,7 @@ function startServer() {
             console.log("Starting express server on httpPort", httpPort);
         }
         else if (err.errno === "EADDRINUSE") {
-            console.log("httpPort", httpPort, "busy. Unable to start express server");
+            console.log("Port", httpPort, "busy. Unable to start express server");
             console.log("To debug: $ lsof -i :" + httpPort);
         }
         else {
@@ -65,6 +64,8 @@ function userLogin(socket) {
     socket.on("adduser", function(username) {
         // we store the username in the socket session for this client
         socket.username = username;
+        // add the client's username to the global list
+        usernames[username] = username;
 
         // store username in Redis database
         if (db) {
@@ -80,15 +81,7 @@ function userLogin(socket) {
                     redisClient.rpush("users", username);
                 }
             });
-        }
 
-        // echo to client they've connected
-        socket.emit("updatechat", "SERVER", "you have connected");
-        // echo globally (all clients) that a person has connected
-        socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
-
-        // add the client's username to the global list
-        if (db) {
             redisClient.lrange("users", 0, -1, function(err, items) {
                 if (err) {
                     console.log("Error in getting elements of user list");
@@ -99,10 +92,11 @@ function userLogin(socket) {
                 });
             });
         }
-        else {
-            usernames[username] = username;
-        }
 
+        // echo to client they've connected
+        socket.emit("updatechat", "SERVER", "you have connected");
+        // echo globally (all clients) that a person has connected
+        socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
         // update the list of users in chat, client-side
         server.sockets.emit("updateusers", usernames);
     });
@@ -112,17 +106,18 @@ function userLogout(socket) {
     // when the user disconnects.. perform this
     socket.on("disconnect", function() {
         console.log("User:", socket.username, "Disconnected");
-
         // remove the username from global usernames list
+        delete usernames[socket.username];
+
+        // remove username from Redis database
         if (db) {
-            redisClient.lrem("users",1,  socket.username, function(err) {
+            redisClient.lrem("users", 1,  socket.username, function(err) {
                 if (err) {
                     console.log("User Removed form list");
                 }
             });
         }
 
-        delete usernames[socket.username];
         // update list of users in chat, client-side
         server.sockets.emit("updateusers", usernames);
         // echo globally that this client has left
@@ -138,6 +133,7 @@ function recordDraw(socket) {
         else {
             console.log("Drawing null");
         }
+
     }
 }
 
@@ -155,7 +151,7 @@ function winner(socket) {
     server.sockets.emit("updateword", "the word was '" + magic[xyzzy] + "'");
     // echo globally (all clients) that a person has won
     socket.broadcast.emit("updateword", "the word was '" + magic[xyzzy] + "'");
-    socket.broadcast.emit("updateword", "player " + socket.username + " was the winner");
+    socket.broadcast.emit("updateword", "player '" + socket.username + "' was the winner");
 
     // change word
     if (xyzzy < magic.length) {
@@ -165,6 +161,7 @@ function winner(socket) {
         xyzzy = 0;
     }
 }
+
 
 function parseChat(socket, data) {
     var line = Array.prototype.join.call(data, "");

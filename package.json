@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "test": "scripts/validate.sh",
-    "start": "redis-server --port 7777 & node server/server.js"
+    "start": "redis-server --port 6379 & node server/server.js"
   },
   "repository": {
     "type": "git",

@@ -5,7 +5,7 @@
 
 // Config
 var httpPort = 3000;
-var redisPort = 7777;
+var redisPort = 6379;
 var line_history = [];
 var usernames = {};
 var magic = [ "bunny", "dog", "elephant", "fish", "turtle" ];
@@ -28,17 +28,17 @@ function connectDB() {
     redisClient = redis.createClient(redisPort);
     redisClient.on("error", function() {
         console.error("Redis server refused connection on port", redisPort);
-        return;
+        return false;
     });
 
     redisClient.on("connect", function() {
         console.log("Connected to Redis Server on port", redisPort);
-        db = true;
+        return true;
     });
 
     redisClient.on("end", function() {
         console.log("Connection to Redis Server closed");
-        db = false;
+        return false;
     });
 }
 
@@ -66,21 +66,26 @@ function userLogin(socket) {
         socket.username = username;
         // add the client's username to the global list
         usernames[username] = username;
+        console.log("add client", username);
 
         // store username in Redis database
         if (db) {
+            console.log("rpush username", username);
+
             redisClient.exists(username, function(err, object) {
                 if (object !== 1) {
                     // initialize scores to 0
                     redisClient.hmset(username, {
                         "wins": 0,
                     });
-                    redisClient.hmset(username, {
-                        "losses": 0,
-                    });
+//                    redisClient.hmset(username, {
+//                        "losses": 0,
+//                    });
                     redisClient.rpush("users", username);
                 }
             });
+
+
 
             redisClient.lrange("users", 0, -1, function(err, items) {
                 if (err) {
@@ -111,6 +116,8 @@ function userLogout(socket) {
 
         // remove username from Redis database
         if (db) {
+            console.log("lrem username", socket.username);
+
             redisClient.lrem("users", 1,  socket.username, function(err) {
                 if (err) {
                     console.log("User Removed form list");
@@ -188,7 +195,7 @@ function transmitChat(socket) {
 
 // Run server
 server = startServer();
-connectDB();
+db = connectDB();
 
 // Main
 server.sockets.on("connection", function(socket) {

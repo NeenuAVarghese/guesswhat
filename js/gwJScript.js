@@ -29,7 +29,7 @@ var main = function() {
                         btn1: "#btn-solo",
                         btn2: "#btn-teams",
                         status: "#playFooter",
-						playSubmitBtn: "#playSubmit"
+                        playSubmitBtn: "#playSubmit"
                     },
                     activeusersList: "#gwActiveUser",
                     colorPicker: "#gwColorPicker",
@@ -173,15 +173,14 @@ var main = function() {
             h += parseInt($(this).height()) + 20;
         });
         h = h.toString();
-        // debugging
-        //console.log("scroll to", h);
+
         // scroll to bottom of chat
         $(".chatPanel").animate({scrollTop: h});
     }
 
     // load modal when page loads
     //$(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
-    
+
     // handle button toggle
     $(gw.landpage.section.content.playCard.btn1).on("click", function() {
         $(this).addClass("active");
@@ -211,36 +210,36 @@ var main = function() {
 
     // call the server-side function "adduser" and send one parameter (value of prompt)
     socket.on("connect", function() {
-		$(gw.landpage.section.content.playCard.handle).modal("show");
-		    // handle username input
-    $(gw.landpage.section.content.playCard.form).submit(function(event) {
-        var newuser = $(gw.landpage.section.content.playCard.input).val();
+        //socket.emit("adduser", prompt("newuser"));
 
-        if (newuser.length > 2) {
-            $(gw.landpage.section.content.playCard.status).append("<div class='alert alert-success'><strong>Success!</strong> Joining a game</div>").show().fadeOut(2000);
+        $(gw.landpage.section.content.playCard.handle).modal("show");
+        // handle username input
+        $(gw.landpage.section.content.playCard.form).submit(function(event) {
+            var newuser = $(gw.landpage.section.content.playCard.input).val();
 
-            if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
-                console.log("connect socket #1");
-                //connectSocket(newuser, "solo");
+            if (newuser.length > 2) {
+                $(gw.landpage.section.content.playCard.status).append("<div class='alert alert-success'><strong>Success!</strong> Joining a game</div>").show().fadeOut(2000);
+
+                if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
+                    console.log("connect socket #1");
+                    socket.emit("adduser", newuser);
+                    //connectSocket(newuser, "solo");
+                }
+                else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
+                    console.log("connect socket #2");
+                    socket.emit("adduser", newuser);
+                    //connectSocket(newuser, "team");
+                }
+                $(gw.landpage.section.content.playCard.handle).modal("hide");
+                return false;
             }
-            else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
-                console.log("connect socket #2");
-                //connectSocket(newuser, "team");
+            else {
+                $(gw.landpage.section.content.playCard.status).append("<div class='alert alert-danger'><strong>Error!</strong> Unable to join game</div>").show().fadeOut(2000);
+                event.preventDefault();
+                $(gw.landpage.section.content.playCard.handle).modal("hide");
             }
-            $(gw.landpage.section.content.playCard.handle).modal("hide");
-            return false;
-        }
-
-        $(gw.landpage.section.content.playCard.status).append("<div class='alert alert-danger'><strong>Error!</strong> Unable to join game</div>").show().fadeOut(2000);
-        event.preventDefault();
-		
-		socket.emit("adduser", newuser);
-		$(gw.landpage.section.content.playCard.handle).modal("hide");
-     });
-
-		
-		});
-        
+        });
+    });
 
     // listener, whenever the server emits "updatechat", this updates the chat body
     socket.on("updatechat", function(username, data) {

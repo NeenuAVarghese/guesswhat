@@ -182,7 +182,6 @@ var main = function() {
     // load modal when page loads
     //$(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
     
-
     // handle button toggle
     $(gw.landpage.section.content.playCard.btn1).on("click", function() {
         $(this).addClass("active");
@@ -193,7 +192,27 @@ var main = function() {
         $(gw.landpage.section.content.playCard.btn1).removeClass("active");
     });
 
-    // handle username input
+
+
+    $("#logoutLink").on("click", function() {
+        console.log("logging out");
+        socket.emit("logout", function() {
+            socket.disconnect();
+        });
+        $(gw.landpage.section.content.playCard.handle).modal("show");
+    });
+
+    // handle chat message input
+    $(gw.landpage.section.content.chatform.handle).submit(function() {
+        socket.emit("sendchat", $(gw.landpage.section.content.chatform.field.sendButton).val());
+        $(gw.landpage.section.content.chatform.field.sendButton).val("");
+        return false;
+    });
+
+    // call the server-side function "adduser" and send one parameter (value of prompt)
+    socket.on("connect", function() {
+		$(gw.landpage.section.content.playCard.handle).modal("show");
+		    // handle username input
     $(gw.landpage.section.content.playCard.form).submit(function(event) {
         var newuser = $(gw.landpage.section.content.playCard.input).val();
 
@@ -214,30 +233,11 @@ var main = function() {
 
         $(gw.landpage.section.content.playCard.status).append("<div class='alert alert-danger'><strong>Error!</strong> Unable to join game</div>").show().fadeOut(2000);
         event.preventDefault();
+		
+		socket.emit("adduser", newuser);
+		$(gw.landpage.section.content.playCard.handle).modal("hide");
      });
 
-    $("#logoutLink").on("click", function() {
-        console.log("logging out");
-        socket.emit("logout", function() {
-            socket.disconnect();
-        });
-        $(gw.landpage.section.content.playCard.handle).modal("show");
-    });
-
-    // handle chat message input
-    $(gw.landpage.section.content.chatform.handle).submit(function() {
-        socket.emit("sendchat", $(gw.landpage.section.content.chatform.field.sendButton).val());
-        $(gw.landpage.section.content.chatform.field.sendButton).val("");
-        return false;
-    });
-
-    // call the server-side function "adduser" and send one parameter (value of prompt)
-    socket.on("connect", function() {
-		$(gw.landpage.section.content.playCard.handle).modal("show");
-		$(gw.landpage.section.content.playCard.playSubmitBtn).on("click", function(){
-			socket.emit("adduser", $(gw.landpage.section.content.playCard.input).val());
-			$(gw.landpage.section.content.playCard.handle).modal("hide");
-    });
 		
 		});
         

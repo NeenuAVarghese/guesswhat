@@ -36,13 +36,16 @@
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a>
                     </li>
-                    <li><a href="#">Link</a>
+                    <li>
+                        <a href="#">Link</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Link</a>
+                    <li>
+                        <a href="#">Link</a>
                     </li>
-                    <li><a href="#">Link</a>
+                    <li>
+                        <a id="logoutLink" class="navbutton">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -58,7 +61,7 @@
                     <button id="gwRed" type="button" class="btn btn-danger">Red</button>
                     <button id="gwGreen" type="button" class="btn btn-success">Green</button>
                     <button id="gwBlue" type="button" class="btn btn-primary">Blue</button>
-                    <button id="gwClear"type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true">&nbsp;</i>
+                    <button id="gwClear"type="button" class="btn btn-warning"><i class="fa fa-trash" aria-hidden="true">&nbsp;</i>
                     </button>
                 </div>
             </div>
@@ -165,9 +168,9 @@
                             <form id="playForm" class="form-inline">
                                 <div class="col-md-2"></div>
                                 <div class="col-md-8">
-                                    <label for="screen-name">What's your name?</label>
+                                    <label for="playInput">What's your name?</label>
                                     <div class="input-group">
-                                        <input id="screen-name" class="form-control" type="text" placeholder="Clue">
+                                        <input id="playInput" class="form-control" type="text" placeholder="Clue">
                                     </div>
                                     <button class="btn btn-primary btn-md" type="submit">Play!</button>
                                 </div>
@@ -180,9 +183,7 @@
                 <div class="modal-footer">
                     <div class="container col-md-12">
                         <div class="row">
-                            <div id="playFooter" class="alert alert-dismissable">
-                                <span id="playStatus"></span>
-                            </div>
+                            <div id="playFooter" class="alert alert-dismissable"></div>
                         </div>
                     </div>
                 </div>

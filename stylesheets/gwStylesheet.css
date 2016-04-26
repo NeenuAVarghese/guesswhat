@@ -57,6 +57,10 @@ body {
   background: #444;
 }
 
+.navbutton {
+  cursor: pointer;
+}
+
 canvas {
   width: 100%;
   height: 100%;

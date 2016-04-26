@@ -27,7 +27,8 @@ var main = function() {
                         input: "#playInput",
                         form: "#playForm",
                         btn1: "#btn-solo",
-                        btn2: "#btn-teams"
+                        btn2: "#btn-teams",
+                        status: "#playFooter"
                     },
                     activeusersList: "#gwActiveUser",
                     colorPicker: "#gwColorPicker",
@@ -192,29 +193,35 @@ var main = function() {
     });
 
     // handle username input
-    $("#playForm").submit(function(event) {
-        var newuser = $("#screen-name").val();
+    $(gw.landpage.section.content.playCard.form).submit(function(event) {
+        var newuser = $(gw.landpage.section.content.playCard.input).val();
 
         if (newuser.length > 2) {
-            $("#playFooter").addClass("alert-success");
-            $("#playStatus").html("<strong>Success!</strong> Joining a game").show().fadeOut(2000);
+            $(gw.landpage.section.content.playCard.status).append("<div class='alert alert-success'><strong>Success!</strong> Joining a game</div>").show().fadeOut(2000);
 
-            if ($("#btn-solo").hasClass("active")) {
+            if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
                 console.log("connect socket #1");
                 //connectSocket(newuser, "solo");
             }
-            else if ($("#btn-teams").hasClass("active")) {
+            else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
                 console.log("connect socket #2");
                 //connectSocket(newuser, "team");
             }
-            $("#playCard").modal("hide");
+            $(gw.landpage.section.content.playCard.handle).modal("hide");
             return false;
         }
 
-        $("#playFooter").append("<div class='alert alert-danger'><strong>Error!</strong> Unable to join game</div>").show().fadeOut(2000);
+        $(gw.landpage.section.content.playCard.status).append("<div class='alert alert-danger'><strong>Error!</strong> Unable to join game</div>").show().fadeOut(2000);
         event.preventDefault();
      });
 
+    $("#logoutLink").on("click", function() {
+        console.log("logging out");
+        socket.emit("logout", function() {
+            socket.disconnect();
+        });
+        $(gw.landpage.section.content.playCard.handle).modal("show");
+    });
 
     // handle chat message input
     $(gw.landpage.section.content.chatform.handle).submit(function() {

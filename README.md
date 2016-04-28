@@ -8,9 +8,16 @@
 1. `git clone https://github.com/NeenuAVarghese/guesswhat.git`
 2. `cd guesswhat`
 3. `npm install`
-4. `npm start`
-5. Open web browser to `http://localhost:3000`
-6. Repeat Step 5, for each client
+
+###Playing
+1. `cd guesswhat`
+2. `npm start`
+3. Open web browser to `http://localhost:3000`
+4. Repeat _Step 3_, for each client
+
+**Note:** if `redis-server` _and/or_ `node` are not in your `PATH`, then manually run
+- `/path/to/redis-server --port 6379`
+- `/path/to/node server/server.js`
 
 ###Testing
 1. Install [csslint](https://www.npmjs.com/package/csslint) (CSS validator)

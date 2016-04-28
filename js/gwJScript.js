@@ -151,11 +151,11 @@ var main = function() {
 
         function drawCanvas(x, y, pX, pY, c) {
                 context.beginPath();
-                context.lineWidth = 2;
+                context.lineWidth = 5;
+                context.lineJoin = context.lineCap = 'round';
                 context.strokeStyle = c;
                 context.moveTo(pX, pY);
                 context.lineTo(x, y);
-                context.closePath();
                 context.stroke();
         }
 

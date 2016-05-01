@@ -59,9 +59,26 @@ function startServer() {
     return process;
 }
 
+function reveal() {
+    // echo new word
+    server.sockets.emit("displayword", magic[xyzzy]);
+}
+
 function userLogin(socket) {
     // when the client emits "adduser", this listens and executes
-    socket.on("adduser", function(username) {
+    socket.on("adduser", function(mode, username) {
+
+        // detect game mode
+        if (mode === 1) {
+            console.log("Free-for-all mode");
+        }
+        else if (mode === 2) {
+            console.log("Teams mode");
+        }
+        else {
+            console.log("Invalid mode", mode);
+        }
+
         // we store the username in the socket session for this client
         socket.username = username;
         // add the client's username to the global list
@@ -104,6 +121,10 @@ function userLogin(socket) {
         socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
         // update the list of users in chat, client-side
         server.sockets.emit("updateusers", usernames);
+
+        if (server.engine.clientsCount === 1) {
+            reveal();
+        }
     });
 }
 
@@ -129,6 +150,10 @@ function userLogout(socket) {
         server.sockets.emit("updateusers", usernames);
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
+
+        if (server.engine.clientsCount === 1) {
+            reveal();
+        }
     });
 }
 
@@ -160,7 +185,7 @@ function winner(socket) {
     socket.broadcast.emit("updateword", "the word was '" + magic[xyzzy] + "'");
     socket.broadcast.emit("updateword", "player '" + socket.username + "' was the winner");
 
-    // change word
+    // get new word
     if (xyzzy < magic.length) {
         xyzzy += 1;
     }
@@ -168,7 +193,6 @@ function winner(socket) {
         xyzzy = 0;
     }
 }
-
 
 function parseChat(socket, data) {
     var line = Array.prototype.join.call(data, "");
@@ -178,6 +202,7 @@ function parseChat(socket, data) {
         console.log(words[i], magic[xyzzy]);
         if (words[i] === magic[xyzzy]) {
             winner(socket, magic[xyzzy]);
+            reveal();
         }
     }
 }

@@ -29,6 +29,7 @@
                     <span class="icon-bar">&nbsp;</span>
                 </button>
                 <a class="navbar-brand" href="#">GuessWhat</a>
+                <a id="gwPrompt" class="navbar-brand" href="#"></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -82,7 +83,7 @@
                 <div class="panel panel-primary" ><div class="panel-heading">Chat board</div><div class="panel-body chatPanel"><div id="gwMessages"></div></div></div>
                 <form action="" id="gwChatForm">
                     <div class="input-group gw-input-chat">
-                        <input id="gwChatButton" type="text" class="form-control"  autocomplete="off" placeholder="type">
+                        <input id="gwChatButton" type="text" class="form-control"  autocomplete="off" placeholder="Message">
                         <div class="input-group-addon">
                             <button type="submit">
                                 <i class="glyphicon glyphicon-send">&nbsp;</i>
@@ -110,14 +111,14 @@
 
                 <div class="modal-body">
                     <h4>Welcome to GuessWhat!?</h4>
-                    <div class="container col-md-12">
+                    <div class="container col-md-12 col-xs-12">
                         <div class="row">
-                            <div class="col-md-1"></div>
-                            <div class="col-md-4">
+                            <div class="col-md-1 col-xs-0"></div>
+                            <div class="col-md-4 col-xs-5">
                                 <img src="images/framed-artwork.png" alt="flower" class="sticker" />
                             </div>
 
-                            <div class="col-md-5">
+                            <div class="col-md-5 col-xs-7">
                                 <span>The fun party game you know and love</span>
                                 <ul>
                                     <li>So you think you can draw?</li>
@@ -125,65 +126,53 @@
                                 </ul>
                                 <span>Battle against your friends and the clock!</span>
                             </div>
-                            <div class="col-md-2"></div>
+                            <div class="col-md-2 col-xs-0"></div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4"></div>
-                            <div class="btn-group btn-group-lg col-md-4" role="group" aria-label="game mode">
-                                <button id="btn-solo" class="btn btn-default active" type="button">Solo
+                            <div class="col-md-3 col-xs-2"></div>
+                            <div class="btn-group btn-group-lg col-md-6 col-xs-8" role="group" aria-label="game mode">
+                                <button id="btn-solo" class="btn btn-default mode active" type="button">Solo
                                     <i class="glyphicon glyphicon-user">&nbsp;</i>
                                 </button>
-                                <button id="btn-teams" class="btn btn-default" type="button">Teams
+                                <button id="btn-teams" class="btn btn-default mode" type="button">Teams
                                     <i class="glyphicon glyphicon-flag">&nbsp;</i>
                                 </button>
                             </div>
-                            <div class="col-md-4"></div>
+                            <div class="col-md-3 col-xs-2"></div>
                         </div>
 
                         <div class="row"></div>
 
-                        <div class="row">
-                            <form id="playForm" class="form-inline">
-                                <div class="col-md-2"></div>
-                                <div class="col-md-8">
+                        <form id="playForm" class="form-inline">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-2"></div>
+                                <div class="col-md-6 col-xs-8">
                                     <div class="input-group">
                                         <label for="playInput">What's your name?</label>
-                                        <input id="playInput" class="form-control" type="text" placeholder="Clue">
+                                        <input id="playInput" class="form-control" type="text" placeholder="Username">
                                     </div>
-                                    <button id="playSubmit" class="btn btn-primary btn-md" type="submit">Play!</button>
                                 </div>
-                                <div class="col-md-2"></div>
-                            </form>
-                        </div>
+                                <div class="col-md-3 col-xs-2"></div>
+                            </div>
 
-<div class="col-lg-12">
-      <label>Name</label>
-      <div class="row">
-        <div class="col-xs-10">
-          <div class="form-group">
-            <input type="text" class="form-control" />
-          </div>
-        </div>
-        <div class="col-xs-2">
-          <div class="form-group">
-            <div class="btn btn-danger">Remove</div>
-          </div>
-        </div>
-      </div>
-</div>
+                            <div class="row">
+                                <div class="col-xs-4"></div>
+                                <div class="col-xs-4 form">
+                                    <button id="playSubmit" class="btn btn-primary btn-lg" type="submit">Play!</button>
+                                </div>
+                                <div class="col-xs-4"></div>
+                            </div>
+                        </form>
 
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <div class="container col-md-12">
-                        <div class="row">
+                        <div class="col-md-12 col-xs-12">
                             <div id="playFooter" class="alert alert-dismissable"></div>
                         </div>
+
                     </div>
                 </div>
 
+                <div class="modal-footer"></div>
             </div>
         </div>
     </div>

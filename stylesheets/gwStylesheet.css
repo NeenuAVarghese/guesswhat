@@ -93,8 +93,8 @@ canvas {
   padding-bottom: 20px;
 }
 
-.game-mode button {
-  height: 200px;
+.mode {
+  min-height: 100px;
 }
 
 @media screen and (min-width: 768px) {

@@ -13,6 +13,14 @@ body {
   vertical-align: middle;
 }
 
+/* scroll fixes */
+.modal-open .modal {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  overflow-y: scroll;
+}
+
+
 .navbar img {
   display: inline;
   padding: 0 0.5em 0 0;
@@ -97,24 +105,13 @@ canvas {
   min-height: 100px;
 }
 
-@media screen and (min-width: 768px) {
-  .modal:before {
-    display: inline-block;
-    vertical-align: middle;
-    content: " ";
-    height: 100%;
-  }
+@media screen and (max-width: 768px) {
   canvas {
-    height: 700px;
+    /*height: 100%;
+    width: 100%;*/
+    background-color: #FF0000;
   }
   .chatPanel {
-    height: 600px;
-  }
-}
-
-@media (max-width: 900px) {
-  canvas {
-    /* testing */
-    background-color: #FF0000;
+    height: 50%;
   }
 }

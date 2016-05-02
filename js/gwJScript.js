@@ -68,6 +68,7 @@ var main = function() {
     //Function to handle Clear Canvas
     $(gw.landpage.action.clearCanvas).on("click", function() {
         context.clearRect(0, 0, width, height);
+        socket.emit("clear_line");
     });
     //Function to handle Red Color
     $(gw.landpage.action.red).on("click", function() {
@@ -102,63 +103,77 @@ var main = function() {
 
         setTimeout(handleSocketEmit, 25);
     }
+
+    //
+    function paint(e, that) {
+        gw.mouse.pos_prev.x = gw.mouse.pos.x;
+        gw.mouse.pos_prev.y = gw.mouse.pos.y;
+
+        var offset = that.offset();
+        gw.mouse.pos.x = e.pageX - offset.left;
+        gw.mouse.pos.y = e.pageY - offset.top;
+        gw.mouse.move = true;
+    }
+
     // Function to track User mouse events on canvas
     function handleDrawEvent() {
-        var touchcanvas = document.getElementById("gw_Canvas");
         $(gw.canvas.handle)[0].width = width;
         $(gw.canvas.handle)[0].height = height;
 
-        touchcanvas.addEventListener("touchstart", function(e) {
+        $(gw.canvas.handle).bind("touchstart", function() {
             gw.mouse.click = true;
-            if (e) {
-                console.log("error", "onTouchstart", e);
-            }
-        }, false);
-
-        touchcanvas.addEventListener("touchmove", function(e) {
-            if (e) {
-                console.log("error", "ontouchmove", e);
-            }
-
-            gw.mouse.pos_prev.x = gw.mouse.pos.x;
-            gw.mouse.pos_prev.y = gw.mouse.pos.y;
-
-            var offset = $(this).offset();
-            gw.mouse.pos.x = e.pageX - offset.left;
-            gw.mouse.pos.y = e.pageY - offset.top;
-            gw.mouse.move = true;
-        }, false);
-
-        $(gw.canvas.handle)[0].onmousedown = function(e) {
-            gw.mouse.click = true;
-        };
+        });
 
         $(gw.canvas.handle)[0].onmouseup = function(e) {
             gw.mouse.click = false;
         };
 
-        $(gw.canvas.handle)[0].onmousemove = function(e) {
-            gw.mouse.pos_prev.x = gw.mouse.pos.x;
-            gw.mouse.pos_prev.y = gw.mouse.pos.y;
+        $(gw.canvas.handle).bind("touchmove", function(e) {
+            if (gw.mouse.click) {
+                context.lineTo(e.clientX, e.clientY);
+                context.stroke();
+            }
 
-            var offset = $(this).offset();
-            gw.mouse.pos.x = e.pageX - offset.left;
-            gw.mouse.pos.y = e.pageY - offset.top;
-            gw.mouse.move = true;
+            var that = $(this);
+            paint(e, that);
+        });
+
+        $(gw.canvas.handle)[0].onmousemove = function(e) {
+            if (gw.mouse.click) {
+                context.lineTo(e.clientX, e.clientY);
+                context.stroke();
+            }
+
+            var that = $(this);
+            paint(e, that);
+        };
+
+        $(gw.canvas.handle).bind("touchend", function() {
+            context.beginPath();
+            gw.mouse.click = true;
+        });
+
+        $(gw.canvas.handle)[0].onmousedown = function(e) {
+            context.beginPath();
+            gw.mouse.click = true;
         };
 
         function drawCanvas(x, y, pX, pY, c) {
-                context.beginPath();
-                context.lineWidth = 5;
-                context.lineJoin = context.lineCap = 'round';
-                context.strokeStyle = c;
-                context.moveTo(pX, pY);
-                context.lineTo(x, y);
-                context.stroke();
+            context.lineWidth = 10;
+            context.lineJoin = context.lineCap = "round";
+            context.strokeStyle = c;
+            context.moveTo(pX, pY);
+            context.lineTo(x, y);
+            context.stroke();
         }
 
         socket.on("draw_line", function(data) {
             drawCanvas(data.x, data.y, data.prevX, data.prevY, data.color);
+        });
+
+        socket.on("clear_line", function() {
+            console.log("empty");
+            context.clearRect(0, 0, width, height);
         });
 
         handleSocketEmit();
@@ -177,7 +192,32 @@ var main = function() {
     }
 
     // load modal when page loads
-    //$(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
+    $(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
+
+// FIXME
+// https://api.datamuse.com/words?rel_jja=turquoise&topics=animals&max=50
+//////////////////////////////////////////////
+var modalVerticalCenterClass = ".modal";
+function centerModals($element) {
+    var $modals;
+    if ($element.length) {
+        $modals = $element;
+    } else {
+        $modals = $(modalVerticalCenterClass + ':visible');
+    }
+    $modals.each( function(i) {
+        var $clone = $(this).clone().css('display', 'block').appendTo('body');
+        var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
+        top = top > 0 ? top : 0;
+        $clone.remove();
+        $(this).find('.modal-content').css("margin-top", top);
+    });
+}
+$(modalVerticalCenterClass).on('show.bs.modal', function(e) {
+    centerModals($(this));
+});
+$(window).on('resize', centerModals);
+/////////////////////////////////////////////
 
     // handle button toggle
     $(gw.landpage.section.content.playCard.btn1).on("click", function() {
@@ -216,7 +256,7 @@ var main = function() {
 
             if (newuser.length > 2) {
                 $(gw.landpage.section.content.playCard.status).removeClass("alert-danger").addClass("alert-success");
-                $(gw.landpage.section.content.playCard.status).html("<strong>Success!</strong> Joining a game").show().fadeOut(2000);
+                $(gw.landpage.section.content.playCard.status).html("<strong>Success!</strong> Joining a game").show().delay(800).fadeOut(400);
 
                 if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
                     console.log("connect socket #1");
@@ -231,7 +271,7 @@ var main = function() {
             }
             else {
                 $(gw.landpage.section.content.playCard.status).removeClass("alert-success").addClass("alert-danger");
-                $(gw.landpage.section.content.playCard.status).html("<strong>Error!</strong> Unable to join game").show().fadeOut(2000);
+                $(gw.landpage.section.content.playCard.status).html("<strong>Error!</strong> Unable to join game").show().delay(800).fadeOut(400);
                 $(gw.landpage.section.content.playCard.input).val("");
                 event.preventDefault();
             }
@@ -253,7 +293,7 @@ var main = function() {
     // listener, whenever the server emits "updateword", this updates the game round
     socket.on("updateword", function(data) {
         $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + data + "</strong></p>");
-        context.clearRect(0, 0, width, height);
+        socket.emit("clear_line");
         autoScroll();
     });
 

@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/NeenuAVarghese/guesswhat#readme",
   "dependencies": {
+    "datamuse": "^1.0.3",
     "express": "^4.13.4",
+    "random-js": "^1.0.8",
     "redis": "^2.6.0-1",
     "socket.io": "^1.4.5"
   }

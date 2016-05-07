@@ -57,11 +57,12 @@ function startServer() {
     }));
 
     return process;
+
 }
 
 function reveal() {
     // echo new word
-    server.sockets.emit("displayword", magic[xyzzy]);
+    guesswhat.emit("displayword", magic[xyzzy]);
 }
 
 function userLogin(socket) {
@@ -115,11 +116,12 @@ function userLogin(socket) {
         }
 
         // echo to client they've connected
-        socket.emit("updatechat", "SERVER", "you have connected");
+        guesswhat.emit("updatechat", "SERVER", "you have connected");
         // echo globally (all clients) that a person has connected
         socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
         // update the list of users in chat, client-side
-        server.sockets.emit("updateusers", usernames);
+        //server.sockets.emit("updateusers", usernames);
+        guesswhat.emit("updateusers", usernames);
 
         if (server.engine.clientsCount === 1) {
             reveal();
@@ -146,7 +148,8 @@ function userLogout(socket) {
         }
 
         // update list of users in chat, client-side
-        server.sockets.emit("updateusers", usernames);
+        //server.sockets.emit("updateusers", usernames);
+        guesswhat.emit("updateusers", usernames);
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
 
@@ -159,7 +162,8 @@ function userLogout(socket) {
 function recordDraw(socket) {
     for (var i in line_history) {
         if (line_history[i] !== null) {
-            socket.emit("draw_line", line_history[i]);
+            //socket.emit("draw_line", line_history[i]);
+            guesswhat.emit("draw_line", line_history[i]);
         }
         else {
             console.log("Drawing null");
@@ -171,18 +175,19 @@ function recordDraw(socket) {
 function transmitDraw(socket) {
     socket.on("draw_line", function(data) {
         line_history.push(data);
-        server.sockets.emit("draw_line", data);
+        //server.sockets.emit("draw_line", data);
+        guesswhat.emit("draw_line", data);
     });
 }
 
 function winner(socket) {
     console.log("Winner", socket.username);
     // echo to client they've won
-    server.sockets.emit("updateword", "you win!");
-    server.sockets.emit("updateword", "the word was '" + magic[xyzzy] + "'");
+    socket.emit("updateword", "You win!");
+    socket.emit("updateword", "The word was '" + magic[xyzzy] + "'");
     // echo globally (all clients) that a person has won
-    socket.broadcast.emit("updateword", "the word was '" + magic[xyzzy] + "'");
-    socket.broadcast.emit("updateword", "player '" + socket.username + "' was the winner");
+    socket.broadcast.emit("updateword", "The word was '" + magic[xyzzy] + "'");
+    socket.broadcast.emit("updateword", "Player '" + socket.username + "' was the winner");
 
     // get new word
     if (xyzzy < magic.length) {
@@ -210,7 +215,8 @@ function transmitChat(socket) {
     // when the client emits "sendchat", this listens and executes
     socket.on("sendchat", function(data) {
         // we tell the client to execute "updatechat" with 2 parameters
-        server.sockets.emit("updatechat", socket.username, data);
+        //server.sockets.emit("updatechat", socket.username, data);
+        guesswhat.emit("updatechat", socket.username, data);
         // check for magic word
         parseChat(socket, data);
     });
@@ -220,7 +226,7 @@ function clearCanvas(socket){
     socket.on("clearcanvas", function(data){
         line_history.length = 0;
     console.log("cleared....");
-    server.sockets.emit("clearcanvas");
+    guesswhat.emit("clearcanvas");
     });
 }
 
@@ -228,9 +234,10 @@ function clearCanvas(socket){
 // Run server
 server = startServer();
 db = connectDB();
-
+var guesswhat = server.of('/guesswhat');
 // Main
-server.sockets.on("connection", function(socket) {
+//server.sockets.on("connection", function(socket) {
+guesswhat.on("connection", function(socket){
     console.log("Connected: %s", socket.id);
     userLogin(socket);
     recordDraw(socket);
@@ -239,3 +246,4 @@ server.sockets.on("connection", function(socket) {
     userLogout(socket);
     clearCanvas(socket);
 });
+

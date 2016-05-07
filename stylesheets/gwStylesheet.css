@@ -112,9 +112,15 @@ canvas {
   }
 }
 
+
 @media (max-width: 900px) {
   canvas {
     /* testing */
     background-color: #FF0000;
   }
+}
+
+
+.toggleshow{
+  display: none;
 }

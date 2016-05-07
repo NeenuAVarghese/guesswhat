@@ -5,7 +5,8 @@
 var main = function() {
     "use strict";
 
-    var socket = io.connect();
+    //var socket = io.connect();
+    var socket = io('/guesswhat');
 
     var gw = {
         landpage: {
@@ -271,6 +272,7 @@ var main = function() {
     socket.on("clearcanvas", function(){
         context.clearRect(0, 0, width, height);
     });
+
     
     handleDrawEvent();
 };

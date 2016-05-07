@@ -66,8 +66,8 @@ function reveal() {
 
 function userLogin(socket) {
     // when the client emits "adduser", this listens and executes
-    socket.on("adduser", function(mode, username) {
-
+    socket.on("adduser", function(mode, username, groupname) {
+        console.log(mode, username, groupname);
         // detect game mode
         if (mode === 1) {
             console.log("Free-for-all mode");
@@ -94,10 +94,9 @@ function userLogin(socket) {
                     // initialize scores to 0
                     redisClient.hmset(username, {
                         "wins": 0,
+                        "gropuname": groupname,
+                        "socketid": socket.id
                     });
-//                    redisClient.hmset(username, {
-//                        "losses": 0,
-//                    });
                     redisClient.rpush("users", username);
                 }
             });
@@ -217,6 +216,14 @@ function transmitChat(socket) {
     });
 }
 
+function clearCanvas(socket){
+    socket.on("clearcanvas", function(data){
+        line_history.length = 0;
+    console.log("cleared....");
+    server.sockets.emit("clearcanvas");
+    });
+}
+
 
 // Run server
 server = startServer();
@@ -230,4 +237,5 @@ server.sockets.on("connection", function(socket) {
     transmitDraw(socket);
     transmitChat(socket);
     userLogout(socket);
+    clearCanvas(socket);
 });

@@ -26,7 +26,10 @@ var main = function() {
                         btn1: "#btn-solo",
                         btn2: "#btn-teams",
                         status: "#playFooter",
-                        playSubmitBtn: "#playSubmit"
+                        playSubmitBtn: "#playSubmit",
+                        nameinput: "#playInput",
+                        groupdiv: ".groupname",
+                        groupname: "#groupInput"
                     },
                     activeusersList: "#gwActiveUser",
                     colorPicker: "#gwColorPicker",
@@ -68,6 +71,7 @@ var main = function() {
     //Function to handle Clear Canvas
     $(gw.landpage.action.clearCanvas).on("click", function() {
         context.clearRect(0, 0, width, height);
+        socket.emit("clearcanvas", "hello");
     });
     //Function to handle Red Color
     $(gw.landpage.action.red).on("click", function() {
@@ -176,20 +180,19 @@ var main = function() {
         $(".chatPanel").animate({scrollTop: h});
     }
 
-    // load modal when page loads
-    //$(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
 
     // handle button toggle
     $(gw.landpage.section.content.playCard.btn1).on("click", function() {
         $(this).addClass("active");
         $(gw.landpage.section.content.playCard.btn2).removeClass("active");
+        $(gw.landpage.section.content.playCard.groupdiv).removeClass("form-group").addClass("toggleshow");
     });
+
     $(gw.landpage.section.content.playCard.btn2).on("click", function() {
         $(this).addClass("active");
         $(gw.landpage.section.content.playCard.btn1).removeClass("active");
+        $(gw.landpage.section.content.playCard.groupdiv).addClass("form-group").removeClass("toggleshow");
     });
-
-
 
     $("#logoutLink").on("click", function() {
         console.log("logging out");
@@ -212,7 +215,8 @@ var main = function() {
         $(gw.landpage.section.content.playCard.handle).modal("show");
         // handle username input
         $(gw.landpage.section.content.playCard.form).submit(function(event) {
-            var newuser = $(gw.landpage.section.content.playCard.input).val();
+            var newuser = $(gw.landpage.section.content.playCard.nameinput).val();
+            var grpname = $(gw.landpage.section.content.playCard.groupname).val();
 
             if (newuser.length > 2) {
                 $(gw.landpage.section.content.playCard.status).removeClass("alert-danger").addClass("alert-success");
@@ -220,11 +224,11 @@ var main = function() {
 
                 if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
                     console.log("connect socket #1");
-                    socket.emit("adduser", 1, newuser);
+                    socket.emit("adduser", 1, newuser, "");
                 }
                 else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
                     console.log("connect socket #2");
-                    socket.emit("adduser", 2, newuser);
+                    socket.emit("adduser", 2, newuser, grpname);
                 }
                 $(gw.landpage.section.content.playCard.handle).modal("hide");
                 return false;
@@ -264,6 +268,10 @@ var main = function() {
         });
     });
 
+    socket.on("clearcanvas", function(){
+        context.clearRect(0, 0, width, height);
+    });
+    
     handleDrawEvent();
 };
 

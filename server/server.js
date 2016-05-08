@@ -9,6 +9,7 @@ var redisPort = 6379;
 var line_history = [];
 var usernames = {};
 var xyzzy = null;
+var topics = ["bird", "mammal", "fish", "machine" ];
 
 // Depends
 var express = require("express");
@@ -26,12 +27,20 @@ var redisClient = null;
 var db = false;
 
 // Functions
-function wordsFromAPI() {
+function wordsFromAPI(salt) {
     var colors = [ "red", "green", "blue", "yellow", "black", "pink", "white" ];
     var seed = random.integer(0, colors.length-1);
     var adjective = colors[seed];
-    var categories = "bird,mammal,fish,machine";
     var limit = 50;
+
+    if (salt) {
+        console.log("salting with", salt);
+        topics.pop();
+        topics.push(salt);
+    }
+
+    var categories = topics.join(",");
+    //console.log(categories);
 
     var prefix = "http://api.datamuse.com/words?";
     var url = prefix + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
@@ -39,6 +48,8 @@ function wordsFromAPI() {
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var json = JSON.parse(body);
+            //console.log(json);
+
             var pick = random.integer(0, json.length-1);
             xyzzy = json[pick].word;
             console.log("==> magicword:", xyzzy);
@@ -231,7 +242,7 @@ function winner(socket) {
     guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");
 
     // get new word
-    wordsFromAPI();
+    wordsFromAPI(xyzzy);
     reveal(socket);
 }
 

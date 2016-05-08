@@ -1,16 +1,22 @@
 #!/bin/bash
 ##################
 # validate.sh #######
-version="1.0" #######
+version="1.1" #######
 ### Kevin Mittman ###
 #####################
 
+# Input files
 html=("index.html")
 css=("style.css")
 js=("app.js" "client.js")
 
+# Tests to run
+list="jshint csslint tidy whitespace stylish"
+config="$PWD/.webapp"
+
 checkdep() { type -p $1 &>/dev/null; }
 
+# Color
 alert="\e[1;34m"
 notice="\e[1;39m"
 warn="\e[1;33m"
@@ -72,17 +78,17 @@ parse_utils() {
     if [ $cmd = "tidy" ]; then
       what="HTML"
       params="-qe"
-      input="$html"
+      input="${html[@]}"
       run_utility
     elif [ "$cmd" = "csslint" ]; then
       what="CSS"
       params="--quiet"
-      input="$css"
+      input="${css[@]}"
       run_utility
     elif [ "$cmd" = "jshint" ]; then
       what="Javascript"
       params=""
-      input="$js"
+      input="${js[@]}"
       run_utility
     elif [ "$cmd" = "whitespace" ]; then
       what="Whitespace"
@@ -104,14 +110,15 @@ parse_utils() {
   fi
 }
 
-if [ -f ".webapp" ]; then
-  echo -e "${alert}==>${reset} ${notice}Parsing ($PWD/.webapp) config file${reset}"
-  source ".webapp"
+# Load config file
+if [ -f "$config" ]; then
+  echo -e "${alert}==>${reset} ${notice}Parsing ($config) config file${reset}"
+  source "$config"
 else
-  echo -e "${warn}==>${reset} ${notice}Config file ($PWD/.webapp) not found${reset}"
+  echo -e "${warn}==>${reset} ${notice}Config file ($config) not found${reset}"
 fi
 
-list="jshint csslint tidy whitespace stylish"
+# Run tests
 parse_utils
 
 ### END ###

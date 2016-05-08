@@ -198,6 +198,11 @@ var main = function() {
         });
 
         $(gw.landpage.section.content.playCard.handle).modal("hide");
+
+        // Confirm leaving webapp
+        window.onbeforeunload = function() {
+            return "";
+        };
     }
 
     // login error

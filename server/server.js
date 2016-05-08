@@ -62,7 +62,7 @@ function startServer() {
 
 function reveal() {
     // echo new word
-    guesswhat.emit("displayword", magic[xyzzy]);
+   guesswhat.emit("displayword", magic[xyzzy]);
 }
 
 function userLogin(socket) {
@@ -71,17 +71,32 @@ function userLogin(socket) {
         console.log(mode, username, groupname);
         // detect game mode
         if (mode === 1) {
+            // we store the username in the socket session for this client
+            socket.username = username;
+            //we store the room information in the socket session
+            socket.room = "freeforall";
+            socket.join(socket.room);
             console.log("Free-for-all mode");
+             // echo to client they've connected
+            socket.emit("updatechat", "SERVER", "you have connected");
+            
+
         }
         else if (mode === 2) {
+            // we store the username in the socket session for this client
+            socket.username = username;
+            //we store the room information in the socket session
+            socket.room = groupname;
+            socket.join(socket.room)
             console.log("Teams mode");
+             // echo to client they've connected
+            socket.emit("updatechat", "SERVER", "you have connected");
+            
         }
         else {
             console.log("Invalid mode", mode);
         }
 
-        // we store the username in the socket session for this client
-        socket.username = username;
         // add the client's username to the global list
         usernames[username] = username;
         console.log("add client", username);
@@ -115,13 +130,17 @@ function userLogin(socket) {
             });
         }
 
-        // echo to client they've connected
-        guesswhat.emit("updatechat", "SERVER", "you have connected");
         // echo globally (all clients) that a person has connected
-        socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
+            guesswhat.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
+              // update the list of users in chat, client-side
+            guesswhat.to(socket.room).emit("updateusers", usernames);
+
+        // echo to client they've connected
+        //guesswhat.emit("updatechat", "SERVER", "you have connected");
+        // echo globally (all clients) that a person has connected
+        //socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
         // update the list of users in chat, client-side
-        //server.sockets.emit("updateusers", usernames);
-        guesswhat.emit("updateusers", usernames);
+        //guesswhat.emit("updateusers", usernames);
 
         if (server.engine.clientsCount === 1) {
             reveal();
@@ -149,7 +168,7 @@ function userLogout(socket) {
 
         // update list of users in chat, client-side
         //server.sockets.emit("updateusers", usernames);
-        guesswhat.emit("updateusers", usernames);
+         guesswhat.to(socket.room).emit("updateusers", usernames);
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
 
@@ -163,7 +182,7 @@ function recordDraw(socket) {
     for (var i in line_history) {
         if (line_history[i] !== null) {
             //socket.emit("draw_line", line_history[i]);
-            guesswhat.emit("draw_line", line_history[i]);
+             guesswhat.to(socket.room).emit("draw_line", line_history[i]);
         }
         else {
             console.log("Drawing null");
@@ -176,7 +195,7 @@ function transmitDraw(socket) {
     socket.on("draw_line", function(data) {
         line_history.push(data);
         //server.sockets.emit("draw_line", data);
-        guesswhat.emit("draw_line", data);
+         guesswhat.to(socket.room).emit("draw_line", data);
     });
 }
 
@@ -186,8 +205,8 @@ function winner(socket) {
     socket.emit("updateword", "You win!");
     socket.emit("updateword", "The word was '" + magic[xyzzy] + "'");
     // echo globally (all clients) that a person has won
-    socket.broadcast.emit("updateword", "The word was '" + magic[xyzzy] + "'");
-    socket.broadcast.emit("updateword", "Player '" + socket.username + "' was the winner");
+     guesswhat.broadcast.to(socket.room).emit("updateword", "The word was '" + magic[xyzzy] + "'");
+    guesswhat.broadcast.to(socket.room).emit("updateword", "Player '" + socket.username + "' was the winner");
 
     // get new word
     if (xyzzy < magic.length) {
@@ -216,7 +235,7 @@ function transmitChat(socket) {
     socket.on("sendchat", function(data) {
         // we tell the client to execute "updatechat" with 2 parameters
         //server.sockets.emit("updatechat", socket.username, data);
-        guesswhat.emit("updatechat", socket.username, data);
+        guesswhat.to(socket.room).emit("updatechat", socket.username, data);
         // check for magic word
         parseChat(socket, data);
     });
@@ -226,7 +245,7 @@ function clearCanvas(socket){
     socket.on("clearcanvas", function(data){
         line_history.length = 0;
     console.log("cleared....");
-    guesswhat.emit("clearcanvas");
+    guesswhat.to(socket.room).emit("clearcanvas");
     });
 }
 

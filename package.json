@@ -1,6 +1,6 @@
 {
   "name": "guesswhat",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "A multiplayer Pictionary-like webapp game",
   "main": "server/server.js",
   "scripts": {
@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/NeenuAVarghese/guesswhat#readme",
   "dependencies": {
+    "datamuse": "^1.0.4",
     "express": "^4.13.4",
+    "random-js": "^1.0.8",
     "redis": "^2.6.0-1",
     "socket.io": "^1.4.5"
   }

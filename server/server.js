@@ -8,22 +8,43 @@ var httpPort = 3000;
 var redisPort = 6379;
 var line_history = [];
 var usernames = {};
-var magic = [ "bunny", "dog", "elephant", "fish", "turtle" ];
-var xyzzy = 0;
+var xyzzy = null;
 
 // Depends
 var express = require("express");
 var io = require("socket.io");
 var redis = require("redis");
+var datamuse = require("datamuse");
+var random = require("random-js")();
 
 // Initialize
 var app = express();
 app.use(express.static("./"));
 var server = null;
+var guesswhat = null;
 var redisClient = null;
 var db = false;
 
 // Functions
+function wordsFromAPI() {
+    var colors = [ "red", "green", "blue", "yellow", "black", "pink", "white" ];
+    var seed = random.integer(0, colors.length-1);
+    var adjective = colors[seed];
+    var categories = "bird,mammal,fish,machine";
+    var limit = 50;
+
+    datamuse.words({
+        rel_jja: adjective,
+        topics: categories,
+        max: limit
+    })
+    .then(function(json) {
+        var pick = random.integer(0, json.length-1);
+        xyzzy = json[pick].word;
+        console.log("magic word", xyzzy);
+    });
+}
+
 function connectDB() {
     redisClient = redis.createClient(redisPort);
     redisClient.on("error", function() {
@@ -60,9 +81,9 @@ function startServer() {
 
 }
 
-function reveal() {
+function reveal(socket) {
     // echo new word
-   guesswhat.emit("displayword", magic[xyzzy]);
+    socket.emit("displayword", xyzzy);
 }
 
 function userLogin(socket) {
@@ -86,7 +107,7 @@ function userLogin(socket) {
             socket.username = username;
             //we store the room information in the socket session
             socket.room = groupname;
-            socket.join(socket.room)
+            socket.join(socket.room);
             console.log("Teams mode");
              // echo to client they've connected
             socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'");
@@ -142,7 +163,7 @@ function userLogin(socket) {
         //guesswhat.emit("updateusers", usernames);
 
         if (server.engine.clientsCount === 1) {
-            reveal();
+            reveal(socket);
         }
     });
 }
@@ -167,12 +188,12 @@ function userLogout(socket) {
 
         // update list of users in chat, client-side
         //server.sockets.emit("updateusers", usernames);
-         guesswhat.to(socket.room).emit("updateusers", usernames);
+        guesswhat.to(socket.room).emit("updateusers", usernames);
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
 
         if (server.engine.clientsCount === 1) {
-            reveal();
+            reveal(socket);
         }
     });
 }
@@ -199,21 +220,18 @@ function transmitDraw(socket) {
 }
 
 function winner(socket) {
-    console.log("Winner", socket.username);
+    var winuser = socket.username
+    console.log("Winner", winuser);
     // echo to client they've won
     socket.emit("updateword", "You win!");
-    socket.emit("updateword", "The word was '" + magic[xyzzy] + "'");
+    socket.emit("updateword", "The word was '" + xyzzy + "'");
     // echo globally (all clients) that a person has won
-     guesswhat.broadcast.to(socket.room).emit("updateword", "The word was '" + magic[xyzzy] + "'");
-    guesswhat.broadcast.to(socket.room).emit("updateword", "Player '" + socket.username + "' was the winner");
+    guesswhat.to(socket.room).emit("updateword", "The word was '" + xyzzy + "'");
+    guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");
 
     // get new word
-    if (xyzzy < magic.length) {
-        xyzzy += 1;
-    }
-    else {
-        xyzzy = 0;
-    }
+    wordsFromAPI();
+    reveal(socket);
 }
 
 function parseChat(socket, data) {
@@ -221,10 +239,22 @@ function parseChat(socket, data) {
     var words = line.split(" ");
 
     for (var i = 0; i < words.length; ++i) {
-        console.log(words[i], magic[xyzzy]);
-        if (words[i] === magic[xyzzy]) {
-            winner(socket, magic[xyzzy]);
-            reveal();
+        console.log(words[i], xyzzy);
+        if (words[i] === xyzzy) {
+            winner(socket);
+        }
+        // fuzzy matching
+        else if (words[i].replace(/s$/, "") === xyzzy) {
+            console.log("trimmed 's'");
+            winner(socket);
+        }
+        else if (words[i].replace(/y$/, "ies") === xyzzy) {
+            console.log("expanded 's'");
+            winner(socket);
+        }
+        else if (words[i] === xyzzy + "s") {
+            console.log("appended 's'");
+            winner(socket);
         }
     }
 }
@@ -240,11 +270,11 @@ function transmitChat(socket) {
     });
 }
 
-function clearCanvas(socket){
-    socket.on("clearcanvas", function(data){
+function clearCanvas(socket) {
+    socket.on("clearcanvas", function() {
         line_history.length = 0;
-    console.log("cleared....");
-    guesswhat.to(socket.room).emit("clearcanvas");
+        console.log("cleared....");
+        guesswhat.to(socket.room).emit("clearcanvas");
     });
 }
 
@@ -252,10 +282,11 @@ function clearCanvas(socket){
 // Run server
 server = startServer();
 db = connectDB();
-var guesswhat = server.of('/guesswhat');
+guesswhat = server.of("/guesswhat");
+wordsFromAPI();
+
 // Main
-//server.sockets.on("connection", function(socket) {
-guesswhat.on("connection", function(socket){
+guesswhat.on("connection", function(socket) {
     console.log("Connected: %s", socket.id);
     userLogin(socket);
     recordDraw(socket);
@@ -264,4 +295,3 @@ guesswhat.on("connection", function(socket){
     userLogout(socket);
     clearCanvas(socket);
 });
-

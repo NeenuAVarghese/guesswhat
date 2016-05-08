@@ -20,6 +20,10 @@ var main = function() {
                             sendButton: "#gwChatButton"
                         }
                     },
+                    hintCard: {
+                        handle: "#hintCard",
+                        definition: "#modal-definition"
+                    },
                     playCard: {
                         handle: "#playCard",
                         expand: "#toggleFit",
@@ -230,12 +234,18 @@ var main = function() {
         $(gw.landpage.section.content.playCard.groupdiv).removeClass("toggleshow");
     });
 
+    // logout
     $("#logoutLink").on("click", function() {
         console.log("logging out");
         socket.emit("logout", function() {
             socket.disconnect();
         });
         $(gw.landpage.section.content.playCard.handle).modal("show");
+    });
+
+    // show definition
+    $(gw.landpage.section.content.word).on("click", function() {
+        $(gw.landpage.section.content.hintCard.handle).modal("show");
     });
 
     // handle chat message input
@@ -297,9 +307,10 @@ var main = function() {
     });
 
     // listener, whenever the server emits "updateword", this updates the game round
-    socket.on("displayword", function(data) {
+    socket.on("displayword", function(word, definition) {
         console.log("displayword");
-        $(gw.landpage.section.content.word).text(data);
+        $(gw.landpage.section.content.word).text(word);
+        $(gw.landpage.section.content.hintCard.definition).text(definition);
     });
 
     // listener, whenever the server emits "updateword", this updates the game round

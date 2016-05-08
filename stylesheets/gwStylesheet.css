@@ -98,6 +98,10 @@ canvas {
   padding-bottom: 20px;
 }
 
+.hint {
+  min-height: 100px;
+}
+
 .btn-autosize {
   padding: 5px 5px;
   font-size: 14px;
@@ -133,6 +137,9 @@ canvas {
   }
   .chatPanel {
     height: 600px;
+  }
+  .hint {
+    min-height: 200px;
   }
   .btn-autosize {
     padding: 10px 10px;

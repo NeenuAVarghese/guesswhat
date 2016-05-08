@@ -137,7 +137,7 @@ function startServer() {
 
 function reveal(socket) {
     // echo new word
-    socket.emit("displayword", xyzzy);
+    socket.emit("displayword", xyzzy, define);
 }
 
 function userLogin(socket) {

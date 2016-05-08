@@ -11,6 +11,7 @@ var usernames = {};
 var xyzzy = null;
 var define = null;
 var topics = ["bird", "mammal", "fish", "machine" ];
+var room_names = ["freeforall"];
 
 // Depends
 var express = require("express");
@@ -104,8 +105,9 @@ function connectDB() {
     var flag = false;
     redisClient = redis.createClient(redisPort);
     
-    redisClient.on("error", function() {
+    redisClient.on("error", function(err) {
         console.error("Redis server refused connection on port", redisPort);
+        console.log(err);
         db = false;
     });
 
@@ -160,11 +162,16 @@ function userLogin(socket) {
         }
 
         else if (mode === 2) {
+            if(room_names.indexOf(groupname) === -1){
+                redisClient.sadd("teamnames", groupname);
+            }
+            //error handling needed....
+            console.log(groupname);
             // we store the username in the socket session for this client
             socket.username = username;
             //we store the room information in the socket session
             socket.room = groupname;
-            socket.join(socket.room);
+            socket.join(groupname);
             console.log("Teams mode");
              // echo to client they've connected
             socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'");
@@ -174,12 +181,8 @@ function userLogin(socket) {
             console.log("Invalid mode", mode);
         }
 
-        
-        
-        console.log("add client", username);
 
         // store username in Redis database
-        console.log(db);
         if (db) {
             redisClient.exists(username, function(err, object) {
                 if (object !== 1) {
@@ -194,7 +197,6 @@ function userLogin(socket) {
             });
 
             redisClient.smembers("users", function(err, items) {
-                console.log("in smembers " + items);
                 if (err) {
                     console.log("Error in getting elements of user list");
                 }
@@ -206,8 +208,9 @@ function userLogin(socket) {
             });
         }
 
-        // echo globally (all clients) that a person has connected
+            // echo globally (all clients) that a person has connected
             guesswhat.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
+            recordDraw(socket.room);
 
         if (server.engine.clientsCount === 1) {
             reveal(socket);
@@ -243,22 +246,54 @@ function userLogout(socket) {
     });
 }
 
-function recordDraw(socket) {
-    for (var i in line_history) {
-        if (line_history[i] !== null) {
-            //socket.emit("draw_line", line_history[i]);
-             guesswhat.to(socket.room).emit("draw_line", line_history[i]);
-        }
-        else {
-            console.log("Drawing null");
-        }
-    }
+function recordDraw(roomname) {
+    var room = roomname;
+    console.log("for sending: "+ room)
+    line_history.length = 0;
+    redisClient.lrange(room, 0, -1, function(err, items){
+        if (err) {
+                    console.log("Error in getting elements of user list");
+                }
+                if(items !== null){
+                    items.forEach(function(item) {
+                   line_history.push(JSON.parse(item));
+                });
+                    console.log("ready");
+                    for (var i in line_history) {
+                        if (line_history[i] !== null) {
+                            console.log("emitting.."+room);
+                            //socket.emit("draw_line", line_history[i]);
+                            console.log(line_history[i]);
+                            guesswhat.to(room).emit("draw_line", line_history[i]);
+
+                            }
+                         else {
+                            console.log("Drawing null");
+                        }
+                    }
+                }
+    });
+    
+    
 }
 
 function transmitDraw(socket) {
+   
     socket.on("draw_line", function(data) {
-        line_history.push(data);
+        //line_history.push(data);
         //server.sockets.emit("draw_line", data);
+         if(db){
+            redisClient.exists(socket.room, function(err, object) {
+                if (object !== 1) {
+                    console.log("creating and saving");
+                   redisClient.rpush(socket.room, JSON.stringify(data));
+                }
+                else{
+                    console.log("updating");
+                     redisClient.rpush(socket.room, JSON.stringify(data));
+                }
+            });
+         }
         guesswhat.to(socket.room).emit("draw_line", data);
     });
 }
@@ -336,7 +371,8 @@ wordsFromAPI();
 guesswhat.on("connection", function(socket) {
     console.log("Connected: %s", socket.id);
     userLogin(socket);
-    recordDraw(socket);
+    //recordDraw(socket);
+
     transmitDraw(socket);
     transmitChat(socket);
     userLogout(socket);

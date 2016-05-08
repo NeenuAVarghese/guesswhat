@@ -13,6 +13,11 @@ body {
   vertical-align: middle;
 }
 
+.modal-header {
+  background-color: #337AB7;
+  color: white;
+}
+
 .navbar img {
   display: inline;
   padding: 0 0.5em 0 0;
@@ -100,7 +105,15 @@ canvas {
   border-radius: 3px;
 }
 
-.toggleshow{
+.expand {
+  float: right;
+}
+
+.fitonmodal {
+  display: none;
+}
+
+.toggleshow {
   display: none;
 }
 
@@ -124,7 +137,13 @@ canvas {
   .btn-autosize {
     padding: 10px 10px;
     font-size: 18px;
-  min-height: 100px;
+    min-height: 100px;
     border-radius: 6px;
+  }
+  .expand {
+    display: none;
+  }
+  .fitonmodal {
+    display: block;
   }
 }

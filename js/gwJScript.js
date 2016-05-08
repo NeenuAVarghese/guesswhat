@@ -22,6 +22,9 @@ var main = function() {
                     },
                     playCard: {
                         handle: "#playCard",
+                        expand: "#toggleFit",
+                        welcome: "#modal-welcome",
+                        moretext: "#modal-description",
                         form: "#playForm",
                         btn1: "#btn-solo",
                         btn2: "#btn-teams",
@@ -200,7 +203,21 @@ var main = function() {
         $(gw.landpage.section.content.playCard.status).html("<strong>Error!</strong> " + error).show().fadeOut(2000);
     }
 
-    // handle button toggle
+    // handle expand button toggle
+    $(gw.landpage.section.content.playCard.expand).on("click", function() {
+        if ($(this).hasClass("glyphicon-chevron-down")) {
+            $(gw.landpage.section.content.playCard.welcome).removeClass("fitonmodal");
+            $(gw.landpage.section.content.playCard.moretext).removeClass("fitonmodal");
+            $(this).removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+        }
+        else {
+            $(gw.landpage.section.content.playCard.welcome).addClass("fitonmodal");
+            $(gw.landpage.section.content.playCard.moretext).addClass("fitonmodal");
+            $(this).removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+        }
+    });
+
+    // handle mode button toggle
     $(gw.landpage.section.content.playCard.btn1).on("click", function() {
         $(this).addClass("active");
         $(gw.landpage.section.content.playCard.btn2).removeClass("active");

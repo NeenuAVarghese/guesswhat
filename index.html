@@ -103,16 +103,19 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                        <span aria-hidden="true">&times;</span>
+                    <button aria-label="expand" class="expand btn btn-primary" type="button">
+                        <i id="toggleFit" class="glyphicon glyphicon-chevron-down">&nbsp;</i>
                     </button>
                     <h2 class="modal-title">Play a Game</h2>
                 </div>
 
                 <div class="modal-body">
-                    <h4>Welcome to GuessWhat!?</h4>
                     <div class="container col-md-12 col-xs-12">
-                        <div class="row">
+                        <div id="modal-welcome" class="row fitonmodal">
+                            <h4>Welcome to GuessWhat</h4>
+                        </div>
+
+                        <div id="modal-description" class="row fitonmodal">
                             <div class="col-md-1 col-xs-0"></div>
                             <div class="col-md-4 col-xs-5">
                                 <img src="images/framed-artwork.png" alt="flower" class="sticker" />

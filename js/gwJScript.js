@@ -1,12 +1,12 @@
 // Client-side code
 /* jshint browser: true, jquery: true, curly: true, eqeqeq: true, forin: true, immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double, undef: true, unused: true, strict: true, trailing: true */
-/* global io: true, prompt: true, console: true */
+/* global io: true, console: true */
 
 var main = function() {
     "use strict";
 
     //var socket = io.connect();
-    var socket = io('/guesswhat');
+    var socket = io("/guesswhat");
 
     var gw = {
         landpage: {
@@ -133,11 +133,11 @@ var main = function() {
             gw.mouse.move = true;
         }, false);
 
-        $(gw.canvas.handle)[0].onmousedown = function(e) {
+        $(gw.canvas.handle)[0].onmousedown = function() {
             gw.mouse.click = true;
         };
 
-        $(gw.canvas.handle)[0].onmouseup = function(e) {
+        $(gw.canvas.handle)[0].onmouseup = function() {
             gw.mouse.click = false;
         };
 
@@ -154,7 +154,7 @@ var main = function() {
         function drawCanvas(x, y, pX, pY, c) {
                 context.beginPath();
                 context.lineWidth = 5;
-                context.lineJoin = context.lineCap = 'round';
+                context.lineJoin = context.lineCap = "round";
                 context.strokeStyle = c;
                 context.moveTo(pX, pY);
                 context.lineTo(x, y);
@@ -171,7 +171,7 @@ var main = function() {
     function autoScroll() {
         // get height of chat box
         var h = 0;
-        $(".gwMsg").each(function(i, value) {
+        $(".gwMsg").each(function() {
             h += parseInt($(this).height()) + 20;
         });
         h = h.toString();
@@ -230,7 +230,7 @@ var main = function() {
 
     // call the server-side function "adduser" and send two parameters (mode, name)
     socket.on("connect", function() {
-        //$(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
+        $(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
         $(gw.landpage.section.content.playCard.handle).modal("show");
 
         // handle username input
@@ -294,16 +294,15 @@ var main = function() {
 
     socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
-        $.each(data, function(key, value) {
+        $.each(data, function(key) {
             $(gw.landpage.section.content.activeusersList).append("<span class='label label-info'>" + key +"</span><div>");
         });
     });
 
-    socket.on("clearcanvas", function(){
+    socket.on("clearcanvas", function() {
         context.clearRect(0, 0, width, height);
     });
 
-    
     handleDrawEvent();
 };
 

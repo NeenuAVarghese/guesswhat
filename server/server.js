@@ -41,7 +41,7 @@ function wordsFromAPI() {
     .then(function(json) {
         var pick = random.integer(0, json.length-1);
         xyzzy = json[pick].word;
-        console.log("magic word", xyzzy);
+        console.log("==> magicword:", xyzzy);
     });
 }
 
@@ -207,7 +207,6 @@ function recordDraw(socket) {
         else {
             console.log("Drawing null");
         }
-
     }
 }
 
@@ -215,13 +214,14 @@ function transmitDraw(socket) {
     socket.on("draw_line", function(data) {
         line_history.push(data);
         //server.sockets.emit("draw_line", data);
-         guesswhat.to(socket.room).emit("draw_line", data);
+        guesswhat.to(socket.room).emit("draw_line", data);
     });
 }
 
 function winner(socket) {
-    var winuser = socket.username
+    var winuser = socket.username;
     console.log("Winner", winuser);
+
     // echo to client they've won
     socket.emit("updateword", "You win!");
     socket.emit("updateword", "The word was '" + xyzzy + "'");
@@ -239,20 +239,22 @@ function parseChat(socket, data) {
     var words = line.split(" ");
 
     for (var i = 0; i < words.length; ++i) {
-        console.log(words[i], xyzzy);
-        if (words[i] === xyzzy) {
+        var guess = words[i].replace(/[^a-zA-Z]/g, "");
+        console.log("raw:" + words[i], "alpha:" + guess, "this:" + xyzzy);
+
+        if (guess === xyzzy) {
             winner(socket);
         }
         // fuzzy matching
-        else if (words[i].replace(/s$/, "") === xyzzy) {
+        else if (guess.replace(/s$/, "") === xyzzy) {
             console.log("trimmed 's'");
             winner(socket);
         }
-        else if (words[i].replace(/y$/, "ies") === xyzzy) {
+        else if (guess.replace(/y$/, "ies") === xyzzy) {
             console.log("expanded 's'");
             winner(socket);
         }
-        else if (words[i] === xyzzy + "s") {
+        else if (guess === xyzzy + "s") {
             console.log("appended 's'");
             winner(socket);
         }

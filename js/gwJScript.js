@@ -111,8 +111,20 @@ var main = function() {
             gw.mouse.move = false;
         }
 
-        setTimeout(handleSocketEmit, 25);
+        setTimeout(handleSocketEmit, 5);
     }
+
+    function drawCanvas(x, y, pX, pY, c) {
+
+                context.beginPath();
+                context.lineWidth = 5;
+                context.lineJoin = context.lineCap = "round";
+                context.strokeStyle = c;
+                context.moveTo(pX, pY);
+                context.lineTo(x, y);
+                context.stroke();
+        }
+
     // Function to track User mouse events on canvas
     function handleDrawEvent() {
         var touchcanvas = document.getElementById("gw_Canvas");
@@ -158,15 +170,7 @@ var main = function() {
             gw.mouse.move = true;
         };
 
-        function drawCanvas(x, y, pX, pY, c) {
-                context.beginPath();
-                context.lineWidth = 5;
-                context.lineJoin = context.lineCap = "round";
-                context.strokeStyle = c;
-                context.moveTo(pX, pY);
-                context.lineTo(x, y);
-                context.stroke();
-        }
+        
 
         socket.on("draw_line", function(data) {
             drawCanvas(data.x, data.y, data.prevX, data.prevY, data.color);
@@ -335,6 +339,8 @@ var main = function() {
     socket.on("clearcanvas", function() {
         context.clearRect(0, 0, width, height);
     });
+
+  
 
     handleDrawEvent();
 };

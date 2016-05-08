@@ -239,7 +239,6 @@ function userLogout(socket) {
         }
 
         // update list of users in chat, client-side
-        //server.sockets.emit("updateusers", usernames);
         guesswhat.to(socket.room).emit("updateusers", usernames);
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
@@ -284,16 +283,12 @@ function recordDraw(roomname) {
 function transmitDraw(socket) {
    
     socket.on("draw_line", function(data) {
-        //line_history.push(data);
-        //server.sockets.emit("draw_line", data);
          if(db){
             redisClient.exists(socket.room, function(err, object) {
                 if (object !== 1) {
-                    console.log("creating and saving");
                    redisClient.rpush(socket.room, JSON.stringify(data));
                 }
                 else{
-                    console.log("updating");
                      redisClient.rpush(socket.room, JSON.stringify(data));
                 }
             });

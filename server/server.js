@@ -99,21 +99,24 @@ function wordsFromAPI(salt) {
     });
 }
 
+
 function connectDB() {
+    var flag = false;
     redisClient = redis.createClient(redisPort);
+    
     redisClient.on("error", function() {
         console.error("Redis server refused connection on port", redisPort);
-        return false;
-    });
-
-    redisClient.on("connect", function() {
-        console.log("Connected to Redis Server on port", redisPort);
-        return true;
+        db = false;
     });
 
     redisClient.on("end", function() {
         console.log("Connection to Redis Server closed");
-        return false;
+        db = false;
+    });
+
+    redisClient.on("connect", function() {
+        console.log("Connected to Redis Server on port", redisPort);
+        db = true; 
     });
 }
 
@@ -171,14 +174,13 @@ function userLogin(socket) {
             console.log("Invalid mode", mode);
         }
 
-        // add the client's username to the global list
-        usernames[username] = username;
+        
+        
         console.log("add client", username);
 
         // store username in Redis database
+        console.log(db);
         if (db) {
-            console.log("rpush username", username);
-
             redisClient.exists(username, function(err, object) {
                 if (object !== 1) {
                     // initialize scores to 0
@@ -187,34 +189,25 @@ function userLogin(socket) {
                         "gropuname": groupname,
                         "socketid": socket.id
                     });
-                    redisClient.rpush("users", username);
+                    redisClient.sadd("users", username);
                 }
             });
 
-
-
-            redisClient.lrange("users", 0, -1, function(err, items) {
+            redisClient.smembers("users", function(err, items) {
+                console.log("in smembers " + items);
                 if (err) {
                     console.log("Error in getting elements of user list");
                 }
                 items.forEach(function(item) {
-                    console.log("Item", item);
-                    usernames[username] = username;
+                   usernames[item] = item;
                 });
+                // update the list of users in chat, client-side
+                guesswhat.to(socket.room).emit("updateusers", usernames);
             });
         }
 
         // echo globally (all clients) that a person has connected
             guesswhat.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
-              // update the list of users in chat, client-side
-            guesswhat.to(socket.room).emit("updateusers", usernames);
-
-        // echo to client they've connected
-        //guesswhat.emit("updatechat", "SERVER", "you have connected");
-        // echo globally (all clients) that a person has connected
-        //socket.broadcast.emit("updatechat", "SERVER", username + " has connected");
-        // update the list of users in chat, client-side
-        //guesswhat.emit("updateusers", usernames);
 
         if (server.engine.clientsCount === 1) {
             reveal(socket);
@@ -231,9 +224,7 @@ function userLogout(socket) {
 
         // remove username from Redis database
         if (db) {
-            console.log("lrem username", socket.username);
-
-            redisClient.lrem("users", 1,  socket.username, function(err) {
+            redisClient.srem("users", 1,  socket.username, function(err) {
                 if (err) {
                     console.log("User Removed form list");
                 }
@@ -337,7 +328,7 @@ function clearCanvas(socket) {
 
 // Run server
 server = startServer();
-db = connectDB();
+connectDB();
 guesswhat = server.of("/guesswhat");
 wordsFromAPI();
 

@@ -189,7 +189,7 @@ function userLogin(socket) {
                     // initialize scores to 0
                     redisClient.hmset(username, {
                         "wins": 0,
-                        "gropuname": groupname,
+                        "groupname": groupname,
                         "socketid": socket.id
                     });
                     redisClient.sadd("users", username);
@@ -232,6 +232,10 @@ function userLogout(socket) {
                     console.log("User Removed form list");
                 }
             });
+
+            redisClient.hdel(socket.username, "wins");
+            redisClient.hdel(socket.username, "groupname");
+            redisClient.hdel(socket.username, "socketid");
         }
 
         // update list of users in chat, client-side

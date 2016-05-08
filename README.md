@@ -9,20 +9,20 @@
 2. `cd guesswhat`
 3. `npm install`
 
-**Note:** these node modules will be installed via [package.json](package.json) by *npm*
-- express
-- random-js
-- redis
-- request
-- socket.io
+**Note:** these node modules will be installed via [package.json](package.json) by [*npm*](https://github.com/npm/npm)
+- [express](https://www.npmjs.com/package/express)
+- [random-js](https://www.npmjs.com/package/random-js)
+- [redis](https://www.npmjs.com/package/redis)
+- [request](https://www.npmjs.com/package/request)
+- [socket.io](https://www.npmjs.com/package/socket.io)
 
 ###Playing
 1. `cd guesswhat`
 2. `npm start` *OR* `foreman start` *OR* `nf start`
-3. Open web browser to `http://localhost:3000`
-4. Repeat _Step 3_, for each client
+3. Open web browser to [`http://localhost:3000`](http://localhost:3000)
+4. Repeat **Step 3**, for each client
 
-**Note:** a _Procfile_ is included for [`foreman`](https://github.com/ddollar/foreman) or [`nf`](https://github.com/strongloop/node-foreman)
+**Note:** a _Procfile_ is included for [`foreman`](https://github.com/ddollar/foreman) *or* [`nf`](https://github.com/strongloop/node-foreman)
 
 **Note:** if `redis-server` _and/or_ `node` are not in your `PATH`, then manually run
 - `/path/to/redis-server --port 6379`

@@ -9,13 +9,14 @@ var redisPort = 6379;
 var line_history = [];
 var usernames = {};
 var xyzzy = null;
+var define = null;
 var topics = ["bird", "mammal", "fish", "machine" ];
 
 // Depends
 var express = require("express");
 var io = require("socket.io");
 var redis = require("redis");
-var request = require('request');
+var request = require("request");
 var random = require("random-js")();
 
 // Initialize
@@ -27,6 +28,46 @@ var redisClient = null;
 var db = false;
 
 // Functions
+function defineFromAPI(word) {
+    var onelook = "http://www.onelook.com/?xml=1&w=";
+    var url = onelook + word;
+
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            var xml = Array.prototype.join.call(body, "");
+            var lines = xml.split("\n");
+            var max = 10;
+
+            if (lines.length < 10) {
+                max = lines.length;
+            }
+
+            var count = 0;
+            var stop = false;
+            var found = false;
+
+            while (!stop) {
+                if (lines[count] === "<OLQuickDef>") {
+                    found = true;
+                }
+                else if (lines[count] === "</OLQuickDef>") {
+                    stop = true;
+                }
+                else if (count >= max) {
+                    stop = true;
+                }
+                else if (found) {
+                    define = lines[count].split("&")[0];
+                }
+
+                ++count;
+            }
+
+            console.log("==> definition:", define);
+        }
+    });
+}
+
 function wordsFromAPI(salt) {
     var colors = [ "red", "green", "blue", "yellow", "black", "pink", "white" ];
     var seed = random.integer(0, colors.length-1);
@@ -42,17 +83,18 @@ function wordsFromAPI(salt) {
     var categories = topics.join(",");
     //console.log(categories);
 
-    var prefix = "http://api.datamuse.com/words?";
-    var url = prefix + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
+    var datamuse = "http://api.datamuse.com/words?";
+    var url = datamuse + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
 
     request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode === 200) {
             var json = JSON.parse(body);
             //console.log(json);
 
             var pick = random.integer(0, json.length-1);
             xyzzy = json[pick].word;
             console.log("==> magicword:", xyzzy);
+            defineFromAPI(xyzzy);
         }
     });
 }

@@ -14,7 +14,7 @@ var xyzzy = null;
 var express = require("express");
 var io = require("socket.io");
 var redis = require("redis");
-var datamuse = require("datamuse");
+var request = require('request');
 var random = require("random-js")();
 
 // Initialize
@@ -33,15 +33,16 @@ function wordsFromAPI() {
     var categories = "bird,mammal,fish,machine";
     var limit = 50;
 
-    datamuse.words({
-        rel_jja: adjective,
-        topics: categories,
-        max: limit
-    })
-    .then(function(json) {
-        var pick = random.integer(0, json.length-1);
-        xyzzy = json[pick].word;
-        console.log("==> magicword:", xyzzy);
+    var prefix = "http://api.datamuse.com/words?";
+    var url = prefix + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
+
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var json = JSON.parse(body);
+            var pick = random.integer(0, json.length-1);
+            xyzzy = json[pick].word;
+            console.log("==> magicword:", xyzzy);
+        }
     });
 }
 

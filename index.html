@@ -129,40 +129,59 @@
                             <div class="col-md-2 col-xs-0"></div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-3 col-xs-2"></div>
-                            <div class="btn-group btn-group-lg col-md-6 col-xs-8" role="group" aria-label="game mode">
-                                <button id="btn-solo" class="btn btn-default mode active" type="button">Solo
-                                    <i class="glyphicon glyphicon-user">&nbsp;</i>
-                                </button>
-                                <button id="btn-teams" class="btn btn-default mode" type="button">Teams
-                                    <i class="glyphicon glyphicon-flag">&nbsp;</i>
-                                </button>
+                        <form id="playForm" class="form-inline">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-2"></div>
+                                <div class="col-md-6 col-xs-8">
+                                    <div class="input-group">
+                                        <label for="nameInput">What's your name?</label>
+                                        <input id="nameInput" class="form-control" type="text" placeholder="Username" autofocus>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-xs-2"></div>
                             </div>
-                            <div class="col-md-3 col-xs-2"></div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-10 col-sm-offset-2">
-                                <form id="playForm" class="form-inline">
-                                    <div class="form-group">
-                                        <label for="playInput">Name</label>
-                                        <input id="playInput" class="form-control" type="text" placeholder="Username">
-                                    </div>
-                                     <div class="groupname toggleshow">
-                                        <label for="playInput">Group Name</label>
-                                        <input id="groupInput" class="form-control" type="text" placeholder="Groupname">
-                                    </div>
-                                    <button id="playSubmit" class="btn btn-primary" type="submit">Play!</button>     
-                                </form>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-2"></div>
+                                <div class="btn-group col-md-6 col-xs-8" role="group" aria-label="game mode">
+                                    <button id="btn-solo" class="btn btn-default btn-autosize active" type="button">Solo
+                                        <i class="glyphicon glyphicon-user">&nbsp;</i>
+                                    </button>
+                                    <button id="btn-teams" class="btn btn-default btn-autosize" type="button">Teams
+                                        <i class="glyphicon glyphicon-flag">&nbsp;</i>
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-xs-2"></div>
                             </div>
-                        </div>
-                        <div class="col-md-12 col-xs-12">
-                            <div id="playFooter" class="alert alert-dismissable"></div>
-                        </div>
+
+                            <div class="row groupname toggleshow">
+                                <div class="col-md-3 col-xs-2"></div>
+                                    <div class="col-md-6 col-xs-8">
+                                        <div class="input-group">
+                                            <label for="groupInput">Group name?</label>
+                                            <input id="groupInput" class="form-control" type="text" placeholder="Groupname">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-xs-2"></div>
+                                </div>
+
+                            <div class="row">
+                                <div class="col-xs-4"></div>
+                                <div class="col-xs-4 form">
+                                    <button id="playSubmit" class="btn btn-primary btn-lg" type="submit">Play!</button>
+                                </div>
+                                <div class="col-xs-4"></div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="modal-footer"></div>
+
+                <div class="modal-footer">
+                    <div class="container col-md-12 col-xs-12">
+                        <div id="playStatus" class="toggleshow alert alert-dismissable"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

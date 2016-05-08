@@ -78,10 +78,9 @@ function userLogin(socket) {
             socket.join(socket.room);
             console.log("Free-for-all mode");
              // echo to client they've connected
-            socket.emit("updatechat", "SERVER", "you have connected");
-            
-
+            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'");
         }
+
         else if (mode === 2) {
             // we store the username in the socket session for this client
             socket.username = username;
@@ -90,9 +89,9 @@ function userLogin(socket) {
             socket.join(socket.room)
             console.log("Teams mode");
              // echo to client they've connected
-            socket.emit("updatechat", "SERVER", "you have connected");
-            
+            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'");
         }
+
         else {
             console.log("Invalid mode", mode);
         }

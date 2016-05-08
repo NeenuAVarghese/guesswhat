@@ -22,13 +22,12 @@ var main = function() {
                     },
                     playCard: {
                         handle: "#playCard",
-                        input: "#playInput",
                         form: "#playForm",
                         btn1: "#btn-solo",
                         btn2: "#btn-teams",
-                        status: "#playFooter",
-                        playSubmitBtn: "#playSubmit",
-                        nameinput: "#playInput",
+                        status: "#playStatus",
+                        submit: "#playSubmit",
+                        username: "#nameInput",
                         groupdiv: ".groupname",
                         groupname: "#groupInput"
                     },
@@ -181,18 +180,37 @@ var main = function() {
         $(".chatPanel").animate({scrollTop: h});
     }
 
+    // login success
+    function formSuccess(mode, user, group) {
+        $(gw.landpage.section.content.playCard.status).removeClass("toggleshow");
+        $(gw.landpage.section.content.playCard.status).removeClass("alert-danger").addClass("alert-success");
+        $(gw.landpage.section.content.playCard.status).html("<strong>Success!</strong> Joining a game");
+        $(gw.landpage.section.content.playCard.status).show().fadeOut(500, function() {
+            console.log("connect socket #" + mode);
+            socket.emit("adduser", mode, user, group);
+        });
+
+        $(gw.landpage.section.content.playCard.handle).modal("hide");
+    }
+
+    // login error
+    function formFailure(error) {
+        $(gw.landpage.section.content.playCard.status).removeClass("toggleshow");
+        $(gw.landpage.section.content.playCard.status).removeClass("alert-success").addClass("alert-danger");
+        $(gw.landpage.section.content.playCard.status).html("<strong>Error!</strong> " + error).show().fadeOut(2000);
+    }
 
     // handle button toggle
     $(gw.landpage.section.content.playCard.btn1).on("click", function() {
         $(this).addClass("active");
         $(gw.landpage.section.content.playCard.btn2).removeClass("active");
-        $(gw.landpage.section.content.playCard.groupdiv).removeClass("form-group").addClass("toggleshow");
+        $(gw.landpage.section.content.playCard.groupdiv).addClass("toggleshow");
     });
 
     $(gw.landpage.section.content.playCard.btn2).on("click", function() {
         $(this).addClass("active");
         $(gw.landpage.section.content.playCard.btn1).removeClass("active");
-        $(gw.landpage.section.content.playCard.groupdiv).addClass("form-group").removeClass("toggleshow");
+        $(gw.landpage.section.content.playCard.groupdiv).removeClass("toggleshow");
     });
 
     $("#logoutLink").on("click", function() {
@@ -212,32 +230,44 @@ var main = function() {
 
     // call the server-side function "adduser" and send two parameters (mode, name)
     socket.on("connect", function() {
-
+        //$(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
         $(gw.landpage.section.content.playCard.handle).modal("show");
+
         // handle username input
         $(gw.landpage.section.content.playCard.form).submit(function(event) {
-            var newuser = $(gw.landpage.section.content.playCard.nameinput).val();
+            var newuser = $(gw.landpage.section.content.playCard.username).val();
             var grpname = $(gw.landpage.section.content.playCard.groupname).val();
 
-            if (newuser.length > 2) {
-                $(gw.landpage.section.content.playCard.status).removeClass("alert-danger").addClass("alert-success");
-                $(gw.landpage.section.content.playCard.status).html("<strong>Success!</strong> Joining a game").show().fadeOut(2000);
-
-                if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
-                    console.log("connect socket #1");
-                    socket.emit("adduser", 1, newuser, "");
+            if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
+                if (newuser.length > 2) {
+                    formSuccess(1, newuser, "");
+                    return false;
                 }
-                else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
-                    console.log("connect socket #2");
-                    socket.emit("adduser", 2, newuser, grpname);
+                else {
+                    formFailure("Invalid username");
+                    $(gw.landpage.section.content.playCard.username).val("");
+                    event.preventDefault();
                 }
-                $(gw.landpage.section.content.playCard.handle).modal("hide");
-                return false;
+            }
+            else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
+                if (grpname.length > 2 && newuser.length > 2) {
+                    formSuccess(2, newuser, grpname);
+                    return false;
+                }
+                else if (newuser.length > 2) {
+                    formFailure("Invalid group name");
+                    $(gw.landpage.section.content.playCard.groupname).val("");
+                    event.preventDefault();
+                }
+                else {
+                    formFailure("Invalid username");
+                    $(gw.landpage.section.content.playCard.username).val("");
+                    event.preventDefault();
+                }
             }
             else {
-                $(gw.landpage.section.content.playCard.status).removeClass("alert-success").addClass("alert-danger");
-                $(gw.landpage.section.content.playCard.status).html("<strong>Error!</strong> Unable to join game").show().fadeOut(2000);
-                $(gw.landpage.section.content.playCard.input).val("");
+                formFailure("Unable to join game");
+                $(gw.landpage.section.content.playCard.username).val("");
                 event.preventDefault();
             }
         });

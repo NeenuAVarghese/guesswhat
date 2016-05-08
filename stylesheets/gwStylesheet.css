@@ -67,7 +67,7 @@ canvas {
 }
 
 .sticker {
-  max-width: 150px;
+  max-width: 100px;
 }
 
 .chatPanel {
@@ -93,10 +93,18 @@ canvas {
   padding-bottom: 20px;
 }
 
-.mode {
-  min-height: 100px;
+.btn-autosize {
+  padding: 5px 5px;
+  font-size: 14px;
+  min-height: 60px;
+  border-radius: 3px;
 }
 
+.toggleshow{
+  display: none;
+}
+
+/* Desktop */
 @media screen and (min-width: 768px) {
   .modal:before {
     display: inline-block;
@@ -107,20 +115,16 @@ canvas {
   canvas {
     height: 700px;
   }
+  .sticker {
+    max-width: 150px;
+  }
   .chatPanel {
     height: 600px;
   }
-}
-
-
-@media (max-width: 900px) {
-  canvas {
-    /* testing */
-    background-color: #FF0000;
+  .btn-autosize {
+    padding: 10px 10px;
+    font-size: 18px;
+  min-height: 100px;
+    border-radius: 6px;
   }
-}
-
-
-.toggleshow{
-  display: none;
 }

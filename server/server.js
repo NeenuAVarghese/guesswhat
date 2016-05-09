@@ -7,7 +7,7 @@
 var httpPort = 3000;
 var redisPort = 6379;
 var line_history = [];
-var usernames = {};
+var usernames = [];
 var xyzzy = null;
 var define = null;
 var topics = ["bird", "mammal", "fish", "machine" ];
@@ -102,7 +102,6 @@ function wordsFromAPI(salt) {
 
 
 function connectDB() {
-    var flag = false;
     redisClient = redis.createClient(redisPort);
     
     redisClient.on("error", function(err) {
@@ -146,13 +145,18 @@ function reveal(socket) {
 }
 
 function userLogin(socket) {
+    usernames.length = 0;
     // when the client emits "adduser", this listens and executes
     socket.on("adduser", function(mode, username, groupname) {
         console.log(mode, username, groupname);
+        if(username === null){
+            username = "unknown";
+        }
         // detect game mode
         if (mode === 1) {
             // we store the username in the socket session for this client
             socket.username = username;
+            groupname = "freeforall";
             //we store the room information in the socket session
             socket.room = "freeforall";
             socket.join(socket.room);
@@ -162,9 +166,6 @@ function userLogin(socket) {
         }
 
         else if (mode === 2) {
-            if(room_names.indexOf(groupname) === -1){
-                redisClient.sadd("teamnames", groupname);
-            }
             //error handling needed....
             console.log(groupname);
             // we store the username in the socket session for this client
@@ -192,24 +193,27 @@ function userLogin(socket) {
                         "groupname": groupname,
                         "socketid": socket.id
                     });
-                    redisClient.sadd("users", username);
+                    var grp = "G"+ groupname;
+                    
+                    redisClient.sadd(grp, username, function(){
+                        
+                        redisClient.smembers(grp, function(err, items) {
+                            if (err) {
+                                console.log("Error in getting elements of user list");
+                            }
+                            items.forEach(function(item) {
+                                console.log(items);
+                               usernames.push(item);
+                            });
+                            // update the list of users in chat, client-side
+                            guesswhat.to(socket.room).emit("updateusers", usernames);
+                            // echo globally (all clients) that a person has connected
+                            socket.broadcast.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
+                        });
+                    });
                 }
-            });
-
-            redisClient.smembers("users", function(err, items) {
-                if (err) {
-                    console.log("Error in getting elements of user list");
-                }
-                items.forEach(function(item) {
-                   usernames[item] = item;
-                });
-                // update the list of users in chat, client-side
-                guesswhat.to(socket.room).emit("updateusers", usernames);
             });
         }
-
-            // echo globally (all clients) that a person has connected
-            guesswhat.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
             recordDraw(socket.room);
 
         if (server.engine.clientsCount === 1) {
@@ -227,21 +231,36 @@ function userLogout(socket) {
 
         // remove username from Redis database
         if (db) {
-            redisClient.srem("users", 1,  socket.username, function(err) {
+            var cgrp = "G" + socket.room;
+            console.log(cgrp);
+            redisClient.srem(cgrp, 1,  socket.username, function(err) {
                 if (err) {
                     console.log("User Removed form list");
                 }
             });
-
+            //remove the hash set for user
             redisClient.hdel(socket.username, "wins");
             redisClient.hdel(socket.username, "groupname");
             redisClient.hdel(socket.username, "socketid");
-        }
 
+            redisClient.exists(cgrp, function(err, object){
+
+                if(object === 0){
+
+                    redisClient.ltrim(socket.room, -1 ,0, function(err){
+                        if(!err){
+                            console.log(socket.room + " Room deleted !");
+                        }
+                    });
+                }
+            });
+        }
         // update list of users in chat, client-side
         guesswhat.to(socket.room).emit("updateusers", usernames);
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
+
+
 
         if (server.engine.clientsCount === 1) {
             reveal(socket);
@@ -251,7 +270,6 @@ function userLogout(socket) {
 
 function recordDraw(roomname) {
     var room = roomname;
-    console.log("for sending: "+ room)
     line_history.length = 0;
     redisClient.lrange(room, 0, -1, function(err, items){
         if (err) {
@@ -261,12 +279,10 @@ function recordDraw(roomname) {
                     items.forEach(function(item) {
                    line_history.push(JSON.parse(item));
                 });
-                    console.log("ready");
+                    
                     for (var i in line_history) {
                         if (line_history[i] !== null) {
-                            console.log("emitting.."+room);
-                            //socket.emit("draw_line", line_history[i]);
-                            console.log(line_history[i]);
+                           
                             guesswhat.to(room).emit("draw_line", line_history[i]);
 
                             }
@@ -276,8 +292,6 @@ function recordDraw(roomname) {
                     }
                 }
     });
-    
-    
 }
 
 function transmitDraw(socket) {
@@ -354,7 +368,7 @@ function transmitChat(socket) {
 function clearCanvas(socket) {
     socket.on("clearcanvas", function() {
         line_history.length = 0;
-        console.log("cleared....");
+        
         guesswhat.to(socket.room).emit("clearcanvas");
     });
 }
@@ -371,7 +385,6 @@ guesswhat.on("connection", function(socket) {
     console.log("Connected: %s", socket.id);
     userLogin(socket);
     //recordDraw(socket);
-
     transmitDraw(socket);
     transmitChat(socket);
     userLogout(socket);

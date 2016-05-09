@@ -11,7 +11,12 @@ var main = function() {
     var gw = {
         landpage: {
             section: {
-                navbar: "",
+                navbar: {
+                    handle: "#mainnav",
+                    startGame: "#gamestartlnk",
+                    logout: "#logoutLink",
+                    showTime: "#showtimer"
+                },
                 content: {
                     canvasDiv: "#divCanvas",
                     chatform: {
@@ -242,9 +247,14 @@ var main = function() {
         $(gw.landpage.section.content.playCard.btn1).removeClass("active");
         $(gw.landpage.section.content.playCard.groupdiv).removeClass("toggleshow");
     });
+    //startGame
+    $(gw.landpage.section.navbar.startGame).on("click", function(){
+        console.log("in func");
+        socket.emit("startgame");
+    });
 
     // logout
-    $("#logoutLink").on("click", function() {
+    $(gw.landpage.section.navbar.logout).on("click", function() {
         console.log("logging out");
         $(gw.landpage.section.content.activeusersList).empty();
         socket.emit("disconnect", function() {
@@ -340,6 +350,10 @@ var main = function() {
     socket.on("clearcanvas", function() {
         context.clearRect(0, 0, width, height);
     });
+
+    socket.on("incTimer", function(data){
+        $(gw.landpage.section.navbar.showTime).text(data);
+    })
 
   
 

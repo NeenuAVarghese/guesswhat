@@ -100,7 +100,6 @@ function wordsFromAPI(salt) {
     });
 }
 
-
 function connectDB() {
     redisClient = redis.createClient(redisPort);
     
@@ -368,8 +367,31 @@ function transmitChat(socket) {
 function clearCanvas(socket) {
     socket.on("clearcanvas", function() {
         line_history.length = 0;
-        
         guesswhat.to(socket.room).emit("clearcanvas");
+    });
+}
+
+function startGame(socket){
+    socket.on("startgame", function(){
+        console.log("in server");
+        var count=60;
+
+        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+
+        function timer()
+        {
+          count=count-1;
+          if (count < 0)
+          {
+             clearInterval(counter);
+             guesswhat.to(socket.room).emit("incTimer","Game Over !");
+             return;
+          }
+
+          //Do code for showing the number of seconds here
+           guesswhat.to(socket.room).emit("incTimer",count);
+        }
+       
     });
 }
 
@@ -384,9 +406,9 @@ wordsFromAPI();
 guesswhat.on("connection", function(socket) {
     console.log("Connected: %s", socket.id);
     userLogin(socket);
-    //recordDraw(socket);
     transmitDraw(socket);
     transmitChat(socket);
     userLogout(socket);
     clearCanvas(socket);
+    startGame(socket);
 });

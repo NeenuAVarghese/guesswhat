@@ -246,7 +246,8 @@ var main = function() {
     // logout
     $("#logoutLink").on("click", function() {
         console.log("logging out");
-        socket.emit("logout", function() {
+        $(gw.landpage.section.content.activeusersList).empty();
+        socket.emit("disconnect", function() {
             socket.disconnect();
         });
         $(gw.landpage.section.content.playCard.handle).modal("show");

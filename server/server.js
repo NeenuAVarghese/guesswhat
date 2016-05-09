@@ -373,6 +373,20 @@ function clearCanvas(socket) {
 
 function startGame(socket){
     socket.on("startgame", function(){
+
+        var res = [],
+        room = guesswhat.adapter.rooms[socket.room];
+
+        if (room) {
+            for (var key in room.sockets) {
+                res.push(key);
+            }
+        }
+        console.log("following client has been slected:   "+res[Math.round(Math.random()*(res.length-1))]);
+
+        guesswhat.connected[res[Math.round(Math.random()*(res.length-1))]].emit('message', 'for your eyes only');
+
+
         console.log("in server");
         var count=60;
 

@@ -353,7 +353,10 @@ var main = function() {
 
     socket.on("incTimer", function(data){
         $(gw.landpage.section.navbar.showTime).text(data);
-    })
+    });
+    socket.on("message", function(data){
+        $("#messNeenu").text(data);
+    });
 
   
 

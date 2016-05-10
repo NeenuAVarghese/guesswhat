@@ -373,7 +373,7 @@ function parseChat(socket, data) {
 function transmitChat(socket) {
     // when the client emits "sendchat", this listens and executes
     socket.on("sendchat", function(userid, data) {
-        var timestamp = new Date().getTime();
+        var timestamp = new Date().getTime() / 1000;
         // we tell the client to execute "updatechat" with 2 parameters
         //server.sockets.emit("updatechat", socket.username, data);
         guesswhat.to(socket.room).emit("updatechat", socket.username, data, userid, timestamp);

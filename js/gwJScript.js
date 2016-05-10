@@ -335,10 +335,14 @@ var main = function() {
             chatmsg = "<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + content + "</strong></p>";
         }
         else if (userid === socket.id) {
-            chatmsg = "<div class='chatYou'><div class='spacer'></div><div class='gwMsg'><p>" + content + "</p><span class='msginfo'>" + username + "&nbsp;&bull;<time datetime='" + timestamp + "'></time></span></div></div>";
+            chatmsg = "<div class='chatYou'><div class='spacer'></div><div class='gwMsg'>";
+            chatmsg += "<p>" + content + "</p><span class='msginfo'>" + username;
+            chatmsg += "&nbsp;&bull;&nbsp;<span data-livestamp='" + timestamp + "'></span></span></div></div>";
         }
         else {
-            chatmsg = "<div class='chatThem'><div class='spacer'></div><div class='gwMsg'><p>" + content + "</p><span class='msginfo'>" + username + "&nbsp;&bull;<time datetime='" + timestamp + "'></time></span></div></div>";
+            chatmsg = "<div class='chatThem'><div class='spacer'></div><div class='gwMsg'>"
+            chatmsg += "<p>" + content + "</p><span class='msginfo'>" + username
+            chatmsg += "&nbsp;&bull;&nbsp;<span data-livestamp='" + timestamp + "'></span></span></div></div>";
         }
 
         return chatmsg;

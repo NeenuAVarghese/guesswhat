@@ -91,11 +91,11 @@ function wordsFromAPI(salt) {
         if (!error && response.statusCode === 200) {
             var json = JSON.parse(body);
             //console.log(json);
-
             var pick = random.integer(0, json.length-1);
             xyzzy = json[pick].word;
-            console.log("==> magicword:", xyzzy);
-            defineFromAPI(xyzzy);
+            //console.log("==> magicword:", xyzzy);
+            return (xyzzy);
+            //defineFromAPI(xyzzy);
         }
     });
 }
@@ -366,7 +366,11 @@ function transmitChat(socket) {
 
 function clearCanvas(socket) {
     socket.on("clearcanvas", function() {
-        line_history.length = 0;
+        redisClient.ltrim(socket.room, -1 ,0, function(err){
+            if(!err){
+                console.log(socket.room + " Room deleted !");
+            }
+        });
         guesswhat.to(socket.room).emit("clearcanvas");
     });
 }
@@ -374,17 +378,38 @@ function clearCanvas(socket) {
 function startGame(socket){
     socket.on("startgame", function(){
 
-        var res = [],
-        room = guesswhat.adapter.rooms[socket.room];
+        var res = [];
+        //get the list of socket id in room
+        var room = guesswhat.adapter.rooms[socket.room];
 
         if (room) {
             for (var key in room.sockets) {
                 res.push(key);
             }
         }
+        //selects random ID
         console.log("following client has been slected:   "+res[Math.round(Math.random()*(res.length-1))]);
+        //Call the function to generate random words and meaning.
+        //pass it as a parameter throught the emit below
+/*
+        var magicwrd = wordsFromAPI();
+         var magicwrdmeaning = defineFromAPI(magicwrd);
+         //output of the above two functions are recied after the below commands are executed
+         because of the call backs in the above functions
+          var puzzle = {
+                    magicwrd : magicwrd,
+                    magicwrdmeaning: magicwrdmeaning
+                };
+                console.log(puzzle);
+                guesswhat.connected[res[Math.round(Math.random()*(res.length-1))]].emit('message', puzzle);
+                console.log("after");
+    
+*/
 
-        guesswhat.connected[res[Math.round(Math.random()*(res.length-1))]].emit('message', 'for your eyes only');
+
+        wordsFromAPI().then(function(data){
+            console.log(data);
+        });
 
 
         console.log("in server");

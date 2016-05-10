@@ -27,7 +27,8 @@ var main = function() {
                     },
                     hintCard: {
                         handle: "#hintCard",
-                        definition: "#modal-definition"
+                        definition: "#modal-definition",
+                        word: "#magicwrd"
                     },
                     playCard: {
                         handle: "#playCard",
@@ -191,7 +192,6 @@ var main = function() {
             h += parseInt($(this).height()) + 20;
         });
         h = h.toString();
-
         // scroll to bottom of chat
         $(".chatPanel").animate({scrollTop: h});
     }
@@ -355,7 +355,10 @@ var main = function() {
         $(gw.landpage.section.navbar.showTime).text(data);
     });
     socket.on("message", function(data){
-        $("#messNeenu").text(data);
+        console.log(data.magicwrdmeaning, data.magicwrd);
+        $(gw.landpage.section.content.playCard.definition).text(data.magicwrdmeaning);
+        $(gw.landpage.section.content.playCard.word).text(data.magicwrd);
+        $(gw.landpage.section.content.hintCard.handle).modal("show");
     });
 
   

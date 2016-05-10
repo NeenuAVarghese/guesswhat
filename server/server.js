@@ -33,6 +33,7 @@ function defineFromAPI(word) {
     var onelook = "http://www.onelook.com/?xml=1&w=";
     var url = onelook + word;
 
+return new Promise(function(resolve, reject){
     request(url, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var xml = Array.prototype.join.call(body, "");
@@ -65,8 +66,11 @@ function defineFromAPI(word) {
             }
 
             console.log("==> definition:", define);
+            resolve(define);
         }
     });
+});
+    
 }
 
 function wordsFromAPI(salt) {
@@ -86,18 +90,20 @@ function wordsFromAPI(salt) {
 
     var datamuse = "http://api.datamuse.com/words?";
     var url = datamuse + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
-
-    request(url, function (error, response, body) {
+    return new Promise(function(resolve, reject){
+        request(url, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var json = JSON.parse(body);
             //console.log(json);
             var pick = random.integer(0, json.length-1);
             xyzzy = json[pick].word;
             //console.log("==> magicword:", xyzzy);
-            return (xyzzy);
+            resolve (xyzzy);
             //defineFromAPI(xyzzy);
         }
     });
+    });
+    
 }
 
 function connectDB() {
@@ -408,12 +414,23 @@ function startGame(socket){
 
 
         wordsFromAPI().then(function(data){
-            console.log(data);
+            var magicwrd = data;
+            defineFromAPI(data).then(function(datadefinition){
+                var magicwrdmeaning = datadefinition;
+
+                var puzzle = {
+                    magicwrd : magicwrd,
+                    magicwrdmeaning: magicwrdmeaning
+                };
+
+                guesswhat.to(socket.id).emit('message', puzzle);
+
+            });
         });
 
 
         console.log("in server");
-        var count=60;
+        var count=90;
 
         var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
@@ -439,7 +456,6 @@ function startGame(socket){
 server = startServer();
 connectDB();
 guesswhat = server.of("/guesswhat");
-wordsFromAPI();
 
 // Main
 guesswhat.on("connection", function(socket) {

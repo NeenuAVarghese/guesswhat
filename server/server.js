@@ -8,10 +8,10 @@ var httpPort = 3000;
 var redisPort = 6379;
 var line_history = [];
 var usernames = [];
-var xyzzy = null;
+
 var define = null;
 var topics = ["bird", "mammal", "fish", "machine" ];
-var room_names = ["freeforall"];
+var room_magic = {};
 
 // Depends
 var express = require("express");
@@ -33,44 +33,43 @@ function defineFromAPI(word) {
     var onelook = "http://www.onelook.com/?xml=1&w=";
     var url = onelook + word;
 
-return new Promise(function(resolve, reject){
-    request(url, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var xml = Array.prototype.join.call(body, "");
-            var lines = xml.split("\n");
-            var max = 10;
+    return new Promise(function(resolve, reject){
+        request(url, function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+                var xml = Array.prototype.join.call(body, "");
+                var lines = xml.split("\n");
+                var max = 10;
 
-            if (lines.length < 10) {
-                max = lines.length;
+                if (lines.length < 10) {
+                    max = lines.length;
+                }
+
+                var count = 0;
+                var stop = false;
+                var found = false;
+
+                while (!stop) {
+                    if (lines[count] === "<OLQuickDef>") {
+                        found = true;
+                    }
+                    else if (lines[count] === "</OLQuickDef>") {
+                        stop = true;
+                    }
+                    else if (count >= max) {
+                        stop = true;
+                    }
+                    else if (found) {
+                        define = lines[count].split("&")[0];
+                    }
+
+                    ++count;
+                }
+
+                console.log("==> definition:", define);
+                resolve(define);
             }
-
-            var count = 0;
-            var stop = false;
-            var found = false;
-
-            while (!stop) {
-                if (lines[count] === "<OLQuickDef>") {
-                    found = true;
-                }
-                else if (lines[count] === "</OLQuickDef>") {
-                    stop = true;
-                }
-                else if (count >= max) {
-                    stop = true;
-                }
-                else if (found) {
-                    define = lines[count].split("&")[0];
-                }
-
-                ++count;
-            }
-
-            console.log("==> definition:", define);
-            resolve(define);
-        }
-    });
-});
-    
+        });
+    }); 
 }
 
 function wordsFromAPI(salt) {
@@ -84,26 +83,24 @@ function wordsFromAPI(salt) {
         topics.pop();
         topics.push(salt);
     }
-
+    var xyzzy = null;
     var categories = topics.join(",");
     //console.log(categories);
-
     var datamuse = "http://api.datamuse.com/words?";
     var url = datamuse + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
     return new Promise(function(resolve, reject){
         request(url, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
-            var json = JSON.parse(body);
-            //console.log(json);
-            var pick = random.integer(0, json.length-1);
-            xyzzy = json[pick].word;
-            //console.log("==> magicword:", xyzzy);
-            resolve (xyzzy);
-            //defineFromAPI(xyzzy);
-        }
+            if (!error && response.statusCode === 200) {
+                var json = JSON.parse(body);
+                //console.log(json);
+                var pick = random.integer(0, json.length-1);
+                xyzzy = json[pick].word;
+                //console.log("==> magicword:", xyzzy);
+                resolve (xyzzy);
+                //defineFromAPI(xyzzy);
+            }
+        });
     });
-    });
-    
 }
 
 function connectDB() {
@@ -139,9 +136,7 @@ function startServer() {
             console.log(err);
         }
     }));
-
     return process;
-
 }
 
 function reveal(socket) {
@@ -219,11 +214,10 @@ function userLogin(socket) {
                 }
             });
         }
-            recordDraw(socket.room);
 
-        if (server.engine.clientsCount === 1) {
-            reveal(socket);
-        }
+
+        recordDraw(socket.room);
+
     });
 }
 
@@ -264,12 +258,6 @@ function userLogout(socket) {
         guesswhat.to(socket.room).emit("updateusers", usernames);
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
-
-
-
-        if (server.engine.clientsCount === 1) {
-            reveal(socket);
-        }
     });
 }
 
@@ -322,37 +310,45 @@ function winner(socket) {
 
     // echo to client they've won
     socket.emit("updateword", "You win!");
-    socket.emit("updateword", "The word was '" + xyzzy + "'");
+    socket.emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     // echo globally (all clients) that a person has won
-    guesswhat.to(socket.room).emit("updateword", "The word was '" + xyzzy + "'");
+    guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");
 
     // get new word
-    wordsFromAPI(xyzzy);
-    reveal(socket);
+    wordsFromAPI(room_magic[socket.room]);
+    //reveal(socket);
+}
+
+function getword(room)
+{
+    return room_magic[room];
 }
 
 function parseChat(socket, data) {
+    var guesswrd = getword(socket.room);
+    console.log(guesswrd);
+
     var line = Array.prototype.join.call(data, "");
     var words = line.split(" ");
 
     for (var i = 0; i < words.length; ++i) {
         var guess = words[i].replace(/[^a-zA-Z]/g, "");
-        console.log("raw:" + words[i], "alpha:" + guess, "this:" + xyzzy);
+        console.log("raw:" + words[i], "alpha:" + guess, "this:" + guesswrd);
 
-        if (guess === xyzzy) {
+        if (guess === guesswrd) {
             winner(socket);
         }
         // fuzzy matching
-        else if (guess.replace(/s$/, "") === xyzzy) {
+        else if (guess.replace(/s$/, "") === guesswrd) {
             console.log("trimmed 's'");
             winner(socket);
         }
-        else if (guess.replace(/y$/, "ies") === xyzzy) {
+        else if (guess.replace(/y$/, "ies") === guesswrd) {
             console.log("expanded 's'");
             winner(socket);
         }
-        else if (guess === xyzzy + "s") {
+        else if (guess === guesswrd + "s") {
             console.log("appended 's'");
             winner(socket);
         }
@@ -397,53 +393,37 @@ function startGame(socket){
         console.log("following client has been slected:   "+res[Math.round(Math.random()*(res.length-1))]);
         //Call the function to generate random words and meaning.
         //pass it as a parameter throught the emit below
-/*
-        var magicwrd = wordsFromAPI();
-         var magicwrdmeaning = defineFromAPI(magicwrd);
-         //output of the above two functions are recied after the below commands are executed
-         because of the call backs in the above functions
-          var puzzle = {
-                    magicwrd : magicwrd,
-                    magicwrdmeaning: magicwrdmeaning
-                };
-                console.log(puzzle);
-                guesswhat.connected[res[Math.round(Math.random()*(res.length-1))]].emit('message', puzzle);
-                console.log("after");
-    
-*/
 
+    wordsFromAPI().then(function(data){
+        var magicwrd = data;
+        defineFromAPI(data).then(function(datadefinition){
+            var magicwrdmeaning = datadefinition;
 
-        wordsFromAPI().then(function(data){
-            var magicwrd = data;
-            defineFromAPI(data).then(function(datadefinition){
-                var magicwrdmeaning = datadefinition;
+            var puzzle = {
+                magicwrd : magicwrd,
+                magicwrdmeaning: magicwrdmeaning
+            };
+            room_magic[socket.room] = magicwrd; 
+            guesswhat.to(socket.id).emit('message', puzzle);
 
-                var puzzle = {
-                    magicwrd : magicwrd,
-                    magicwrdmeaning: magicwrdmeaning
-                };
-
-                guesswhat.to(socket.id).emit('message', puzzle);
-
-            });
         });
+    });
 
 
-        console.log("in server");
-        var count=90;
+    console.log("in server");
+    var count=90;
 
-        var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+    var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
 
-        function timer()
+    function timer()
+    {
+        count=count-1;
+        if (count < 0)
         {
-          count=count-1;
-          if (count < 0)
-          {
-             clearInterval(counter);
-             guesswhat.to(socket.room).emit("incTimer","Game Over !");
-             return;
-          }
-
+            clearInterval(counter);
+            guesswhat.to(socket.room).emit("incTimer","Game Over !");
+            return;
+        }
           //Do code for showing the number of seconds here
            guesswhat.to(socket.room).emit("incTimer",count);
         }

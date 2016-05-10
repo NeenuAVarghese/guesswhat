@@ -129,7 +129,7 @@ var main = function() {
                 context.moveTo(pX, pY);
                 context.lineTo(x, y);
                 context.stroke();
-        }
+    }
 
     // Function to track User mouse events on canvas
     function handleDrawEvent() {
@@ -263,10 +263,10 @@ var main = function() {
         $(gw.landpage.section.content.playCard.handle).modal("show");
     });
 
-    // show definition
+    /* show definition
     $(gw.landpage.section.content.word).on("click", function() {
         $(gw.landpage.section.content.hintCard.handle).modal("show");
-    });
+    });*/
 
     // handle chat message input
     $(gw.landpage.section.content.chatform.handle).submit(function() {
@@ -352,13 +352,14 @@ var main = function() {
     });
 
     socket.on("incTimer", function(data){
-        $(gw.landpage.section.navbar.showTime).text(data);
+        $(gw.landpage.section.navbar.showTime).text("  "+data);
     });
     socket.on("message", function(data){
         console.log(data.magicwrdmeaning, data.magicwrd);
         $(gw.landpage.section.content.hintCard.definition).text(data.magicwrdmeaning);
         $(gw.landpage.section.content.hintCard.word).text(data.magicwrd);
         $(gw.landpage.section.content.hintCard.handle).modal("show");
+        $(gw.landpage.section.navbar.startGame).attr('disabled','disabled');
     });
 
   

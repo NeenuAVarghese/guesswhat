@@ -174,9 +174,6 @@ function putToDB(socket, username, groupname){
         }
 }
 
-
-
-
 function userLogin(socket) {
     
     // when the client emits "adduser", this listens and executes
@@ -309,7 +306,18 @@ function transmitDraw(socket) {
         guesswhat.to(socket.room).emit("draw_line", data);
     });
 }
-
+function updatewin(socket, winuser){
+    if(db){
+        redisClient.hincrby(winuser, "wins", 1, function(err){
+            if(!err){
+                console.log("Data Updated !");
+                redisClient.hget(winuser, "wins", function(err, data){
+                    console.log(data);
+                });
+            }
+        })
+    }
+}
 function winner(socket) {
     var winuser = socket.username;
     console.log("Winner", winuser);
@@ -323,9 +331,8 @@ function winner(socket) {
 
     clearCanvas(socket);
     room_magic[socket.room] = "";
-    // get new word
-    //wordsFromAPI(room_magic[socket.room]);
-    //reveal(socket);
+    updatewin(socket, winuser);
+
 }
 
 function getword(room)

@@ -271,7 +271,7 @@ var main = function() {
     // handle chat message input
     $(gw.landpage.section.content.chatform.handle).submit(function() {
         socket.emit("sendchat", socket.id, $(gw.landpage.section.content.chatform.field.sendButton).val());
-        $(gw.landpage.section.content.chatform.field.sendButton).val("");
+        //$(gw.landpage.section.content.chatform.field.sendButton).val("");
         return false;
     });
 
@@ -392,9 +392,41 @@ var main = function() {
         //$(gw.landpage.section.navbar.startGame).attr('disabled','disabled');
     });
 
-  
+
+    // View Model to handle typing indicator
+    function TypingViewModel() {
+        this.isTyping = ko.observable("");
+        this.stoppedTyping = ko.pureComputed(this.isTyping)
+            .extend({ rateLimit: { method: "notifyWhenChangesStop", timeout: 3000 } });
+
+        this.reset = function() {
+            this.isTyping("");
+        }
+
+        this.isTyping.subscribe(function (newValue) {
+             if(newValue != "") {
+                 $("#typing").text("...");
+             }
+             else {
+                 $("#typing").text("");
+             }
+        }, this);
+
+        this.stoppedTyping.subscribe(function (newValue) {
+             if(newValue != "") {
+                 $("#typing").text("stopped typing");
+             }
+             else {
+                 $("#typing").text("");
+             }
+        }, this);
+    }
+
 
     handleDrawEvent();
+
+    // Activate knockout.js
+    ko.applyBindings(new TypingViewModel);
 };
 
 $(document).ready(main);

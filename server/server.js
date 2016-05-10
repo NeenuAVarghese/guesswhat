@@ -139,13 +139,46 @@ function startServer() {
     return process;
 }
 
-function reveal(socket) {
-    // echo new word
-    socket.emit("displayword", xyzzy, define);
+function putToDB(socket, username, groupname){
+    usernames.length = 0;
+    //put users to db
+    if (db) {
+            redisClient.exists(username, function(err, object) {
+                if (object !== 1) {
+                    // initialize scores to 0
+                    redisClient.hmset(username, {
+                        "wins": 0,
+                        "groupname": groupname,
+                        "socketid": socket.id
+                    });
+                    var grp = "G"+ groupname;
+                    
+                    redisClient.sadd(grp, username, function(){
+                        
+                        redisClient.smembers(grp, function(err, items) {
+                            if (err) {
+                                console.log("Error in getting elements of user list");
+                            }
+                            items.forEach(function(item) {
+                                console.log(items);
+                               usernames.push(item);
+                            });
+                            // update the list of users in chat, client-side
+                            guesswhat.to(socket.room).emit("updateusers", usernames);
+                            // echo globally (all clients) that a person has connected
+                            socket.broadcast.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
+                        });
+                    });
+                }
+            });
+        }
 }
 
+
+
+
 function userLogin(socket) {
-    usernames.length = 0;
+    
     // when the client emits "adduser", this listens and executes
     socket.on("adduser", function(mode, username, groupname) {
         console.log(mode, username, groupname);
@@ -182,54 +215,16 @@ function userLogin(socket) {
             console.log("Invalid mode", mode);
         }
 
-
+        putToDB(socket, username, groupname)
         // store username in Redis database
-        if (db) {
-            redisClient.exists(username, function(err, object) {
-                if (object !== 1) {
-                    // initialize scores to 0
-                    redisClient.hmset(username, {
-                        "wins": 0,
-                        "groupname": groupname,
-                        "socketid": socket.id
-                    });
-                    var grp = "G"+ groupname;
-                    
-                    redisClient.sadd(grp, username, function(){
-                        
-                        redisClient.smembers(grp, function(err, items) {
-                            if (err) {
-                                console.log("Error in getting elements of user list");
-                            }
-                            items.forEach(function(item) {
-                                console.log(items);
-                               usernames.push(item);
-                            });
-                            // update the list of users in chat, client-side
-                            guesswhat.to(socket.room).emit("updateusers", usernames);
-                            // echo globally (all clients) that a person has connected
-                            socket.broadcast.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
-                        });
-                    });
-                }
-            });
-        }
-
-
+        
         recordDraw(socket.room);
 
     });
 }
 
-function userLogout(socket) {
-    // when the user disconnects.. perform this
-    socket.on("disconnect", function() {
-        console.log("User:", socket.username, "Disconnected");
-        // remove the username from global usernames list
-        delete usernames[socket.username];
-
-        // remove username from Redis database
-        if (db) {
+function removeFromDb(socket){
+    if (db) {
             var cgrp = "G" + socket.room;
             console.log(cgrp);
             redisClient.srem(cgrp, 1,  socket.username, function(err) {
@@ -254,6 +249,17 @@ function userLogout(socket) {
                 }
             });
         }
+}
+
+function userLogout(socket) {
+    // when the user disconnects.. perform this
+    socket.on("disconnect", function() {
+        console.log("User:", socket.username, "Disconnected");
+        // remove the username from global usernames list
+        delete usernames[socket.username];
+
+        // remove username from Redis database
+        removeFromDb(socket);
         // update list of users in chat, client-side
         guesswhat.to(socket.room).emit("updateusers", usernames);
         // echo globally that this client has left
@@ -315,8 +321,10 @@ function winner(socket) {
     guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");
 
+    clearCanvas(socket);
+    room_magic[socket.room] = "";
     // get new word
-    wordsFromAPI(room_magic[socket.room]);
+    //wordsFromAPI(room_magic[socket.room]);
     //reveal(socket);
 }
 
@@ -377,23 +385,32 @@ function clearCanvas(socket) {
     });
 }
 
-function startGame(socket){
-    socket.on("startgame", function(){
 
-        var res = [];
-        //get the list of socket id in room
-        var room = guesswhat.adapter.rooms[socket.room];
+function startTimer(socket){
 
-        if (room) {
-            for (var key in room.sockets) {
-                res.push(key);
-            }
-        }
-        //selects random ID
-        console.log("following client has been slected:   "+res[Math.round(Math.random()*(res.length-1))]);
-        //Call the function to generate random words and meaning.
-        //pass it as a parameter throught the emit below
+    var count=90;
+    var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
+    
+    function timer(){
+    count=count-1;
+    if (count < 0)
+    {
+        clearInterval(counter);
+        guesswhat.to(socket.room).emit("incTimer","Game Over !");
+        return;
+    }
+    else if(room_magic[socket.room] === ""){
+        clearInterval(counter);
+        guesswhat.to(socket.room).emit("incTimer","Game Over !");
+        return;
+    }
+    //Do code for showing the number of seconds here
+    guesswhat.to(socket.room).emit("incTimer",count);
+}
 
+}
+
+function sendMagicword(socket){
     wordsFromAPI().then(function(data){
         var magicwrd = data;
         defineFromAPI(data).then(function(datadefinition){
@@ -408,26 +425,29 @@ function startGame(socket){
 
         });
     });
+}
 
 
+function startGame(socket){
+    socket.on("startgame", function(){
+/*
+        var res = [];
+        //get the list of socket id in room
+        var room = guesswhat.adapter.rooms[socket.room];
+
+        if (room) {
+            for (var key in room.sockets) {
+                res.push(key);
+            }
+        }
+        //selects random ID
+        console.log("following client has been slected:   "+res[Math.round(Math.random()*(res.length-1))]);
+        //Call the function to generate random words and meaning.
+        //pass it as a parameter throught the emit below
+*/
+    sendMagicword(socket)
     console.log("in server");
-    var count=90;
-
-    var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
-
-    function timer()
-    {
-        count=count-1;
-        if (count < 0)
-        {
-            clearInterval(counter);
-            guesswhat.to(socket.room).emit("incTimer","Game Over !");
-            return;
-        }
-          //Do code for showing the number of seconds here
-           guesswhat.to(socket.room).emit("incTimer",count);
-        }
-       
+    startTimer(socket)
     });
 }
 

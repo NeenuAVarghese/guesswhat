@@ -15,6 +15,7 @@
 - [redis](https://www.npmjs.com/package/redis)
 - [request](https://www.npmjs.com/package/request)
 - [socket.io](https://www.npmjs.com/package/socket.io)
+- [xss-filters](https://www.npmjs.com/package/xss-filters)
 
 ###Playing
 1. `cd guesswhat`
@@ -51,6 +52,16 @@ var redisPort = 6379;
 1. Edit *server/server.js*
 2. `redis-server --port <number>`
 3. `node server/server.js`
+
+### Client-side libraries
+- [Bootstrap](http://getbootstrap.com) - grid layout
+- [Font Awesome](https://fortawesome.github.io/Font-Awesome/) - icon font
+- [jQuery](https://jquery.com) - simplify ~~life~~ Javascript
+- [Knockout](http://knockoutjs.com) - observe user typing with MVVM
+- [LiveStamp](https://mattbradley.github.io/livestampjs/) - auto-update elapsed times in chat
+- [Moment](https://mattbradley.github.io/livestampjs/) - convert UNIX timestamps to human-readable
+- [Montserrat](https://www.google.com/fonts/specimen/Montserrat) - web font
+- [xss-filters](https://github.com/yahoo/xss-filters) - sanitize user input
 
 ###Licensing
 Copyright &copy; 2016

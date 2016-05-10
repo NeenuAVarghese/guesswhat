@@ -83,8 +83,7 @@ var main = function() {
 
     //Function to handle Clear Canvas
     $(gw.landpage.action.clearCanvas).on("click", function() {
-        context.clearRect(0, 0, width, height);
-        socket.emit("clearcanvas", "hello");
+        clearCanvas();
     });
     //Function to handle Red Color
     $(gw.landpage.action.red).on("click", function() {
@@ -185,6 +184,11 @@ var main = function() {
         handleSocketEmit();
     }
 
+    function clearCanvas() {
+        context.clearRect(0, 0, width, height);
+        console.log("canvas cleared");
+    }
+
     function autoScroll() {
         // get height of chat box
         var h = 0;
@@ -258,6 +262,7 @@ var main = function() {
         console.log("logging out");
         $(gw.landpage.section.content.activeusersList).empty();
         socket.emit("disconnect", function() {
+            clearCanvas();
             socket.disconnect();
         });
         $(gw.landpage.section.content.playCard.handle).modal("show");
@@ -270,7 +275,15 @@ var main = function() {
 
     // handle chat message input
     $(gw.landpage.section.content.chatform.handle).submit(function() {
-        socket.emit("sendchat", socket.id, $(gw.landpage.section.content.chatform.field.sendButton).val());
+        var data = $(gw.landpage.section.content.chatform.field.sendButton).val();
+
+        // sanitize chat message
+        data = xssFilters.inHTMLData(data);
+        if (data.indexOf(">") !== -1) {
+            console.log("Warning, message cannot contain HTML tags");
+        }
+
+        socket.emit("sendchat", socket.id, data);
         //$(gw.landpage.section.content.chatform.field.sendButton).val("");
         return false;
     });
@@ -285,11 +298,23 @@ var main = function() {
             var newuser = $(gw.landpage.section.content.playCard.username).val();
             var grpname = $(gw.landpage.section.content.playCard.groupname).val();
 
+            // sanitize username and group name
+            newuser = xssFilters.inHTMLData(newuser);
+            grpname = xssFilters.inHTMLData(grpname);
+
             if (newuser.toUpperCase() === "SERVER") {
+                newuser = "NA";
+            }
+            else if (newuser.toLowerCase().indexOf("script>") !== -1) {
+                console.log("Nice try, script kiddy");
                 newuser = "NA";
             }
 
             if (grpname.toLowerCase() === "freeforall") {
+                grpname = "NA";
+            }
+            else if (grpname.toUpperCase().indexOf("SCRIPT>") !== -1) {
+                console.log("Nice try, script kiddy");
                 grpname = "NA";
             }
 
@@ -382,7 +407,7 @@ var main = function() {
     });
 
     socket.on("clearcanvas", function() {
-        context.clearRect(0, 0, width, height);
+        clearCanvas();
     });
 
     socket.on("incTimer", function(data){

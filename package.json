@@ -1,6 +1,6 @@
 {
   "name": "guesswhat",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "description": "A multiplayer Pictionary-like webapp game",
   "main": "server/server.js",
   "scripts": {
@@ -26,6 +26,7 @@
     "random-js": "^1.0.8",
     "redis": "^2.6.0-1",
     "request": "^2.72.0",
-    "socket.io": "^1.4.5"
+    "socket.io": "^1.4.5",
+    "xss-filters": "^1.2.6"
   }
 }

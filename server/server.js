@@ -19,6 +19,7 @@ var io = require("socket.io");
 var redis = require("redis");
 var request = require("request");
 var random = require("random-js")();
+var xssFilters = require("xss-filters");
 
 // Initialize
 var app = express();
@@ -179,6 +180,10 @@ function userLogin(socket) {
     // when the client emits "adduser", this listens and executes
     socket.on("adduser", function(mode, username, groupname) {
         console.log(mode, username, groupname);
+
+        // sanitize username
+        username = xssFilters.inHTMLData(username);
+
         if(username === null){
             username = "unknown";
         }
@@ -374,9 +379,13 @@ function transmitChat(socket) {
     // when the client emits "sendchat", this listens and executes
     socket.on("sendchat", function(userid, data) {
         var timestamp = new Date().getTime() / 1000;
-        // we tell the client to execute "updatechat" with 2 parameters
-        //server.sockets.emit("updatechat", socket.username, data);
+
+        // sanitize chat message
+        data = xssFilters.inHTMLData(data);
+
+        // we tell the client to execute "updatechat" with 4 parameters
         guesswhat.to(socket.room).emit("updatechat", socket.username, data, userid, timestamp);
+
         // check for magic word
         parseChat(socket, data);
     });

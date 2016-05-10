@@ -27,7 +27,7 @@ var main = function() {
                     },
                     hintCard: {
                         handle: "#hintCard",
-                        definition: "#modal-definition",
+                        definition: "#definition",
                         word: "#magicwrd"
                     },
                     playCard: {
@@ -326,12 +326,12 @@ var main = function() {
         autoScroll();
     });
 
-    // listener, whenever the server emits "updateword", this updates the game round
+    /* listener, whenever the server emits "updateword", this updates the game round
     socket.on("displayword", function(word, definition) {
         console.log("displayword");
         $(gw.landpage.section.content.word).text(word);
         $(gw.landpage.section.content.hintCard.definition).text(definition);
-    });
+    });*/
 
     // listener, whenever the server emits "updateword", this updates the game round
     socket.on("updateword", function(data) {
@@ -356,8 +356,8 @@ var main = function() {
     });
     socket.on("message", function(data){
         console.log(data.magicwrdmeaning, data.magicwrd);
-        $(gw.landpage.section.content.playCard.definition).text(data.magicwrdmeaning);
-        $(gw.landpage.section.content.playCard.word).text(data.magicwrd);
+        $(gw.landpage.section.content.hintCard.definition).text(data.magicwrdmeaning);
+        $(gw.landpage.section.content.hintCard.word).text(data.magicwrd);
         $(gw.landpage.section.content.hintCard.handle).modal("show");
     });
 

@@ -1,6 +1,6 @@
 // Client-side code
 /* jshint browser: true, jquery: true, curly: true, eqeqeq: true, forin: true, immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double, undef: true, unused: true, strict: true, trailing: true */
-/* global io: true, console: true */
+/* global io: true, ko: true, xssFilters: true, console: true */
 
 var main = function() {
     "use strict";
@@ -81,7 +81,12 @@ var main = function() {
     var width = $(gw.landpage.section.content.canvasDiv).width();
     var height = $(gw.landpage.section.content.canvasDiv).height();
 
-    //Function to handle Clear Canvas
+    function clearCanvas() {
+        context.clearRect(0, 0, width, height);
+        console.log("canvas cleared");
+    }
+
+    //Function to handle Clear Canvas button
     $(gw.landpage.action.clearCanvas).on("click", function() {
         clearCanvas();
     });
@@ -175,18 +180,12 @@ var main = function() {
             gw.mouse.move = true;
         };
 
-        
 
         socket.on("draw_line", function(data) {
             drawCanvas(data.x, data.y, data.prevX, data.prevY, data.color);
         });
 
         handleSocketEmit();
-    }
-
-    function clearCanvas() {
-        context.clearRect(0, 0, width, height);
-        console.log("canvas cleared");
     }
 
     function autoScroll() {
@@ -365,8 +364,8 @@ var main = function() {
             chatmsg += "&nbsp;&bull;&nbsp;<span data-livestamp='" + timestamp + "'></span></span></div></div>";
         }
         else {
-            chatmsg = "<div class='chatThem'><div class='spacer'></div><div class='gwMsg'>"
-            chatmsg += "<p>" + content + "</p><span class='msginfo'>" + username
+            chatmsg = "<div class='chatThem'><div class='spacer'></div><div class='gwMsg'>";
+            chatmsg += "<p>" + content + "</p><span class='msginfo'>" + username;
             chatmsg += "&nbsp;&bull;&nbsp;<span data-livestamp='" + timestamp + "'></span></span></div></div>";
         }
 
@@ -430,10 +429,10 @@ var main = function() {
 
         this.reset = function() {
             this.isTyping("");
-        }
+        };
 
         this.isTyping.subscribe(function (newValue) {
-             if(newValue != "") {
+             if(newValue !== "") {
                  $("#typing").text("...");
              }
              else {
@@ -442,7 +441,7 @@ var main = function() {
         }, this);
 
         this.stoppedTyping.subscribe(function (newValue) {
-             if(newValue != "") {
+             if(newValue !== "") {
                  $("#typing").text("stopped typing");
              }
              else {
@@ -455,7 +454,7 @@ var main = function() {
     handleDrawEvent();
 
     // Activate knockout.js
-    ko.applyBindings(new TypingViewModel);
+    ko.applyBindings(new TypingViewModel());
 };
 
 $(document).ready(main);

@@ -1,5 +1,6 @@
 // Server-side code
 /* jshint node: true, curly: true, eqeqeq: true, forin: true, immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double, undef: true, unused: true, strict: true, trailing: true */
+/* global Promise: true */
 
 "use strict";
 
@@ -68,9 +69,12 @@ function defineFromAPI(word) {
 
                 console.log("==> definition:", define);
                 resolve(define);
+
+                // FIXME
+                console.log(reject);
             }
         });
-    }); 
+    });
 }
 
 function wordsFromAPI(salt) {
@@ -97,8 +101,11 @@ function wordsFromAPI(salt) {
                 var pick = random.integer(0, json.length-1);
                 xyzzy = json[pick].word;
                 //console.log("==> magicword:", xyzzy);
-                resolve (xyzzy);
+                resolve(xyzzy);
                 //defineFromAPI(xyzzy);
+
+                // FIXME
+                console.log(reject);
             }
         });
     });
@@ -106,7 +113,7 @@ function wordsFromAPI(salt) {
 
 function connectDB() {
     redisClient = redis.createClient(redisPort);
-    
+
     redisClient.on("error", function(err) {
         console.error("Redis server refused connection on port", redisPort);
         console.log(err);
@@ -120,7 +127,7 @@ function connectDB() {
 
     redisClient.on("connect", function() {
         console.log("Connected to Redis Server on port", redisPort);
-        db = true; 
+        db = true;
     });
 }
 
@@ -153,9 +160,9 @@ function putToDB(socket, username, groupname){
                         "socketid": socket.id
                     });
                     var grp = "G"+ groupname;
-                    
+
                     redisClient.sadd(grp, username, function(){
-                        
+
                         redisClient.smembers(grp, function(err, items) {
                             if (err) {
                                 console.log("Error in getting elements of user list");
@@ -175,8 +182,33 @@ function putToDB(socket, username, groupname){
         }
 }
 
+function recordDraw(roomname) {
+    var room = roomname;
+    line_history.length = 0;
+    redisClient.lrange(room, 0, -1, function(err, items){
+        if (err) {
+                    console.log("Error in getting elements of user list");
+                }
+                if(items !== null){
+                    items.forEach(function(item) {
+                   line_history.push(JSON.parse(item));
+                });
+
+                    for (var i in line_history) {
+                        if (line_history[i] !== null) {
+
+                            guesswhat.to(room).emit("draw_line", line_history[i]);
+
+                            }
+                         else {
+                            console.log("Drawing null");
+                        }
+                    }
+                }
+    });
+}
+
 function userLogin(socket) {
-    
     // when the client emits "adduser", this listens and executes
     socket.on("adduser", function(mode, username, groupname) {
         console.log(mode, username, groupname);
@@ -217,9 +249,9 @@ function userLogin(socket) {
             console.log("Invalid mode", mode);
         }
 
-        putToDB(socket, username, groupname)
+        putToDB(socket, username, groupname);
         // store username in Redis database
-        
+
         recordDraw(socket.room);
 
     });
@@ -269,34 +301,7 @@ function userLogout(socket) {
     });
 }
 
-function recordDraw(roomname) {
-    var room = roomname;
-    line_history.length = 0;
-    redisClient.lrange(room, 0, -1, function(err, items){
-        if (err) {
-                    console.log("Error in getting elements of user list");
-                }
-                if(items !== null){
-                    items.forEach(function(item) {
-                   line_history.push(JSON.parse(item));
-                });
-                    
-                    for (var i in line_history) {
-                        if (line_history[i] !== null) {
-                           
-                            guesswhat.to(room).emit("draw_line", line_history[i]);
-
-                            }
-                         else {
-                            console.log("Drawing null");
-                        }
-                    }
-                }
-    });
-}
-
 function transmitDraw(socket) {
-   
     socket.on("draw_line", function(data) {
          if(db){
             redisClient.exists(socket.room, function(err, object) {
@@ -311,6 +316,7 @@ function transmitDraw(socket) {
         guesswhat.to(socket.room).emit("draw_line", data);
     });
 }
+
 function updatewin(socket, winuser){
     if(db){
         redisClient.hincrby(winuser, "wins", 1, function(err){
@@ -320,9 +326,21 @@ function updatewin(socket, winuser){
                     console.log(data);
                 });
             }
-        })
+        });
     }
 }
+
+function clearCanvas(socket) {
+    socket.on("clearcanvas", function() {
+        redisClient.ltrim(socket.room, -1 ,0, function(err){
+            if(!err){
+                console.log(socket.room + " Room deleted !");
+            }
+        });
+        guesswhat.to(socket.room).emit("clearcanvas");
+    });
+}
+
 function winner(socket) {
     var winuser = socket.username;
     console.log("Winner", winuser);
@@ -391,40 +409,29 @@ function transmitChat(socket) {
     });
 }
 
-function clearCanvas(socket) {
-    socket.on("clearcanvas", function() {
-        redisClient.ltrim(socket.room, -1 ,0, function(err){
-            if(!err){
-                console.log(socket.room + " Room deleted !");
-            }
-        });
-        guesswhat.to(socket.room).emit("clearcanvas");
-    });
-}
-
-
 function startTimer(socket){
+    var count = 90;
+    var counter = null;
 
-    var count=90;
-    var counter=setInterval(timer, 1000); //1000 will  run it every 1 second
-    
     function timer(){
-    count=count-1;
-    if (count < 0)
-    {
-        clearInterval(counter);
-        guesswhat.to(socket.room).emit("incTimer","Game Over !");
-        return;
-    }
-    else if(room_magic[socket.room] === ""){
-        clearInterval(counter);
-        guesswhat.to(socket.room).emit("incTimer","Game Over !");
-        return;
-    }
-    //Do code for showing the number of seconds here
-    guesswhat.to(socket.room).emit("incTimer",count);
-}
+        count = count - 1;
 
+        if (count < 0) {
+            clearInterval(counter);
+            guesswhat.to(socket.room).emit("incTimer", "Game Over !");
+            return;
+        }
+        else if(room_magic[socket.room] === "") {
+            clearInterval(counter);
+            guesswhat.to(socket.room).emit("incTimer", "Game Over !");
+            return;
+        }
+
+        //Do code for showing the number of seconds here
+        guesswhat.to(socket.room).emit("incTimer", count);
+    }
+
+    counter = setInterval(timer, 1000); //1000 will  run it every 1 second
 }
 
 function sendMagicword(socket){
@@ -437,8 +444,8 @@ function sendMagicword(socket){
                 magicwrd : magicwrd,
                 magicwrdmeaning: magicwrdmeaning
             };
-            room_magic[socket.room] = magicwrd; 
-            guesswhat.to(socket.id).emit('message', puzzle);
+            room_magic[socket.room] = magicwrd;
+            guesswhat.to(socket.id).emit("message", puzzle);
 
         });
     });
@@ -462,9 +469,9 @@ function startGame(socket){
         //Call the function to generate random words and meaning.
         //pass it as a parameter throught the emit below
 */
-    sendMagicword(socket)
+    sendMagicword(socket);
     console.log("in server");
-    startTimer(socket)
+    startTimer(socket);
     });
 }
 

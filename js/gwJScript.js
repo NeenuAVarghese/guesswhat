@@ -270,7 +270,7 @@ var main = function() {
 
     // handle chat message input
     $(gw.landpage.section.content.chatform.handle).submit(function() {
-        socket.emit("sendchat", $(gw.landpage.section.content.chatform.field.sendButton).val());
+        socket.emit("sendchat", socket.id, $(gw.landpage.section.content.chatform.field.sendButton).val());
         $(gw.landpage.section.content.chatform.field.sendButton).val("");
         return false;
     });
@@ -284,6 +284,14 @@ var main = function() {
         $(gw.landpage.section.content.playCard.form).submit(function(event) {
             var newuser = $(gw.landpage.section.content.playCard.username).val();
             var grpname = $(gw.landpage.section.content.playCard.groupname).val();
+
+            if (newuser.toUpperCase() === "SERVER") {
+                newuser = "NA";
+            }
+
+            if (grpname.toLowerCase() === "freeforall") {
+                grpname = "NA";
+            }
 
             if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
                 if (newuser.length > 2) {
@@ -320,9 +328,30 @@ var main = function() {
         });
     });
 
+    function chatBubble(username, content, userid, timestamp) {
+        var chatmsg = "";
+
+        if (userid === 0) {
+            chatmsg = "<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + content + "</strong></p>";
+        }
+        else if (userid === socket.id) {
+            chatmsg = "<div class='chatYou'><div class='spacer'></div><div class='gwMsg'><p>" + content + "</p><span class='msginfo'>" + username + "&nbsp;&bull;<time datetime='" + timestamp + "'></time></span></div></div>";
+        }
+        else {
+            chatmsg = "<div class='chatThem'><div class='spacer'></div><div class='gwMsg'><p>" + content + "</p><span class='msginfo'>" + username + "&nbsp;&bull;<time datetime='" + timestamp + "'></time></span></div></div>";
+        }
+
+        return chatmsg;
+    }
+
     // listener, whenever the server emits "updatechat", this updates the chat body
-    socket.on("updatechat", function(username, data) {
-        $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + username + ":</strong> " + data + "</p>");
+    socket.on("updatechat", function(username, data, userid, timestamp) {
+        if (timestamp === undefined || timestamp === null) {
+            timestamp = 0;
+        }
+
+        var bubble = chatBubble(username, data, userid, timestamp);
+        $(gw.landpage.section.content.chatMessages).append(bubble);
         autoScroll();
     });
 
@@ -335,7 +364,8 @@ var main = function() {
 
     // listener, whenever the server emits "updateword", this updates the game round
     socket.on("updateword", function(data) {
-        $(gw.landpage.section.content.chatMessages).append("<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + data + "</strong></p>");
+        var bubble = chatBubble("SERVER", data, 0);
+        $(gw.landpage.section.content.chatMessages).append(bubble);
         context.clearRect(0, 0, width, height);
         autoScroll();
     });

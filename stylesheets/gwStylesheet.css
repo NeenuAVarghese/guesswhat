@@ -81,6 +81,93 @@ canvas {
   overflow-y: scroll;
 }
 
+p {
+  margin: 0 0 0.2em 0;
+}
+
+.gwMessages {
+  background: white;
+}
+
+.spacer {
+  width: 40px;
+  position: relative;
+}
+
+.gwMsg {
+  font-size: 0.8em;
+  padding: 10px;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.chatThem, .chatYou {
+  padding: 0.5em;
+  overflow: hidden;
+  display: flex;
+}
+
+.chatYou {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.chatYou .gwMsg {
+  background: #0183FE;
+  color: white;
+  min-width: 100px;
+}
+
+.chatThem .gwMsg {
+  background: #E8E5E9;
+  color: black;
+  min-width: 100px;
+}
+
+.chatYou .msginfo {
+  font-size: 0.8em;
+  color: #CCCCCC;
+}
+
+.chatThem .msginfo {
+  font-size: 0.8em;
+  color: #75B2EB;
+}
+
+.chatThem .spacer:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border: 5px solid #E8E5E9;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+  -webkit-filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+  -moz-filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+}
+
+.chatYou .spacer {
+  order: 2;
+}
+
+.chatYou .spacer:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -2px;
+  width: 0;
+  height: 0;
+  border: 5px solid #0183FE;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+  -webkit-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+  -moz-filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
 .gw-input-chat .input-group-addon {
   background: white;
 }

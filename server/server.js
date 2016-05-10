@@ -166,7 +166,7 @@ function putToDB(socket, username, groupname){
                             // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
                             // echo globally (all clients) that a person has connected
-                            socket.broadcast.to(socket.room).emit("updatechat", "SERVER", username + " has connected");
+                            socket.broadcast.to(socket.room).emit("updatechat", "SERVER", username + " has connected", 0);
                         });
                     });
                 }
@@ -192,7 +192,7 @@ function userLogin(socket) {
             socket.join(socket.room);
             console.log("Free-for-all mode");
              // echo to client they've connected
-            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'");
+            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
         }
 
         else if (mode === 2) {
@@ -205,7 +205,7 @@ function userLogin(socket) {
             socket.join(groupname);
             console.log("Teams mode");
              // echo to client they've connected
-            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'");
+            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
         }
 
         else {
@@ -260,7 +260,7 @@ function userLogout(socket) {
         // update list of users in chat, client-side
         guesswhat.to(socket.room).emit("updateusers", usernames);
         // echo globally that this client has left
-        socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected");
+        socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
     });
 }
 
@@ -372,10 +372,11 @@ function parseChat(socket, data) {
 
 function transmitChat(socket) {
     // when the client emits "sendchat", this listens and executes
-    socket.on("sendchat", function(data) {
+    socket.on("sendchat", function(userid, data) {
+        var timestamp = new Date().getTime();
         // we tell the client to execute "updatechat" with 2 parameters
         //server.sockets.emit("updatechat", socket.username, data);
-        guesswhat.to(socket.room).emit("updatechat", socket.username, data);
+        guesswhat.to(socket.room).emit("updatechat", socket.username, data, userid, timestamp);
         // check for magic word
         parseChat(socket, data);
     });

@@ -9,6 +9,7 @@
     <title>GuessWhat</title>
     <!-- Google Fonts -->
     <link href="libraries/montserrat-webfont/montserrat.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <!-- Bootstrap CSS-->
     <link href="libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <!-- Font Awesome CSS -->
@@ -18,7 +19,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed" id="mainnav">
+  <nav class="navbar navbar-inverse navbar-fixed container-fluid" style="border-radius: 0px;" id="mainnav">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -43,7 +44,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#"><span class="glyphicon glyphicon-time" id="showtimer">&nbsp;60</span></a>
+                      <a href="#"><span id="showtimer">&nbsp;90</span> <i class="fa fa-clock-o" aria-hidden="true"></i></a>
                     </li>
                     <li>
                         <a id="logoutLink" class="navbutton">Logout</a>
@@ -56,15 +57,16 @@
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12 col-sm-6 col-sm-offset-5">
+          <div class="col-md-4"></div>
+          <div class="col-md-4">
                 <div class="btn-group" role="group" id="gwColorPicker">
-                    <button id="gwBlack" type="button" class="btn btn-default">Black</button>
-                    <button id="gwRed" type="button" class="btn btn-danger">Red</button>
-                    <button id="gwGreen" type="button" class="btn btn-success">Green</button>
-                    <button id="gwBlue" type="button" class="btn btn-primary">Blue</button>
-                    <button id="gwClear"type="button" class="btn btn-warning"><i class="fa fa-trash" aria-hidden="true">&nbsp;</i>
-                    </button>
+                    <button id="gwBlack" type="button" class="btn btn-default">Black <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    <button id="gwRed" type="button" class="btn btn-danger">Red <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    <button id="gwGreen" type="button" class="btn btn-success">Green <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    <button id="gwBlue" type="button" class="btn btn-primary">Blue <i class="fa fa-pencil" aria-hidden="true"></i></button>
+                    <button id="gwClear" type="button" class="btn btn-warning">Clear <i class="fa fa-eraser" aria-hidden="true"></i></button>
                 </div>
+              </div>
             </div>
             <div class="col-sm-1"><span id="messNeenu"></span></div>
         </div>
@@ -81,7 +83,12 @@
                 <canvas id="gw_Canvas" style="border:1px solid #d3d3d3;"></canvas>
             </div>
             <div class="col-md-3">
-                <div class="panel panel-primary" ><div class="panel-heading">Chat board</div><div class="panel-body chatPanel"><div id="gwMessages"></div></div></div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Chat board</div>
+                    <div class="panel-body chatPanel">
+                        <div id="gwMessages"></div>
+                    </div>
+                </div>
                 <form action="" id="gwChatForm" data-bind="submit: reset">
                     <div class="input-group gw-input-chat">
                         <input id="gwChatButton" type="text" class="form-control" data-bind="textInput: isTyping" autocomplete="off" placeholder="Message">
@@ -97,7 +104,6 @@
         </div>
 
     </div>
-
 
     <!-- Play Modal -->
     <div id="playCard" class="modal fade" role="dialog">
@@ -136,46 +142,47 @@
 
                         <form id="playForm" class="form-inline">
                             <div class="row">
-                                <div class="col-md-3 col-xs-2"></div>
-                                <div class="col-md-6 col-xs-8">
+                                <div class="col-md-4 col-md-offset-3">
                                     <div class="input-group">
                                         <label for="nameInput">What's your name?</label>
                                         <input id="nameInput" class="form-control" type="text" placeholder="Username" autofocus>
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-xs-2"></div>
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4"></div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-3 col-xs-2"></div>
-                                <div class="btn-group col-md-6 col-xs-8" role="group" aria-label="game mode">
-                                    <button id="btn-solo" class="btn btn-default btn-autosize active" type="button">Solo
-                                        <i class="glyphicon glyphicon-user">&nbsp;</i>
-                                    </button>
-                                    <button id="btn-teams" class="btn btn-default btn-autosize" type="button">Teams
-                                        <i class="glyphicon glyphicon-flag">&nbsp;</i>
-                                    </button>
+                              <div class="col-md-4"></div>
+                              <div class="col-md-4">
+                                  <div class="btn-group" align="center" role="group" aria-label="game mode">
+                                      <button id="btn-solo" class="btn btn-info btn-md active" type="button">Solo
+                                          <i class="fa fa-user" aria-hidden="true"></i> </button>
+                                      <button id="btn-teams" class="btn btn-success btn-md" type="button">Team
+                                        <i class="fa fa-users" aria-hidden="true"></i>
+                                      </button>
+                                  </div>
                                 </div>
-                                <div class="col-md-3 col-xs-2"></div>
-                            </div>
+                                <div class="col-md-4"></div>
+                          </div>
 
                             <div class="row groupname toggleshow">
                                 <div class="col-md-3 col-xs-2"></div>
-                                    <div class="col-md-6 col-xs-8">
-                                        <div class="input-group">
-                                            <label for="groupInput">Group name?</label>
-                                            <input id="groupInput" class="form-control" type="text" placeholder="Groupname">
-                                        </div>
+                                <div class="col-md-6 col-xs-8">
+                                    <div class="input-group">
+                                        <label for="groupInput">Group name?</label>
+                                        <input id="groupInput" class="form-control" type="text" placeholder="Groupname">
                                     </div>
-                                    <div class="col-md-3 col-xs-2"></div>
                                 </div>
+                                <div class="col-md-3 col-xs-2"></div>
+                            </div>
 
                             <div class="row">
-                                <div class="col-xs-4"></div>
-                                <div class="col-xs-4 form">
-                                    <button id="playSubmit" class="btn btn-primary btn-lg" type="submit">Play!</button>
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4 form">
+                                    <button id="playSubmit" class="btn btn-primary btn-lg" type="submit" style="margin-left: 37px;">Play!</button>
                                 </div>
-                                <div class="col-xs-4"></div>
+                                <div class="col-md-4"></div>
                             </div>
                         </form>
                     </div>
@@ -206,7 +213,7 @@
 
                     <h3 id="magicwrd"></h3>
                     <h4 id="definition" class="hint">&nbsp;</h4>
-                          
+
 
                 </div>
 

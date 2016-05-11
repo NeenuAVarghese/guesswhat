@@ -25,7 +25,7 @@ body {
 
 .navbar-inverse{
   background: #444;
-  padding: 15px;
+  padding: 5px;
 }
 .navbar-brand {
   margin: 0 0 0 2em;
@@ -76,7 +76,7 @@ canvas {
 }
 
 .chatPanel {
-  height: 300px;
+  height: auto;
   width: 100%;
   overflow-y: scroll;
 }
@@ -189,13 +189,6 @@ p {
   min-height: 100px;
 }
 
-.btn-autosize {
-  padding: 5px 5px;
-  font-size: 14px;
-  min-height: 60px;
-  border-radius: 3px;
-}
-
 .expand {
   float: right;
 }
@@ -240,4 +233,8 @@ p {
   .fitonmodal {
     display: block;
   }
+}
+#showtimer {
+font-family: 'Open Sans', sans-serif;
+font-weight: bolder;
 }

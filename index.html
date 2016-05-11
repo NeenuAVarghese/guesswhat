@@ -9,7 +9,7 @@
     <title>GuessWhat</title>
     <!-- Google Fonts -->
     <link href="libraries/montserrat-webfont/montserrat.css" rel="stylesheet" type="text/css">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
     <!-- Bootstrap CSS-->
     <link href="libraries/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <!-- Font Awesome CSS -->
@@ -39,7 +39,7 @@
                     <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a>
                     </li>
                     <li>
-                        <button class="btn btn-primary" id="gamestartlnk">Let's start the Fun !</button>
+                        <button class="btn btn-danger" id="gamestartlnk">Let's start the Fun !</button>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -55,10 +55,9 @@
     </nav>
 
 
-    <div class="container-fluid">
+    <div class="container">
         <div class="row">
-          <div class="col-md-4"></div>
-          <div class="col-md-4">
+          <div class="col-xs-12 col-sm-6 col-sm-offset-3">
                 <div class="btn-group" role="group" id="gwColorPicker">
                     <button id="gwBlack" type="button" class="btn btn-default">Black <i class="fa fa-pencil" aria-hidden="true"></i></button>
                     <button id="gwRed" type="button" class="btn btn-danger">Red <i class="fa fa-pencil" aria-hidden="true"></i></button>
@@ -69,10 +68,11 @@
               </div>
             </div>
             <div class="col-sm-1"><span id="messNeenu"></span></div>
-        </div>
+    </div>
+    <div class="container-fluid">
         <div class="row">
             <div class="col-md-2">
-                <div class="panel panel-primary">
+                <div class="panel panel-warning">
                     <div class="panel-heading">Active Users</div>
                     <div class="panel-body">
                         <div id="gwActiveUser"></div>
@@ -83,7 +83,7 @@
                 <canvas id="gw_Canvas" style="border:1px solid #d3d3d3;"></canvas>
             </div>
             <div class="col-md-3">
-                <div class="panel panel-primary">
+                <div class="panel panel-success">
                     <div class="panel-heading">Chat board</div>
                     <div class="panel-body chatPanel">
                         <div id="gwMessages"></div>

@@ -24,20 +24,16 @@ body {
 }
 
 .navbar-inverse{
-  background: #4073bf;
+  background: #005ce6;
   padding: 5px;
 }
 .navbar-brand {
   margin: 0 0 0 2em;
 }
 
-.navbar-toggle, .navbar-toggle:active {
-  color: #FE7300;
-}
-
 .navbar-inverse .navbar-toggle:hover,
 .navbar-inverse .navbar-toggle:focus {
-  color: #FFA400;
+  color: #003d99;
 }
 
 .navbar-inverse .navbar-brand {
@@ -51,15 +47,10 @@ body {
   margin-right: 10px;
 }
 
-.navbar-inverse .navbar-nav > .active > a {
-  color: #FE7300;
-  background: #444;
-}
-
 .navbar-inverse .navbar-nav >li > a:hover,
 .navbar-inverse .navbar-nav > .active > a:hover {
   color: #FFA400;
-  background: #444;
+  background: #0047b3;
 }
 
 .navbutton {

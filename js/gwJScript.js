@@ -44,6 +44,10 @@ var main = function() {
                         groupdiv: ".groupname",
                         groupname: "#groupInput"
                     },
+                    startCard: {
+                        handle: "#gameStartCard",
+                        message: "#playerInit"
+                    },
                     activeusersList: "#gwActiveUser",
                     colorPicker: "#gwColorPicker",
                     chatMessages: "#gwMessages",
@@ -377,7 +381,6 @@ var main = function() {
         autoScroll();
     });
 
-
     // listener, whenever the server emits "updateword", this updates the game round
     socket.on("updateword", function(data) {
         var bubble = chatBubble("SERVER", data, 0);
@@ -416,7 +419,10 @@ var main = function() {
         $(gw.landpage.section.navbar.startGame).removeAttr('disabled');
     });
 
-
+    socket.on("gameStarted", function(data){
+        $(gw.landpage.section.content.startCard.message).text(data);
+         $(gw.landpage.section.content.startCard.handle).modal('show');
+    });
     // View Model to handle typing indicator
     function TypingViewModel() {
         this.isTyping = ko.observable("");
@@ -445,7 +451,6 @@ var main = function() {
              }
         }, this);
     }
-
 
     handleDrawEvent();
 

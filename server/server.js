@@ -540,7 +540,7 @@ function sendMagicword(socket){
 function startGame(socket){
     socket.on("startgame", function(){
         guesswhat.to(socket.room).emit("disablePlay");
-/*
+
         var res = [];
         //get the list of socket id in room
         var room = guesswhat.adapter.rooms[socket.room];
@@ -550,14 +550,20 @@ function startGame(socket){
                 res.push(key);
             }
         }
-        //selects random ID
-        console.log("following client has been slected:   "+res[Math.round(Math.random()*(res.length-1))]);
-        //Call the function to generate random words and meaning.
-        //pass it as a parameter throught the emit below
-*/
+        var index = res.indexOf(socket.id);
+        if(index > -1){
+            res.splice(index, 1);
+        }
+        var msg = socket.username + " has initiated the game";
+        
+    
     sendMagicword(socket);
-    console.log("in server");
     startTimer(socket);
+    res.forEach(function(val){
+        console.log(val, msg);
+            guesswhat.to(val).emit("gameStarted", msg);
+    });
+    
     });
 }
 

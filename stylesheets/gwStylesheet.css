@@ -222,13 +222,35 @@ p {
 /*Footer CSS*/
 
 footer {
-	background: #233140;
+    background: #233140;
   font-family: 'Montserrat', sans-serif;
   color: white;
 }
 footer .panel {
 	box-shadow: none;
 }
+
+
+html, body {
+  height: 100%;
+}
+
+#wrap {
+  min-height: 100%;
+}
+
+#main {
+  overflow:auto;
+  padding-bottom:150px; /* this needs to be bigger than footer height*/
+}
+
+.site-footer {
+  position: relative;
+  margin-top: -100px; /* negative value of footer height */
+  height: 100px;
+  clear:both;
+  padding-top:20px;
+} 
 
 /*Copyrights CSS*/
 .copyright{

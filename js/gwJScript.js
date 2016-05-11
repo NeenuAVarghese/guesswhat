@@ -265,6 +265,7 @@ var main = function() {
     $(gw.landpage.section.navbar.logout).on("click", function() {
         console.log("logging out");
         $(gw.landpage.section.content.activeusersList).empty();
+        $(gw.landpage.section.content.chatMessages).empty();
         socket.emit("logout");
         clearCanvas();
         $(gw.landpage.section.content.playCard.handle).modal("show");

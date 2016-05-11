@@ -330,8 +330,11 @@ function removeFromDb(socket){
 }
 
 function userDisconnect(socket) {
-    // when the user disconnects.. perform this
+    
+        // when the user disconnects.. perform this
     socket.on("disconnect", function() {
+
+        if(socket.username !== undefined){
         console.log("User:", socket.username, "Disconnected");
 
         // remove username from Redis database and update users
@@ -339,20 +342,23 @@ function userDisconnect(socket) {
         
         // echo globally that this client has left
         guesswhat.to(socket.room).emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
+    }
     });
+
 }
 
 
 function userLogout(socket){
-
     socket.on("logout", function() {
-        console.log("User:", socket.username, "Disconnected");
+        if(socket.username !== undefined){
+            console.log("User:", socket.username, "Disconnected");
 
-        // remove username from Redis database and update users
-        removeFromDb(socket);
-        
-        // echo globally that this client has left
-        guesswhat.to(socket.room).emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
+            // remove username from Redis database and update users
+            removeFromDb(socket);
+            
+            // echo globally that this client has left
+            guesswhat.to(socket.room).emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
+        } 
     });
 
 }

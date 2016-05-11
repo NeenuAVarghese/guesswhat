@@ -39,7 +39,7 @@
                     <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a>
                     </li>
                     <li>
-                        <button class="btn btn-primary" id="gamestartlnk">Let's start the Fun !</button>
+                        <button class="btn btn-primary" id="gamestartlnk" style="margin-top: 8px;">Let's start the Fun !</button>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -70,37 +70,39 @@
             </div>
             <div class="col-sm-1"><span id="messNeenu"></span></div>
         </div>
-        <div class="row">
-            <div class="col-md-2">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">Active Users</div>
-                    <div class="panel-body">
-                        <div id="gwActiveUser"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-7" id="divCanvas">
-                <canvas id="gw_Canvas" style="border:1px solid #d3d3d3;"></canvas>
-            </div>
-            <div class="col-md-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">Chat board</div>
-                    <div class="panel-body chatPanel">
-                        <div id="gwMessages"></div>
-                    </div>
-                </div>
-                <form action="" id="gwChatForm" data-bind="submit: reset">
-                    <div class="input-group gw-input-chat">
-                        <input id="gwChatButton" type="text" class="form-control" data-bind="textInput: isTyping" autocomplete="off" placeholder="Message">
-                        <div class="input-group-addon">
-                            <button type="submit">
-                                <i class="glyphicon glyphicon-send">&nbsp;</i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                <span id="typing"></span>
-            </div>
+        <div class="container-fluid">
+          <div class="row">
+              <div class="col-md-2">
+                  <div class="panel panel-primary">
+                      <div class="panel-heading">Active Users</div>
+                      <div class="panel-body">
+                          <div id="gwActiveUser"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-7" id="divCanvas">
+                  <canvas id="gw_Canvas" style="border:1px solid #d3d3d3;"></canvas>
+              </div>
+              <div class="col-md-3">
+                  <div class="panel panel-primary">
+                      <div class="panel-heading">Chat board</div>
+                      <div class="panel-body chatPanel">
+                          <div id="gwMessages"></div>
+                      </div>
+                  </div>
+                  <form action="" id="gwChatForm" data-bind="submit: reset">
+                      <div class="input-group gw-input-chat">
+                          <input id="gwChatButton" type="text" class="form-control" data-bind="textInput: isTyping" autocomplete="off" placeholder="Message">
+                          <div class="input-group-addon">
+                              <button type="submit">
+                                  <i class="glyphicon glyphicon-send">&nbsp;</i>
+                              </button>
+                          </div>
+                      </div>
+                  </form>
+                  <span id="typing"></span>
+              </div>
+          </div>
         </div>
 
     </div>
@@ -180,7 +182,7 @@
                             <div class="row">
                                 <div class="col-md-4"></div>
                                 <div class="col-md-4 form">
-                                    <button id="playSubmit" class="btn btn-primary btn-lg" type="submit" style="margin-left: 37px;">Play!</button>
+                                    <button id="playSubmit" class="btn btn-primary btn-md" type="submit" style="margin-left: 35px;">Let's Play !</button>
                                 </div>
                                 <div class="col-md-4"></div>
                             </div>

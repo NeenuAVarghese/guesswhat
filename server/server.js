@@ -318,8 +318,6 @@ function removeFromDb(socket){
                                 if(i === items.length){
                                     // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
-                            // echo globally (all clients) that a person has connected
-                            socket.broadcast.to(socket.room).emit("updatechat", "SERVER", socket.username + " has connected", 0);
                                 }
                                                                 
                                });
@@ -331,11 +329,10 @@ function removeFromDb(socket){
         }
 }
 
-function userLogout(socket) {
+function userDisconnect(socket) {
     // when the user disconnects.. perform this
     socket.on("disconnect", function() {
         console.log("User:", socket.username, "Disconnected");
-
 
         // remove username from Redis database and update users
         removeFromDb(socket);
@@ -343,6 +340,21 @@ function userLogout(socket) {
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
     });
+}
+
+
+function userLogout(socket){
+
+    socket.on("logout", function() {
+        console.log("User:", socket.username, "Disconnected");
+
+        // remove username from Redis database and update users
+        removeFromDb(socket);
+        
+        // echo globally that this client has left
+        socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
+    });
+
 }
 
 function transmitDraw(socket) {
@@ -427,7 +439,6 @@ function winner(socket) {
     clearCanvas(socket);
     room_magic[socket.room] = "";
     updatewin(socket, winuser);
-
 }
 
 function getword(room)
@@ -559,7 +570,8 @@ guesswhat.on("connection", function(socket) {
     userLogin(socket);
     transmitDraw(socket);
     transmitChat(socket);
-    userLogout(socket);
+    userDisconnect(socket);
     clearCanvas(socket);
     startGame(socket);
+    userLogout(socket);
 });

@@ -261,10 +261,8 @@ var main = function() {
     $(gw.landpage.section.navbar.logout).on("click", function() {
         console.log("logging out");
         $(gw.landpage.section.content.activeusersList).empty();
-        socket.emit("disconnect", function() {
-            clearCanvas();
-            socket.disconnect();
-        });
+        socket.emit("logout");
+        clearCanvas();
         $(gw.landpage.section.content.playCard.handle).modal("show");
     });
 

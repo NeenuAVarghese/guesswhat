@@ -442,7 +442,12 @@ function winner(socket) {
     guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");
 
-    clearCanvas(socket);
+    redisClient.ltrim(socket.room, -1 ,0, function(err){
+            if(!err){
+                console.log(socket.room + " Room deleted !");
+            }
+        });
+    guesswhat.to(socket.room).emit("clearcanvas");
     room_magic[socket.room] = "";
     updatewin(socket, winuser);
 }

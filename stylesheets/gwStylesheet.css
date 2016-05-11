@@ -218,3 +218,49 @@ p {
   text-shadow:10px 10px 15px #000;
 
 }
+
+/*Footer CSS*/
+
+footer {
+	background: #233140;
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+}
+footer .panel {
+	box-shadow: none;
+}
+
+/*Copyrights CSS*/
+.copyright{
+  background:#233140;
+  padding:0 20px;
+  color:#fff;
+  font-size:12px;
+}
+.copyright-img{
+  padding:20px 0;
+}
+#fHome{
+  background: #233140;
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size:12px;
+}
+#fAbout{
+  background: #233140;
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size:12px;
+}
+#fFaq{
+  background: #233140;
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size:12px;
+}
+#fContact{
+  background: #233140;
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+  font-size:12px;
+}

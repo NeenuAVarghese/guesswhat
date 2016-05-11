@@ -185,10 +185,10 @@ function putToDB(socket, username, groupname){
                             // echo globally (all clients) that a person has connected
                             socket.broadcast.to(socket.room).emit("updatechat", "SERVER", username + " has connected", 0);
                                 }
-                                                                
+
                                });
                             });
-                            
+
                         });
                     });
                 }
@@ -319,10 +319,10 @@ function removeFromDb(socket){
                                     // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
                                 }
-                                                                
+
                                });
                             });
-                            
+
                         });
 
 
@@ -330,7 +330,6 @@ function removeFromDb(socket){
 }
 
 function userDisconnect(socket) {
-    
         // when the user disconnects.. perform this
     socket.on("disconnect", function() {
 
@@ -339,7 +338,7 @@ function userDisconnect(socket) {
 
         // remove username from Redis database and update users
         removeFromDb(socket);
-        
+
         // echo globally that this client has left
         guesswhat.to(socket.room).emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
     }
@@ -355,10 +354,10 @@ function userLogout(socket){
 
             // remove username from Redis database and update users
             removeFromDb(socket);
-            
+
             // echo globally that this client has left
             guesswhat.to(socket.room).emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
-        } 
+        }
     });
 
 }
@@ -411,12 +410,12 @@ function updatewin(socket, winuser){
                                 if(i === items.length){
                                     // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
-                            
+
                                 }
-                                                                
+
                                });
                             });
-                            
+
                         });
     }
 }
@@ -560,7 +559,9 @@ function startGame(socket){
 
         if (room) {
             for (var key in room.sockets) {
-                res.push(key);
+                if (key) {
+                    res.push(key);
+                }
             }
         }
         var index = res.indexOf(socket.id);
@@ -568,15 +569,15 @@ function startGame(socket){
             res.splice(index, 1);
         }
         var msg = socket.username + " has initiated the game";
-        
-    
+
+
     sendMagicword(socket);
     startTimer(socket);
     res.forEach(function(val){
         console.log(val, msg);
             guesswhat.to(val).emit("gameStarted", msg);
     });
-    
+
     });
 }
 

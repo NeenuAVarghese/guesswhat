@@ -21,10 +21,10 @@
 </head>
 
 <body>
-    <div id="wrap">
-        <div id="main">
+    <div class="gwWrap">
+        <div class="gwMain">
     <nav class="navbar navbar-inverse navbar-fixed container-fluid" style="border-radius: 0px;" id="mainnav">
-        <img src="logo.png" id="logo" />
+        <img class="logo" src="images/logo.png" alt="logo" />
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -42,12 +42,12 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a id="gamestartlnk" href="#">Let's start the Fun ! Click Me !<span class="sr-only">(current)</span></a>
+                        <a id="gwStart" href="#" title="Click Me!">Let's start the Fun!<span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a><span id="showtimer">&nbsp;90</span> <i class="fa fa-clock-o" aria-hidden="true"></i></a>
+                        <a><span id="showtimer">&nbsp;90</span> <i class="fa fa-clock-o" aria-hidden="true">&nbsp;</i></a>
                     </li>
                     <li>
                         <a id="logoutLink" class="navbutton">Logout</a>
@@ -61,32 +61,33 @@
         <div class="row">
             <div class="col-xs-12 col-sm-6 col-sm-offset-3">
                 <div class="btn-group" role="group" id="gwColorPicker">
-                    <button id="gwBlack" type="button" class="btn btn-default">Black <i class="fa fa-pencil" aria-hidden="true"></i></button>
-                    <button id="gwRed" type="button" class="btn btn-danger">Red <i class="fa fa-pencil" aria-hidden="true"></i></button>
-                    <button id="gwGreen" type="button" class="btn btn-success">Green <i class="fa fa-pencil" aria-hidden="true"></i></button>
-                    <button id="gwBlue" type="button" class="btn btn-primary">Blue <i class="fa fa-pencil" aria-hidden="true"></i></button>
-                    <button id="gwClear" type="button" class="btn btn-warning">Clear <i class="fa fa-eraser" aria-hidden="true"></i></button>
+                    <button id="gwBlack" type="button" class="btn btn-default">Black <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwRed" type="button" class="btn btn-danger">Red <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwGreen" type="button" class="btn btn-success">Green <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwBlue" type="button" class="btn btn-primary">Blue <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwClear" type="button" class="btn btn-warning">Clear <i class="fa fa-eraser" aria-hidden="true">&nbsp;</i></button>
                 </div>
             </div>
         </div>
-        <div class="col-sm-1"><span id="messNeenu"></span></div>
+        <div class="col-sm-1"></div>
     </div>
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2">
                 <div class="panel panel-danger">
-                    <div class="panel-heading"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;Active Users</div>
+                    <div class="panel-heading"><i class="fa fa-users" aria-hidden="true">&nbsp;</i>Active Users</div>
                     <div class="panel-body">
                         <div id="gwActiveUser"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-7" id="divCanvas">
+            <div class="col-md-7 gwCanvas" id="divCanvas">
                 <canvas id="gw_Canvas"></canvas>
             </div>
             <div class="col-md-3">
                 <div class="panel panel-success">
-                    <div class="panel-heading"><i class="fa fa-comments" aria-hidden="true"></i>&nbsp;Chat board</div>
+                    <div class="panel-heading"><i class="fa fa-comments" aria-hidden="true">&nbsp;</i>Chat board</div>
                     <div class="panel-body chatPanel">
                         <div id="gwMessages"></div>
                     </div>
@@ -148,9 +149,9 @@
                                 <div class="col-md-6 col-md-offset-3">
                                     <div class="btn-group" align="center" role="group" aria-label="game mode">
                                         <button id="btn-solo" class="btn btn-info btn-md active" type="button">Solo
-                                            <i class="fa fa-user" aria-hidden="true"></i> </button>
+                                            <i class="fa fa-user" aria-hidden="true">&nbsp;</i> </button>
                                         <button id="btn-teams" class="btn btn-success btn-md" type="button">Team
-                                            <i class="fa fa-users" aria-hidden="true"></i>
+                                            <i class="fa fa-users" aria-hidden="true">&nbsp;</i>
                                         </button>
                                     </div>
                                 </div>
@@ -247,25 +248,20 @@
 </div>
 </div>
 
-    <!-- footer -->
     <footer role="contentinfo" class="site-footer" id="colophon">
         <div class="copyright">
             <div class="container">
                 <div class="row copyright-img">
                     <div class="col-md-6">
-                      <a id="fHome" href="#">Home</a>
-            					·
-            					<a id="fAbout" href="#about" data-toggle="modal">About</a>
-            					·
-            					<a id="fFaq" href="#faq" data-toggle="modal">Faq</a>
-            					·
-            					<a id="fContact" href="#contact" data-toggle="modal">Contact</a></div>
+                      <a id="fHome" href="#">Home</a>&bull;
+                                <a class="gwFooter" href="#about" data-toggle="modal">About</a>&bull;
+                                <a class="gwFooter" href="#faq" data-toggle="modal">Faq</a>&bull;
+                                <a class="gwFooter" href="#contact" data-toggle="modal">Contact</a></div>
                     <div class="col-md-6 text-right" id="footertext"> Copyright ©</div>
                 </div>
             </div>
         </div>
     </footer>
-    <!-- /footer -->
 
     <!-- POPUP FAQ  -->
 
@@ -275,7 +271,7 @@
             <div class="modal-content">
                 <div class="modal-header modal-header-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h1><i class="fa fa-question-b"></i>Frequently Asked Questions</h1>
+                    <h1><i class="fa fa-question-b">&nbsp;</i>Frequently Asked Questions</h1>
                 </div>
                 <div class="modal-body">
                     <h3>
@@ -416,7 +412,7 @@
             <div class="modal-content">
                 <div class="modal-header modal-header-primary">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h1><i class="fa fa-question-b"></i>About Us</h1>
+                    <h1><i class="fa fa-question-b">&nbsp;</i>About Us</h1>
                 </div>
                 <div class="modal-body">
                     <h3> All About Us </h3>

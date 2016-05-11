@@ -13,7 +13,7 @@ var main = function() {
             section: {
                 navbar: {
                     handle: "#mainnav",
-                    startGame: "#gamestartlnk",
+                    startGame: "#gwStart",
                     logout: "#logoutLink",
                     showTime: "#showtimer"
                 },
@@ -130,14 +130,13 @@ var main = function() {
     }
 
     function drawCanvas(x, y, pX, pY, c) {
-
-                context.beginPath();
-                context.lineWidth = 5;
-                context.lineJoin = context.lineCap = "round";
-                context.strokeStyle = c;
-                context.moveTo(pX, pY);
-                context.lineTo(x, y);
-                context.stroke();
+        context.beginPath();
+        context.lineWidth = 5;
+        context.lineJoin = context.lineCap = "round";
+        context.strokeStyle = c;
+        context.moveTo(pX, pY);
+        context.lineTo(x, y);
+        context.stroke();
     }
 
     // Function to track User mouse events on canvas
@@ -268,6 +267,7 @@ var main = function() {
         $(gw.landpage.section.content.chatMessages).empty();
         socket.emit("logout");
         clearCanvas();
+        window.onbeforeunload = null;
         $(gw.landpage.section.content.playCard.handle).modal("show");
     });
 
@@ -284,6 +284,11 @@ var main = function() {
         socket.emit("sendchat", socket.id, data);
         //$(gw.landpage.section.content.chatform.field.sendButton).val("");
         return false;
+    });
+
+    socket.on("disconnect", function() {
+        console.log("server down");
+        window.onbeforeunload = null;
     });
 
     // call the server-side function "adduser" and send two parameters (mode, name)
@@ -393,7 +398,7 @@ var main = function() {
     socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
         $.each(data, function(key, value){
-            $(gw.landpage.section.content.activeusersList).append("<p>" + key + "    <span class='badge'>" + value +"</span></p><div>");
+            $(gw.landpage.section.content.activeusersList).append("<p>" + key + "    <span class='badge'>" + value + "</span></p><div>");
         });
     });
 
@@ -402,27 +407,28 @@ var main = function() {
     });
 
     socket.on("incTimer", function(data){
-        $(gw.landpage.section.navbar.showTime).text("  "+data);
+        $(gw.landpage.section.navbar.showTime).text("  " + data);
     });
+
     socket.on("message", function(data){
         console.log(data.magicwrdmeaning, data.magicwrd);
         $(gw.landpage.section.content.hintCard.definition).text(data.magicwrdmeaning);
         $(gw.landpage.section.content.hintCard.word).text(data.magicwrd);
         $(gw.landpage.section.content.hintCard.handle).modal("show");
-        $(gw.landpage.section.navbar.startGame).attr('disabled','disabled');
+        $(gw.landpage.section.navbar.startGame).attr("disabled", "disabled");
     });
 
     socket.on("disablePlay", function(){
-        $(gw.landpage.section.navbar.startGame).attr('disabled','disabled');
+        $(gw.landpage.section.navbar.startGame).attr("disabled", "disabled");
     });
 
     socket.on("enablePlay", function(){
-        $(gw.landpage.section.navbar.startGame).removeAttr('disabled');
+        $(gw.landpage.section.navbar.startGame).removeAttr("disabled");
     });
 
     socket.on("gameStarted", function(data){
         $(gw.landpage.section.content.startCard.message).text(data);
-         $(gw.landpage.section.content.startCard.handle).modal('show');
+         $(gw.landpage.section.content.startCard.handle).modal("show");
     });
     // View Model to handle typing indicator
     function TypingViewModel() {

@@ -266,11 +266,6 @@ var main = function() {
         $(gw.landpage.section.content.playCard.handle).modal("show");
     });
 
-    /* show definition
-    $(gw.landpage.section.content.word).on("click", function() {
-        $(gw.landpage.section.content.hintCard.handle).modal("show");
-    });*/
-
     // handle chat message input
     $(gw.landpage.section.content.chatform.handle).submit(function() {
         var data = $(gw.landpage.section.content.chatform.field.sendButton).val();
@@ -355,7 +350,7 @@ var main = function() {
         var chatmsg = "";
 
         if (userid === 0) {
-            chatmsg = "<p class='gwMsg'><span class='glyphicon glyphicon-asterisk'></span><strong>" + "SERVER: " + content + "</strong></p>";
+            chatmsg = "<p class='gwMsg'><strong>" + "SERVER: " + content + "</strong></p>";
         }
         else if (userid === socket.id) {
             chatmsg = "<div class='chatYou'><div class='spacer'></div><div class='gwMsg'>";
@@ -382,12 +377,6 @@ var main = function() {
         autoScroll();
     });
 
-    /* listener, whenever the server emits "updateword", this updates the game round
-    socket.on("displayword", function(word, definition) {
-        console.log("displayword");
-        $(gw.landpage.section.content.word).text(word);
-        $(gw.landpage.section.content.hintCard.definition).text(definition);
-    });*/
 
     // listener, whenever the server emits "updateword", this updates the game round
     socket.on("updateword", function(data) {
@@ -416,7 +405,15 @@ var main = function() {
         $(gw.landpage.section.content.hintCard.definition).text(data.magicwrdmeaning);
         $(gw.landpage.section.content.hintCard.word).text(data.magicwrd);
         $(gw.landpage.section.content.hintCard.handle).modal("show");
-        //$(gw.landpage.section.navbar.startGame).attr('disabled','disabled');
+        $(gw.landpage.section.navbar.startGame).attr('disabled','disabled');
+    });
+
+    socket.on("disablePlay", function(){
+        $(gw.landpage.section.navbar.startGame).attr('disabled','disabled');
+    });
+
+    socket.on("enablePlay", function(){
+        $(gw.landpage.section.navbar.startGame).removeAttr('disabled');
     });
 
 

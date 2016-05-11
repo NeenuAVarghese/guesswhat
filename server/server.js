@@ -338,7 +338,7 @@ function userDisconnect(socket) {
         removeFromDb(socket);
         
         // echo globally that this client has left
-        socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
+        guesswhat.to(socket.room).emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
     });
 }
 
@@ -352,7 +352,7 @@ function userLogout(socket){
         removeFromDb(socket);
         
         // echo globally that this client has left
-        socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
+        guesswhat.to(socket.room).emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
     });
 
 }
@@ -502,11 +502,13 @@ function startTimer(socket){
         if (count < 0) {
             clearInterval(counter);
             guesswhat.to(socket.room).emit("incTimer", "Game Over !");
+            guesswhat.to(socket.room).emit("enablePlay");
             return;
         }
         else if(room_magic[socket.room] === "") {
             clearInterval(counter);
             guesswhat.to(socket.room).emit("incTimer", "Game Over !");
+            guesswhat.to(socket.room).emit("enablePlay");
             return;
         }
 
@@ -537,6 +539,7 @@ function sendMagicword(socket){
 
 function startGame(socket){
     socket.on("startgame", function(){
+        guesswhat.to(socket.room).emit("disablePlay");
 /*
         var res = [];
         //get the list of socket id in room

@@ -104,8 +104,7 @@
 
 
 
-    <!-- Play Modal -->
-    <div id="playCard" class="modal fade" role="dialog">
+  <div id="playCard" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
 
@@ -209,18 +208,33 @@
                 </div>
 
                 <div class="modal-body">
-
+                    <img src="images/draw-it-out.png" alt="drawitout" class="img-responsive" />
                     <h3 id="magicwrd"></h3>
-                    <h4 id="definition" class="hint">&nbsp;</h4>
-
-
+                    <hr>
+                    <p id="definition" class="hint">&nbsp;</p>
                 </div>
-
-                <div class="modal-footer"></div>
-
             </div>
         </div>
     </div>
+
+    <!-- Game Started -->
+    <div id="gameStartCard" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h2 class="modal-title">Start Guessing !!</h2>
+                </div>
+                <div class="modal-body">
+                    <img src="images/guess-what.png" alt="guesswhat" class="img-responsive"/>
+                    <h3 id="playerInit"></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Game Started -->
     <div id="gameStartCard" class="modal fade" role="dialog">

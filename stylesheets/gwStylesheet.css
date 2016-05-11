@@ -216,7 +216,7 @@ p {
     overflow-y: scroll;
   }
   .hint {
-    min-height: 200px;
+    min-height: 50px;
   }
   .btn-autosize {
     padding: 10px 10px;

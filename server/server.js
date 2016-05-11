@@ -457,27 +457,29 @@ function parseChat(socket, data) {
     console.log(guesswrd);
 
     var line = Array.prototype.join.call(data, "");
-    var words = line.split(" ");
+    if(line !== ""){
+        var words = line.split(" ");
 
-    for (var i = 0; i < words.length; ++i) {
-        var guess = words[i].replace(/[^a-zA-Z]/g, "");
-        console.log("raw:" + words[i], "alpha:" + guess, "this:" + guesswrd);
+        for (var i = 0; i < words.length; ++i) {
+            var guess = words[i].replace(/[^a-zA-Z]/g, "");
+            console.log("raw:" + words[i], "alpha:" + guess, "this:" + guesswrd);
 
-        if (guess === guesswrd) {
-            winner(socket);
-        }
-        // fuzzy matching
-        else if (guess.replace(/s$/, "") === guesswrd) {
-            console.log("trimmed 's'");
-            winner(socket);
-        }
-        else if (guess.replace(/y$/, "ies") === guesswrd) {
-            console.log("expanded 's'");
-            winner(socket);
-        }
-        else if (guess === guesswrd + "s") {
-            console.log("appended 's'");
-            winner(socket);
+            if (guess === guesswrd) {
+                winner(socket);
+            }
+            // fuzzy matching
+            else if (guess.replace(/s$/, "") === guesswrd) {
+                console.log("trimmed 's'");
+                winner(socket);
+            }
+            else if (guess.replace(/y$/, "ies") === guesswrd) {
+                console.log("expanded 's'");
+                winner(socket);
+            }
+            else if (guess === guesswrd + "s") {
+                console.log("appended 's'");
+                winner(socket);
+            }
         }
     }
 }

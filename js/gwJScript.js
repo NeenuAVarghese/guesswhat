@@ -88,6 +88,7 @@ var main = function() {
 
     //Function to handle Clear Canvas button
     $(gw.landpage.action.clearCanvas).on("click", function() {
+        socket.emit("clearcanvas");
         clearCanvas();
     });
     //Function to handle Red Color

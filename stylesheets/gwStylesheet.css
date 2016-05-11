@@ -24,7 +24,7 @@ body {
 }
 
 .navbar-inverse{
-  background: #005ce6;
+  background: #337AB7;
   padding: 5px;
 }
 .navbar-brand {
@@ -33,7 +33,7 @@ body {
 
 .navbar-inverse .navbar-toggle:hover,
 .navbar-inverse .navbar-toggle:focus {
-  color: #003d99;
+  color: #A0C2F2;
 }
 
 .navbar-inverse .navbar-brand {
@@ -49,8 +49,8 @@ body {
 
 .navbar-inverse .navbar-nav >li > a:hover,
 .navbar-inverse .navbar-nav > .active > a:hover {
-  color: #FFA400;
-  background: #0047b3;
+  color: #A0C2F2;
+  background: #2D66B5;
 }
 
 .navbutton {

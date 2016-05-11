@@ -1,6 +1,7 @@
 body {
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
+    background-color: lightgray;
 }
 .modal {
     text-align: center;
@@ -19,7 +20,7 @@ body {
     padding: 0 0.5em 0 0;
 }
 .navbar-inverse {
-    background: #337ab7;
+    background: #2C3E50;
     padding: 5px;
 }
 .navbar-brand {
@@ -38,9 +39,9 @@ body {
     margin-right: 10px;
 }
 .navbar-inverse .navbar-nav >li > a:hover, .navbar-inverse .navbar-nav > .active > a:hover {
-    color: #000;
-    text-shadow:5px 5px 10px blue;
-    background: #337ab7;
+    color: #fff;
+    text-shadow:5px 5px 10px #000;
+    background: #2C3E50;
 }
 .navbutton {
     cursor: pointer;
@@ -172,6 +173,7 @@ p {
         width: auto;
         min-height: 470px;
         max-height: 470px;
+        background: white;
     }
     .sticker {
         max-width: 150px;
@@ -207,4 +209,12 @@ p {
     padding-top: 10px;
     padding-left: 10px;
     padding-right: 10px;
+}
+#divCanvas{
+  background: white;
+  border: 5px solid #233140;
+}
+.navbar-brand{
+  text-shadow:10px 10px 15px #000;
+
 }

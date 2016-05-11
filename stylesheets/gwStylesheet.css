@@ -236,12 +236,20 @@ footer .panel {
 }
 
 .site-footer {
-
   margin-top: -100px;
   padding: 25px 0;
   clear: both;
 }
 
+.gwTeam {
+  list-style-type: none;
+  padding: 20px;
+}
+
+.avatar {
+  width: 75px;
+  border-radius: 50%;
+}
 
 /* Desktop */
 @media screen and (min-width: 768px) {

@@ -400,8 +400,8 @@ var main = function() {
 
     socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
-        data.forEach(function(key){
-            $(gw.landpage.section.content.activeusersList).append("<span class='label label-info'>" + key +"</span><div>");
+        $.each(data, function(key, value){
+            $(gw.landpage.section.content.activeusersList).append("<p>" + key + "    <span class='badge'>" + value +"</span></p><div>");
         });
     });
 

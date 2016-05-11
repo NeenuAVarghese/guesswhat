@@ -8,7 +8,7 @@
 var httpPort = 3000;
 var redisPort = 6379;
 var line_history = [];
-var usernames = [];
+
 
 var define = null;
 var topics = ["bird", "mammal", "fish", "machine" ];
@@ -148,7 +148,7 @@ function startServer() {
 }
 
 function putToDB(socket, username, groupname){
-    usernames.length = 0;
+    var usernames = {};
     //put users to db
     if (db) {
             redisClient.exists(username, function(err, object) {
@@ -167,14 +167,28 @@ function putToDB(socket, username, groupname){
                             if (err) {
                                 console.log("Error in getting elements of user list");
                             }
+                            var i = 0;
                             items.forEach(function(item) {
                                 console.log(items);
-                               usernames.push(item);
-                            });
-                            // update the list of users in chat, client-side
+                               redisClient.hget(item, "wins", function(err, data){
+                                i ++;
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    usernames[item] =  data;
+                                }
+
+                                if(i === items.length){
+                                    // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
                             // echo globally (all clients) that a person has connected
                             socket.broadcast.to(socket.room).emit("updatechat", "SERVER", username + " has connected", 0);
+                                }
+                                                                
+                               });
+                            });
+                            
                         });
                     });
                 }
@@ -282,6 +296,38 @@ function removeFromDb(socket){
                     });
                 }
             });
+
+
+            var usernames = {};
+             redisClient.smembers(cgrp, function(err, items) {
+                            if (err) {
+                                console.log("Error in getting elements of user list");
+                            }
+                            var i = 0;
+                            items.forEach(function(item) {
+                                console.log(items);
+                               redisClient.hget(item, "wins", function(err, data){
+                                i ++;
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    usernames[item] =  data;
+                                }
+
+                                if(i === items.length){
+                                    // update the list of users in chat, client-side
+                            guesswhat.to(socket.room).emit("updateusers", usernames);
+                            // echo globally (all clients) that a person has connected
+                            socket.broadcast.to(socket.room).emit("updatechat", "SERVER", socket.username + " has connected", 0);
+                                }
+                                                                
+                               });
+                            });
+                            
+                        });
+
+
         }
 }
 
@@ -289,13 +335,11 @@ function userLogout(socket) {
     // when the user disconnects.. perform this
     socket.on("disconnect", function() {
         console.log("User:", socket.username, "Disconnected");
-        // remove the username from global usernames list
-        delete usernames[socket.username];
 
-        // remove username from Redis database
+
+        // remove username from Redis database and update users
         removeFromDb(socket);
-        // update list of users in chat, client-side
-        guesswhat.to(socket.room).emit("updateusers", usernames);
+        
         // echo globally that this client has left
         socket.broadcast.emit("updatechat", "SERVER", socket.username + " has disconnected", 0);
     });
@@ -327,6 +371,35 @@ function updatewin(socket, winuser){
                 });
             }
         });
+
+        var cgrp = "G" + socket.room;
+        var usernames = {};
+             redisClient.smembers(cgrp, function(err, items) {
+                            if (err) {
+                                console.log("Error in getting elements of user list");
+                            }
+                            var i = 0;
+                            items.forEach(function(item) {
+                                console.log(items);
+                               redisClient.hget(item, "wins", function(err, data){
+                                i ++;
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    usernames[item] =  data;
+                                }
+
+                                if(i === items.length){
+                                    // update the list of users in chat, client-side
+                            guesswhat.to(socket.room).emit("updateusers", usernames);
+                            
+                                }
+                                                                
+                               });
+                            });
+                            
+                        });
     }
 }
 
@@ -347,7 +420,6 @@ function winner(socket) {
 
     // echo to client they've won
     socket.emit("updateword", "You win!");
-    socket.emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     // echo globally (all clients) that a person has won
     guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");

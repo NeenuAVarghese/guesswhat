@@ -408,6 +408,9 @@ var main = function() {
 
     socket.on("incTimer", function(data){
         $(gw.landpage.section.navbar.showTime).text("  " + data);
+        if (data > 0 && data < 90) {
+            $(gw.landpage.section.navbar.startGame).hide();
+        }
     });
 
     socket.on("message", function(data){
@@ -415,15 +418,15 @@ var main = function() {
         $(gw.landpage.section.content.hintCard.definition).text(data.magicwrdmeaning);
         $(gw.landpage.section.content.hintCard.word).text(data.magicwrd);
         $(gw.landpage.section.content.hintCard.handle).modal("show");
-        $(gw.landpage.section.navbar.startGame).attr("disabled", "disabled");
+        $(gw.landpage.section.navbar.startGame).hide();
     });
 
     socket.on("disablePlay", function(){
-        $(gw.landpage.section.navbar.startGame).attr("disabled", "disabled");
+        $(gw.landpage.section.navbar.startGame).hide();
     });
 
     socket.on("enablePlay", function(){
-        $(gw.landpage.section.navbar.startGame).removeAttr("disabled");
+        $(gw.landpage.section.navbar.startGame).show();
     });
 
     socket.on("gameStarted", function(data){

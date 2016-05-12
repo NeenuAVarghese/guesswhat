@@ -451,6 +451,22 @@ function winner(socket) {
     updatewin(socket, winuser);
 }
 
+function loser(socket) {
+    console.log("no one won");
+
+    // echo globally (all clients) that a person has won
+    guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
+    guesswhat.to(socket.room).emit("updateword", "No one guessed it!");
+
+    redisClient.ltrim(socket.room, -1 ,0, function(err){
+            if(!err){
+                console.log(socket.room + " Room deleted !");
+            }
+        });
+    guesswhat.to(socket.room).emit("clearcanvas");
+    room_magic[socket.room] = "";
+}
+
 function getword(room)
 {
     return room_magic[room];
@@ -511,12 +527,15 @@ function startTimer(socket){
     function timer(){
         count = count - 1;
 
+        // loser
         if (count < 0) {
             clearInterval(counter);
             guesswhat.to(socket.room).emit("incTimer", "Game Over !");
             guesswhat.to(socket.room).emit("enablePlay");
+            loser(socket);
             return;
         }
+        // winner
         else if(room_magic[socket.room] === "") {
             clearInterval(counter);
             guesswhat.to(socket.room).emit("incTimer", "Game Over !");

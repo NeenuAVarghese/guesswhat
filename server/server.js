@@ -567,19 +567,22 @@ function startTimer(socket){
 }
 
 function sendMagicword(socket){
-    wordsFromAPI().then(function(data){
-        var magicwrd = data;
-        defineFromAPI(data).then(function(datadefinition){
-            var magicwrdmeaning = datadefinition;
 
-            var puzzle = {
-                magicwrd : magicwrd,
-                magicwrdmeaning: magicwrdmeaning
-            };
-            room_magic[socket.room] = magicwrd;
-            room_player[socket.room] = socket.id;
-            guesswhat.to(socket.id).emit("message", puzzle);
+    socket.on("getmagicword", function(){
+            wordsFromAPI().then(function(data){
+            var magicwrd = data;
+            defineFromAPI(data).then(function(datadefinition){
+                var magicwrdmeaning = datadefinition;
 
+                var puzzle = {
+                    magicwrd : magicwrd,
+                    magicwrdmeaning: magicwrdmeaning
+                };
+                room_magic[socket.room] = magicwrd;
+                room_player[socket.room] = socket.id;
+                guesswhat.to(socket.id).emit("message", puzzle);
+
+            });
         });
     });
 }
@@ -605,9 +608,6 @@ function startGame(socket){
             res.splice(index, 1);
         }
         var msg = socket.username + " has initiated the game";
-
-
-    sendMagicword(socket);
     startTimer(socket);
     res.forEach(function(val){
         console.log(val, msg);
@@ -633,4 +633,5 @@ guesswhat.on("connection", function(socket) {
     clearCanvas(socket);
     startGame(socket);
     userLogout(socket);
+    sendMagicword(socket);
 });

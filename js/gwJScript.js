@@ -28,7 +28,9 @@ var main = function() {
                     hintCard: {
                         handle: "#hintCard",
                         definition: "#definition",
-                        word: "#magicwrd"
+                        word: "#magicwrd",
+                        changeWord: "#changeword",
+                        startDrawing: "#startDrawing"
                     },
                     playCard: {
                         handle: "#playCard",
@@ -254,9 +256,19 @@ var main = function() {
         $(gw.landpage.section.content.playCard.btn1).removeClass("active");
         $(gw.landpage.section.content.playCard.groupdiv).removeClass("toggleshow");
     });
+
+
+    $(gw.landpage.section.content.hintCard.changeWord).on("click", function(){
+        
+        socket.emit("getmagicword");
+    });
+
     //startGame
     $(gw.landpage.section.navbar.startGame).on("click", function(){
-        console.log("in func");
+        socket.emit("getmagicword");        
+    });
+
+    $(gw.landpage.section.content.hintCard.startDrawing).on("click", function(){
         socket.emit("startgame");
     });
 

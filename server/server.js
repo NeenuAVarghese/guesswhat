@@ -12,7 +12,6 @@ var line_history = [];
 
 var define = null;
 var topics = ["bird", "mammal", "fish", "machine" ];
-var room_magic = {};
 
 // Depends
 var express = require("express");
@@ -25,12 +24,20 @@ var xssFilters = require("xss-filters");
 // Initialize
 var app = express();
 app.use(express.static("./"));
+//variable to hadle io connection
 var server = null;
+//namespace for the socket connection
 var guesswhat = null;
 var redisClient = null;
+//Check if successfully connected to db
 var db = false;
+//fir maintain magic word for different rooms
+var room_magic = {};
+var room_player = {};
 
 // Functions
+
+//Function to Get Definition of magic word
 function defineFromAPI(word) {
     var onelook = "http://www.onelook.com/?xml=1&w=";
     var url = onelook + word;
@@ -77,6 +84,8 @@ function defineFromAPI(word) {
     });
 }
 
+
+//Function to get Magic Word
 function wordsFromAPI(salt) {
     var colors = [ "red", "green", "blue", "yellow", "black", "pink", "white" ];
     var seed = random.integer(0, colors.length-1);
@@ -111,6 +120,8 @@ function wordsFromAPI(salt) {
     });
 }
 
+
+//Function to connect to DB will return true if successfully connected
 function connectDB() {
     redisClient = redis.createClient(redisPort);
 
@@ -131,6 +142,8 @@ function connectDB() {
     });
 }
 
+
+//Function to start server and make socket io listen to the connections on server
 function startServer() {
     var process = io.listen(app.listen(httpPort).on("error", function(err) {
         if (!err) {
@@ -147,6 +160,7 @@ function startServer() {
     return process;
 }
 
+//FUnction to update DB after User Login
 function putToDB(socket, username, groupname){
     var usernames = {};
     //put users to db
@@ -484,21 +498,23 @@ function parseChat(socket, data) {
             var guess = words[i].replace(/[^a-zA-Z]/g, "");
             console.log("raw:" + words[i], "alpha:" + guess, "this:" + guesswrd);
 
-            if (guess === guesswrd) {
-                winner(socket);
-            }
-            // fuzzy matching
-            else if (guess.replace(/s$/, "") === guesswrd) {
-                console.log("trimmed 's'");
-                winner(socket);
-            }
-            else if (guess.replace(/y$/, "ies") === guesswrd) {
-                console.log("expanded 's'");
-                winner(socket);
-            }
-            else if (guess === guesswrd + "s") {
-                console.log("appended 's'");
-                winner(socket);
+            if(room_player[socket.room] !== socket.id){
+                if (guess === guesswrd) {
+                    winner(socket);
+                }
+                // fuzzy matching
+                else if (guess.replace(/s$/, "") === guesswrd) {
+                    console.log("trimmed 's'");
+                    winner(socket);
+                }
+                else if (guess.replace(/y$/, "ies") === guesswrd) {
+                    console.log("expanded 's'");
+                    winner(socket);
+                }
+                else if (guess === guesswrd + "s") {
+                    console.log("appended 's'");
+                    winner(socket);
+                }
             }
         }
     }
@@ -561,6 +577,7 @@ function sendMagicword(socket){
                 magicwrdmeaning: magicwrdmeaning
             };
             room_magic[socket.room] = magicwrd;
+            room_player[socket.room] = socket.id;
             guesswhat.to(socket.id).emit("message", puzzle);
 
         });

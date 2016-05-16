@@ -8,6 +8,7 @@ var main = function() {
     //var socket = io.connect();
     var socket = io("/guesswhat");
     var reconnect = true;
+    var painting = true;
     var loggedin = false;
 
     var gw = {
@@ -24,7 +25,8 @@ var main = function() {
                     chatform: {
                         handle: "#gwChatForm",
                         field: {
-                            sendButton: "#gwChatButton"
+                            sendButton: "#gwChatButton",
+                            sendText: "#gwChatText"
                         }
                     },
                     hintCard: {
@@ -60,6 +62,7 @@ var main = function() {
                 footer: ""
             },
             action: {
+                handle: ".picker",
                 red: "#gwRed",
                 black: "#gwBlack",
                 green: "#gwGreen",
@@ -119,7 +122,7 @@ var main = function() {
     //Function to HandleSocket Emit on mouse movements
     function handleSocketEmit() {
         // check if the user is drawing
-        if (gw.mouse.click && gw.mouse.move) {
+        if (painting && gw.mouse.click && gw.mouse.move) {
             socket.emit("draw_line", {
                 x: gw.mouse.pos.x,
                 y: gw.mouse.pos.y,
@@ -264,7 +267,9 @@ var main = function() {
     // get a word
     $(gw.landpage.section.navbar.startGame).on("click", function(){
         socket.emit("getmagicword");
+        $(gw.landpage.action.handle).prop("disabled", false);
         $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", true);
+        $(gw.landpage.section.content.chatform.field.sendText).prop("disabled", true);
     });
 
     // get another word
@@ -274,7 +279,8 @@ var main = function() {
 
     // start the game
     $(gw.landpage.section.content.hintCard.startDrawing).on("click", function(){
-        socket.emit("startgame");
+        console.log("player", socket.id);
+        socket.emit("startgame", socket.id);
     });
 
     // logout
@@ -292,7 +298,7 @@ var main = function() {
 
     // handle chat message input
     $(gw.landpage.section.content.chatform.handle).submit(function() {
-        var data = $(gw.landpage.section.content.chatform.field.sendButton).val();
+        var data = $(gw.landpage.section.content.chatform.field.sendText).val();
 
         // sanitize chat message
         data = xssFilters.inHTMLData(data);
@@ -312,7 +318,9 @@ var main = function() {
 
     // call the server-side function "adduser" and send two parameters (mode, name)
     socket.on("connect", function() {
+        $(gw.landpage.action.handle).prop("disabled", false);
         $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", false);
+        $(gw.landpage.section.content.chatform.field.sendText).prop("disabled", false);
         $(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
         $(gw.landpage.section.content.playCard.handle).modal("show");
 
@@ -430,12 +438,18 @@ var main = function() {
         clearCanvas();
     });
 
-    socket.on("incTimer", function(data){
+    socket.on("incTimer", function(data, userid){
         if (loggedin) {
             $(gw.landpage.section.navbar.showTime).text("  " + data);
         }
 
         if (data > 0 && data < 90) {
+            console.log("except", userid);
+            if (userid !== socket.id) {
+                painting = false;
+                $(gw.landpage.action.handle).prop("disabled", true);
+            }
+
             $(gw.landpage.section.navbar.startGame).hide();
         }
     });
@@ -446,15 +460,19 @@ var main = function() {
         $(gw.landpage.section.content.hintCard.word).text(data.magicwrd);
         $(gw.landpage.section.content.hintCard.handle).modal("show");
         $(gw.landpage.section.navbar.startGame).hide();
+        console.log("painting", painting);
     });
 
-    socket.on("disablePlay", function(){
+    socket.on("disablePlay", function(data){
         $(gw.landpage.section.navbar.startGame).hide();
     });
 
     socket.on("enablePlay", function(){
         $(gw.landpage.section.navbar.startGame).show();
+        $(gw.landpage.action.handle).prop("disabled", false);
         $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", false);
+        $(gw.landpage.section.content.chatform.field.sendText).prop("disabled", false);
+        painting = true;
     });
 
     socket.on("gameStarted", function(data){

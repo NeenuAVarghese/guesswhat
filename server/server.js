@@ -580,7 +580,7 @@ function transmitChat(socket) {
     });
 }
 
-function startTimer(socket){
+function startTimer(socket, player){
     var count = 90;
     var counter = null;
 
@@ -590,7 +590,7 @@ function startTimer(socket){
         // loser
         if (count < 0) {
             clearInterval(counter);
-            guesswhat.to(socket.room).emit("incTimer", "Game Over !");
+            guesswhat.to(socket.room).emit("incTimer", "Game Over !", null);
             guesswhat.to(socket.room).emit("enablePlay");
             loser(socket);
             return;
@@ -598,13 +598,13 @@ function startTimer(socket){
         // winner
         else if(room_magic[socket.room] === "") {
             clearInterval(counter);
-            guesswhat.to(socket.room).emit("incTimer", "Game Over !");
+            guesswhat.to(socket.room).emit("incTimer", "Game Over !", null);
             guesswhat.to(socket.room).emit("enablePlay");
             return;
         }
 
         //Do code for showing the number of seconds here
-        guesswhat.to(socket.room).emit("incTimer", count);
+        guesswhat.to(socket.room).emit("incTimer", count, player);
     }
 
     counter = setInterval(timer, 1000); //1000 will  run it every 1 second
@@ -633,7 +633,8 @@ function sendMagicword(socket){
 
 
 function startGame(socket){
-    socket.on("startgame", function(){
+    socket.on("startgame", function(player){
+        console.log("player", player);
         guesswhat.to(socket.room).emit("disablePlay");
 
         var res = [];
@@ -652,11 +653,11 @@ function startGame(socket){
             res.splice(index, 1);
         }
         var msg = socket.username + " has initiated the game";
-    startTimer(socket);
-    res.forEach(function(val){
-        console.log(val, msg);
-            guesswhat.to(val).emit("gameStarted", msg);
-    });
+		startTimer(socket, player);
+		res.forEach(function(val){
+		    console.log(val, msg);
+		        guesswhat.to(val).emit("gameStarted", msg);
+		});
 
     });
 }

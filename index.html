@@ -60,11 +60,11 @@
         <div class="row">
             <div class="col-xs-12 col-sm-6 col-sm-offset-3">
                 <div class="btn-group" role="group" id="gwColorPicker">
-                    <button id="gwBlack" type="button" class="btn btn-default">Black <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
-                    <button id="gwRed" type="button" class="btn btn-danger">Red <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
-                    <button id="gwGreen" type="button" class="btn btn-success">Green <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
-                    <button id="gwBlue" type="button" class="btn btn-primary">Blue <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
-                    <button id="gwClear" type="button" class="btn btn-warning">Clear <i class="fa fa-eraser" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwBlack" type="button" class="btn btn-default picker">Black <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwRed" type="button" class="btn btn-danger picker">Red <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwGreen" type="button" class="btn btn-success picker">Green <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwBlue" type="button" class="btn btn-primary picker">Blue <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <button id="gwClear" type="button" class="btn btn-warning picker">Clear <i class="fa fa-eraser" aria-hidden="true">&nbsp;</i></button>
                 </div>
             </div>
         </div>
@@ -93,9 +93,9 @@
                 </div>
                 <form action="" id="gwChatForm" data-bind="submit: reset">
                     <div class="input-group gw-input-chat">
-                        <input id="gwChatButton" type="text" class="form-control" data-bind="textInput: isTyping" autocomplete="off" placeholder="Message">
+                        <input id="gwChatText" type="text" class="form-control" data-bind="textInput: isTyping" autocomplete="off" placeholder="Message">
                         <div class="input-group-addon">
-                            <button type="submit">
+                            <button id="gwChatButton" type="submit">
                                 <i class="glyphicon glyphicon-send">&nbsp;</i>
                             </button>
                         </div>

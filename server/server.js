@@ -146,19 +146,21 @@ function connectDB() {
 
 //Function to start server and make socket io listen to the connections on server
 function startServer() {
-    var process = io.listen(app.listen(httpPort).on("error", function(err) {
-        if (!err) {
-            console.log("Starting express server on httpPort", httpPort);
-        }
-        else if (err.errno === "EADDRINUSE") {
-            console.log("Port", httpPort, "busy. Unable to start express server");
+    var httpd = io.listen(app.listen(httpPort, function() {
+        console.log("Starting Express server on httpPort", httpPort);
+    }).on("error", function(err) {
+        if (err.errno === "EADDRINUSE") {
+            console.log("Port", httpPort, "busy. Unable to start Express server");
             console.log("To debug: $ lsof -i :" + httpPort);
+            process.exit(1);
         }
-        else {
+        else if (err) {
             console.log(err);
+            process.exit(1);
         }
     }));
-    return process;
+
+    return httpd;
 }
 
 //FUnction to update DB after User Login

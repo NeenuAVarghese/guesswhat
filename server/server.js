@@ -35,6 +35,7 @@ var define = null;
 var line_history = [];
 var room_magic = {};
 var room_player = {};
+var map = new Map();
 
 
 //Function to Get Definition of magic word
@@ -236,10 +237,30 @@ function recordDraw(roomname) {
     });
 }
 
+function newUser(groupname, username) {
+    if (map.has(groupname)) {
+        var members = map.get(groupname);
+        if (members.toLowerCase().indexOf(username) !== -1) {
+            console.log("===> " + username, "already exists in", groupname);
+            return false;
+        }
+        else {
+            map.set(groupname, username);
+            console.log("===> welcome to", groupname, username);
+            return true;
+        }
+    }
+    else {
+        map.set(groupname, username);
+        console.log("===> you have created", groupname, "thanks " + username);
+        return true;
+    }
+}
+
 function userLogin(socket) {
     // when the client emits "adduser", this listens and executes
     socket.on("adduser", function(mode, username, groupname) {
-        console.log(mode, username, groupname);
+        //console.log(mode, username, groupname);
 
         // sanitize username
         username = xssFilters.inHTMLData(username);
@@ -247,18 +268,29 @@ function userLogin(socket) {
         if(username === null){
             username = "unknown";
         }
+
         // detect game mode
         if (mode === 1) {
             // we store the username in the socket session for this client
             socket.username = username;
             groupname = "freeforall";
-            //we store the room information in the socket session
-            socket.room = "freeforall";
-            socket.join(socket.room);
-            console.log("Free-for-all mode");
-             // echo to client they've connected
-            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
 
+            // users cannot have same name in a room
+            if (newUser(groupname, username)) {
+                //we store the room information in the socket session
+                socket.room = "freeforall";
+                socket.join(socket.room);
+                console.log("Free-for-all mode");
+
+                 // echo to client they've connected
+                socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
+
+                // store username in Redis database
+                putToDB(socket, username, groupname);
+
+                // write line history to canvas
+                recordDraw(socket.room);
+            }
         }
 
         else if (mode === 2) {
@@ -266,23 +298,29 @@ function userLogin(socket) {
             console.log(groupname);
             // we store the username in the socket session for this client
             socket.username = username;
-            //we store the room information in the socket session
-            socket.room = groupname;
-            socket.join(groupname);
-            console.log("Teams mode");
-             // echo to client they've connected
-            socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
+
+            // users cannot have same name in a room
+            if (newUser(groupname, username)) {
+                //we store the room information in the socket session
+                socket.room = groupname;
+                socket.join(groupname);
+                console.log("Teams mode");
+
+                 // echo to client they've connected
+                socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
+
+                // store username in Redis database
+                putToDB(socket, username, groupname);
+
+                // write line history to canvas
+                recordDraw(socket.room);
+            }
 
         }
 
         else {
             console.log("Invalid mode", mode);
         }
-
-        putToDB(socket, username, groupname);
-        // store username in Redis database
-
-        recordDraw(socket.room);
 
     });
 }
@@ -308,6 +346,7 @@ function removeFromDb(socket){
                     redisClient.ltrim(socket.room, -1 ,0, function(err){
                         if(!err){
                             console.log(socket.room + " Room deleted !");
+                            map.delete(socket.room + "");
                         }
                     });
                 }
@@ -441,6 +480,7 @@ function clearCanvas(socket) {
         redisClient.ltrim(socket.room, -1 ,0, function(err){
             if(!err){
                 console.log(socket.room + " Room deleted !");
+                map.delete(socket.room + "");
             }
         });
         guesswhat.to(socket.room).emit("clearcanvas");
@@ -460,6 +500,7 @@ function winner(socket) {
     redisClient.ltrim(socket.room, -1 ,0, function(err){
             if(!err){
                 console.log(socket.room + " Room deleted !");
+                map.delete(socket.room + "");
             }
         });
     guesswhat.to(socket.room).emit("clearcanvas");
@@ -477,6 +518,7 @@ function loser(socket) {
     redisClient.ltrim(socket.room, -1 ,0, function(err){
             if(!err){
                 console.log(socket.room + " Room deleted !");
+                map.delete(socket.room + "");
             }
         });
     guesswhat.to(socket.room).emit("clearcanvas");

@@ -341,8 +341,7 @@ function removeFromDb(socket){
 
             redisClient.exists(cgrp, function(err, object){
 
-                if(object === 0){
-
+                if (object === 0 && typeof socket.room !== "undefined") {
                     redisClient.ltrim(socket.room, -1 ,0, function(err){
                         if(!err){
                             console.log(socket.room + " Room deleted !");
@@ -421,11 +420,8 @@ function transmitDraw(socket) {
     socket.on("draw_line", function(data) {
          if(db){
             redisClient.exists(socket.room, function(err, object) {
-                if (object !== 1) {
+                if (typeof socket.room !== "undefined") {
                    redisClient.rpush(socket.room, JSON.stringify(data));
-                }
-                else{
-                     redisClient.rpush(socket.room, JSON.stringify(data));
                 }
             });
          }
@@ -668,6 +664,7 @@ function startGame(socket){
 server = startServer();
 connectDB();
 guesswhat = server.of("/guesswhat");
+
 
 // Main
 guesswhat.on("connection", function(socket) {

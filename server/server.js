@@ -529,8 +529,8 @@ function getword(room)
 }
 
 function parseChat(socket, data) {
-    var guesswrd = getword(socket.room);
-    console.log(guesswrd);
+    var xyzzy = getword(socket.room);
+    console.log(xyzzy);
 
     var line = Array.prototype.join.call(data, "");
     if(line !== ""){
@@ -538,23 +538,36 @@ function parseChat(socket, data) {
 
         for (var i = 0; i < words.length; ++i) {
             var guess = words[i].replace(/[^a-zA-Z]/g, "");
-            console.log("raw:" + words[i], "alpha:" + guess, "this:" + guesswrd);
+            console.log("guess:" + guess, "magic:" + xyzzy);
+            var diffchar = Math.abs(xyzzy.length - guess.length);
 
             if(room_player[socket.room] !== socket.id){
-                if (guess === guesswrd) {
+                if (guess === xyzzy) {
                     winner(socket);
                 }
                 // fuzzy matching
-                else if (guess.replace(/s$/, "") === guesswrd) {
+                else if (guess === xyzzy + "s") {
+                    console.log("appended 's'");
+                    winner(socket);
+                }
+                else if (guess + "s" === xyzzy) {
                     console.log("trimmed 's'");
                     winner(socket);
                 }
-                else if (guess.replace(/y$/, "ies") === guesswrd) {
-                    console.log("expanded 's'");
+                else if (guess.replace(/y$/, "ies") === xyzzy) {
+                    console.log("expanded 'ies'");
                     winner(socket);
                 }
-                else if (guess === guesswrd + "s") {
-                    console.log("appended 's'");
+                else if (guess.replace(/ies$/, "y") === xyzzy) {
+                    console.log("compressed 'ies'");
+                    winner(socket);
+                }
+                else if (xyzzy.indexOf(guess) !== -1 && diffchar < 3) {
+                    console.log("contains guess within " + diffchar + " chars");
+                    winner(socket);
+                }
+                else if (guess.indexOf(xyzzy) !== -1 && diffchar < 3) {
+                    console.log("contained inside guess within " + diffchar + " chars");
                     winner(socket);
                 }
             }

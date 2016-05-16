@@ -258,6 +258,35 @@ function userLogin(socket) {
             console.log("Free-for-all mode");
              // echo to client they've connected
             socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
+
+            var i = 0;
+            var obj1 = Object.getOwnPropertyNames(guesswhat);
+            Object.keys(obj1).forEach(function(key1) {
+                  var value = obj1[key1];
+                console.log("====> FUCK" + i, value);
+                var j = 0;
+                var obj2 = Object.getOwnPropertyNames(eval("guesswhat." + value));
+                Object.keys(obj2).forEach(function(key2) {
+                    var val = obj2[key2];
+                    console.log("====> FU" + value + "_" + j, val);
+                    var k = 0;
+                    try {
+                        var obj3 = Object.getOwnPropertyNames(eval("guesswhat." + value + "." + val));
+                        Object.keys(obj3).forEach(function(key3) {
+                            var v = obj3[key3];
+                            console.log("====> F" + value, val + "_" + k, v);
+                            k += 1;
+                        });
+                    }
+                    catch(e) {
+                        console.log("====> ?" + value, val + "+++", e);
+                    }
+
+                    j += 1;
+                });
+
+                i += 1
+            });
         }
 
         else if (mode === 2) {
@@ -271,6 +300,35 @@ function userLogin(socket) {
             console.log("Teams mode");
              // echo to client they've connected
             socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
+
+            var i = 0;
+            var obj1 = Object.getOwnPropertyNames(guesswhat);
+            Object.keys(obj1).forEach(function(key1) {
+                  var value = obj1[key1];
+                console.log("====> SHIT" + i, value);
+                var j = 0;
+                var obj2 = Object.getOwnPropertyNames(eval("guesswhat." + value));
+                Object.keys(obj2).forEach(function(key2) {
+                    var val = obj2[key2];
+                    console.log("====> SH" + value + "_" + j, val);
+                    var k = 0;
+                    try {
+                        var obj3 = Object.getOwnPropertyNames(eval("guesswhat." + value + "." + val));
+                        Object.keys(obj3).forEach(function(key3) {
+                            var v = obj3[key3];
+                            console.log("====> S" + value, val + "_" + k, v);
+                            k += 1;
+                        });
+                    }
+                    catch(e) {
+                        console.log("====> ?" + value, val + "+++", e);
+                    }
+
+                    j += 1;
+                });
+
+                i += 1
+            });
         }
 
         else {

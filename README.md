@@ -40,11 +40,12 @@
 ###Debugging
 **Problem:** Redis will not start if port is already in use.
 
-#####Option 1: Kill the process(es)
+**Option 1:** Kill the process(es)
+
 1. `lsof -i :6379`
 2. `kill $(lsof -t -i :6379)`
 
-#####Option 2: Change the port number(s)
+**Option 2:** Change the port number(s)
 ```
 var httpPort = 3000;
 var redisPort = 6379;
@@ -52,6 +53,18 @@ var redisPort = 6379;
 1. Edit *server/server.js*
 2. `redis-server --port <number>`
 3. `node server/server.js`
+
+**Problem:** API for socket.io has changed
+
+**Option 1:** Print all properties of object "guesswhat"
+```
+console.log("====> DEBUG", Object.getOwnPropertyNames(guesswhat));
+```
+
+**Option 2:** Enable verbose debugging in nodejs
+```
+DEBUG=socket.io-parser node server/server.js
+```
 
 ### Client-side libraries
 - [Bootstrap](http://getbootstrap.com) - grid layout

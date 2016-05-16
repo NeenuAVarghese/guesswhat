@@ -7,6 +7,7 @@ var main = function() {
 
     //var socket = io.connect();
     var socket = io("/guesswhat");
+    var reconnect = true;
 
     var gw = {
         landpage: {
@@ -216,6 +217,7 @@ var main = function() {
         });
 
         $(gw.landpage.section.content.playCard.handle).modal("hide");
+        reconnect = false;
 
         // Confirm leaving webapp
         window.onbeforeunload = function() {
@@ -257,17 +259,17 @@ var main = function() {
         $(gw.landpage.section.content.playCard.groupdiv).removeClass("toggleshow");
     });
 
-
-    $(gw.landpage.section.content.hintCard.changeWord).on("click", function(){
-        
+    // get a word
+    $(gw.landpage.section.navbar.startGame).on("click", function(){
         socket.emit("getmagicword");
     });
 
-    //startGame
-    $(gw.landpage.section.navbar.startGame).on("click", function(){
-        socket.emit("getmagicword");        
+    // get another word
+    $(gw.landpage.section.content.hintCard.changeWord).on("click", function(){
+        socket.emit("getmagicword");
     });
 
+    // start the game
     $(gw.landpage.section.content.hintCard.startDrawing).on("click", function(){
         socket.emit("startgame");
     });
@@ -279,6 +281,7 @@ var main = function() {
         $(gw.landpage.section.content.chatMessages).empty();
         socket.emit("logout");
         clearCanvas();
+        reconnect = true;
         window.onbeforeunload = null;
         $(gw.landpage.section.content.playCard.handle).modal("show");
     });
@@ -299,6 +302,7 @@ var main = function() {
     });
 
     socket.on("disconnect", function() {
+        reconnect = true;
         console.log("server down");
         window.onbeforeunload = null;
     });
@@ -335,7 +339,9 @@ var main = function() {
 
             if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
                 if (newuser.length > 2) {
-                    formSuccess(1, newuser, "");
+                    if (reconnect) {
+                        formSuccess(1, newuser, "");
+                    }
                     return false;
                 }
                 else {
@@ -346,7 +352,9 @@ var main = function() {
             }
             else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
                 if (grpname.length > 2 && newuser.length > 2) {
-                    formSuccess(2, newuser, grpname);
+                    if (reconnect) {
+                        formSuccess(2, newuser, grpname);
+                    }
                     return false;
                 }
                 else if (newuser.length > 2) {

@@ -8,6 +8,7 @@ var main = function() {
     //var socket = io.connect();
     var socket = io("/guesswhat");
     var reconnect = true;
+    var loggedin = false;
 
     var gw = {
         landpage: {
@@ -218,6 +219,7 @@ var main = function() {
 
         $(gw.landpage.section.content.playCard.handle).modal("hide");
         reconnect = false;
+        loggedin = true;
 
         // Confirm leaving webapp
         window.onbeforeunload = function() {
@@ -277,12 +279,13 @@ var main = function() {
     // logout
     $(gw.landpage.section.navbar.logout).on("click", function() {
         console.log("logging out");
+        clearCanvas();
         $(gw.landpage.section.content.activeusersList).empty();
         $(gw.landpage.section.content.chatMessages).empty();
-        socket.emit("logout");
-        clearCanvas();
         reconnect = true;
+        loggedin = false;
         window.onbeforeunload = null;
+        socket.emit("logout");
         $(gw.landpage.section.content.playCard.handle).modal("show");
     });
 
@@ -427,7 +430,10 @@ var main = function() {
     });
 
     socket.on("incTimer", function(data){
-        $(gw.landpage.section.navbar.showTime).text("  " + data);
+        if (loggedin) {
+            $(gw.landpage.section.navbar.showTime).text("  " + data);
+        }
+
         if (data > 0 && data < 90) {
             $(gw.landpage.section.navbar.startGame).hide();
         }

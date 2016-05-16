@@ -264,6 +264,7 @@ var main = function() {
     // get a word
     $(gw.landpage.section.navbar.startGame).on("click", function(){
         socket.emit("getmagicword");
+        $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", true);
     });
 
     // get another word
@@ -300,7 +301,6 @@ var main = function() {
         }
 
         socket.emit("sendchat", socket.id, data);
-        //$(gw.landpage.section.content.chatform.field.sendButton).val("");
         return false;
     });
 
@@ -312,6 +312,7 @@ var main = function() {
 
     // call the server-side function "adduser" and send two parameters (mode, name)
     socket.on("connect", function() {
+        $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", false);
         $(gw.landpage.section.content.playCard.handle).modal({backdrop: "static",keyboard: false});
         $(gw.landpage.section.content.playCard.handle).modal("show");
 
@@ -453,6 +454,7 @@ var main = function() {
 
     socket.on("enablePlay", function(){
         $(gw.landpage.section.navbar.startGame).show();
+        $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", false);
     });
 
     socket.on("gameStarted", function(data){

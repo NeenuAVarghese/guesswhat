@@ -7,10 +7,6 @@
 // Config
 var httpPort = 3000;
 var redisPort = 6379;
-var line_history = [];
-
-
-var define = null;
 var topics = ["bird", "mammal", "fish", "machine" ];
 
 // Depends
@@ -24,18 +20,22 @@ var xssFilters = require("xss-filters");
 // Initialize
 var app = express();
 app.use(express.static("./"));
-//variable to hadle io connection
+// variable to handle io connection
 var server = null;
-//namespace for the socket connection
-var guesswhat = null;
+// variable to handle db connection
 var redisClient = null;
-//Check if successfully connected to db
+// namespace for the socket connection
+var guesswhat = null;
+// if connected to db
 var db = false;
-//fir maintain magic word for different rooms
+// if connected to API
+var define = null;
+
+// Data
+var line_history = [];
 var room_magic = {};
 var room_player = {};
 
-// Functions
 
 //Function to Get Definition of magic word
 function defineFromAPI(word) {
@@ -259,34 +259,6 @@ function userLogin(socket) {
              // echo to client they've connected
             socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
 
-            var i = 0;
-            var obj1 = Object.getOwnPropertyNames(guesswhat);
-            Object.keys(obj1).forEach(function(key1) {
-                  var value = obj1[key1];
-                console.log("====> FUCK" + i, value);
-                var j = 0;
-                var obj2 = Object.getOwnPropertyNames(eval("guesswhat." + value));
-                Object.keys(obj2).forEach(function(key2) {
-                    var val = obj2[key2];
-                    console.log("====> FU" + value + "_" + j, val);
-                    var k = 0;
-                    try {
-                        var obj3 = Object.getOwnPropertyNames(eval("guesswhat." + value + "." + val));
-                        Object.keys(obj3).forEach(function(key3) {
-                            var v = obj3[key3];
-                            console.log("====> F" + value, val + "_" + k, v);
-                            k += 1;
-                        });
-                    }
-                    catch(e) {
-                        console.log("====> ?" + value, val + "+++", e);
-                    }
-
-                    j += 1;
-                });
-
-                i += 1
-            });
         }
 
         else if (mode === 2) {
@@ -301,34 +273,6 @@ function userLogin(socket) {
              // echo to client they've connected
             socket.emit("updatechat", "SERVER", "you have connected as '" + username + "'", 0);
 
-            var i = 0;
-            var obj1 = Object.getOwnPropertyNames(guesswhat);
-            Object.keys(obj1).forEach(function(key1) {
-                  var value = obj1[key1];
-                console.log("====> SHIT" + i, value);
-                var j = 0;
-                var obj2 = Object.getOwnPropertyNames(eval("guesswhat." + value));
-                Object.keys(obj2).forEach(function(key2) {
-                    var val = obj2[key2];
-                    console.log("====> SH" + value + "_" + j, val);
-                    var k = 0;
-                    try {
-                        var obj3 = Object.getOwnPropertyNames(eval("guesswhat." + value + "." + val));
-                        Object.keys(obj3).forEach(function(key3) {
-                            var v = obj3[key3];
-                            console.log("====> S" + value, val + "_" + k, v);
-                            k += 1;
-                        });
-                    }
-                    catch(e) {
-                        console.log("====> ?" + value, val + "+++", e);
-                    }
-
-                    j += 1;
-                });
-
-                i += 1
-            });
         }
 
         else {

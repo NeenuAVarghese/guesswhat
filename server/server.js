@@ -576,7 +576,9 @@ function transmitChat(socket) {
         guesswhat.to(socket.room).emit("updatechat", socket.username, data, userid, timestamp);
 
         // check for magic word
-        parseChat(socket, data);
+        if(typeof room_magic[socket.room] !== "undefined" && room_magic[socket.room] !== "") {
+            parseChat(socket, data);
+        }
     });
 }
 

@@ -356,11 +356,9 @@ var main = function() {
                 if (newuser.length > 2) {
                     socket.emit("adduser", 1, newuser, "", function(err, msg) {
                         console.log(err);
-                        if (msg === "SUCCESS") {
-                            if (reconnect) {
-                                console.log("connect socket #1");
-                                formSuccess();
-                            }
+                        if (msg === "SUCCESS" && reconnect) {
+                             console.log("connect socket #1");
+                             formSuccess();
                         }
                         else {
                             formFailure("Username already taken");
@@ -383,11 +381,9 @@ var main = function() {
                 if (newuser.length > 2 && grpname.length > 2) {
                     socket.emit("adduser", 2, newuser, grpname, function(err, msg) {
                         console.log(err);
-                        if (msg === "SUCCESS") {
-                            if (reconnect) {
-                                console.log("connect socket #2");
-                                formSuccess();
-                            }
+                        if (msg === "SUCCESS" && reconnect) {
+                            console.log("connect socket #2");
+                            formSuccess();
                         }
                         else {
                             formFailure("Username already taken in room");

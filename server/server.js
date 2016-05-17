@@ -4,12 +4,20 @@
 
 "use strict";
 
-// Config
-var httpPort = 3000;
-var redisPort = 6379;
-var topics = ["bird", "mammal", "fish", "machine" ];
+/* Configuration */
+var nconf = require("nconf");
+// CLI and ENV
+nconf.argv().env();
+// Load from file
+nconf.file({ file: "config.json" });
+// Defaults
+nconf.defaults({
+    "httpPort": 3000,
+    "redisPort": 6379,
+    "topics": ["bird", "mammal", "fish", "machine" ]
+});
 
-// Depends
+/* Depends */
 var express = require("express");
 var io = require("socket.io");
 var redis = require("redis");
@@ -17,7 +25,11 @@ var request = require("request");
 var random = require("random-js")();
 var xssFilters = require("xss-filters");
 
-// Initialize
+/* Initialize */
+var httpPort = nconf.get("httpPort");
+var redisPort = nconf.get("redisPort");
+var topics = nconf.get("topics");
+// variable to handle express
 var app = express();
 app.use(express.static("./"));
 // variable to handle io connection
@@ -31,7 +43,7 @@ var db = false;
 // if connected to API
 var define = null;
 
-// Data
+/* Data */
 var line_history = [];
 var room_magic = {};
 var room_player = {};

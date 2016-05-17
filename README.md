@@ -10,6 +10,7 @@
 3. `npm install`
 
 **Note:** these node modules will be installed via [package.json](package.json) by [*npm*](https://github.com/npm/npm)
+- [nconf](https://www.npmjs.com/package/nconf)
 - [express](https://www.npmjs.com/package/express)
 - [random-js](https://www.npmjs.com/package/random-js)
 - [redis](https://www.npmjs.com/package/redis)
@@ -26,7 +27,7 @@
 **Note:** a _Procfile_ is included for [`foreman`](https://github.com/ddollar/foreman) *or* [`nf`](https://github.com/strongloop/node-foreman)
 
 **Note:** if `redis-server` _and/or_ `node` are not in your `PATH`, then manually run
-- `/path/to/redis-server --port 6379`
+- `/path/to/redis-server`
 - `/path/to/node server/server.js`
 
 ###Testing
@@ -38,6 +39,21 @@
 **Note:** [`validate.sh`](https://github.com/mittman/validate.sh) is [included](scripts/validate.sh) with this project for testing
 
 ###Debugging
+**Problem:** Express will not start if port is already in use.
+
+**Option 1:** Add a `config.json` file
+```
+{
+    "httpPort": 8080
+    "redisPort": 7777
+}
+```
+
+**Option 2:** Temporarily change the port number
+
+1. `redis-server`
+2. `node server/server.js --httpPort <number>`
+
 **Problem:** Redis will not start if port is already in use.
 
 **Option 1:** Kill the process(es)
@@ -45,14 +61,10 @@
 1. `lsof -i :6379`
 2. `kill $(lsof -t -i :6379)`
 
-**Option 2:** Change the port number(s)
-```
-var httpPort = 3000;
-var redisPort = 6379;
-```
-1. Edit *server/server.js*
-2. `redis-server --port <number>`
-3. `node server/server.js`
+**Option 2:** Temporarily change the port number
+
+1. `redis-server --port <number>`
+2. `node server/server.js --redisPort <number>`
 
 **Problem:** API for socket.io has changed
 

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/NeenuAVarghese/guesswhat#readme",
   "dependencies": {
     "express": "^4.13.4",
+    "nconf": "^0.8.4",
     "random-js": "^1.0.8",
     "redis": "^2.6.0-1",
     "request": "^2.72.0",

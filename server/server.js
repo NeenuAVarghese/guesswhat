@@ -1,6 +1,6 @@
 // Server-side code
 /* jshint node: true, curly: true, eqeqeq: true, forin: true, immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double, undef: true, unused: true, strict: true, trailing: true */
-/* global Promise: true */
+/* global Promise: true, Map: true */
 
 "use strict";
 
@@ -43,7 +43,7 @@ function defineFromAPI(word) {
     var onelook = "http://www.onelook.com/?xml=1&w=";
     var url = onelook + word;
 
-    return new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject) {
         request(url, function (error, response, body) {
             if (!error && response.statusCode === 200) {
                 var xml = Array.prototype.join.call(body, "");
@@ -103,16 +103,14 @@ function wordsFromAPI(salt) {
     //console.log(categories);
     var datamuse = "http://api.datamuse.com/words?";
     var url = datamuse + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
-    return new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject) {
         request(url, function (error, response, body) {
             if (!error && response.statusCode === 200) {
                 var json = JSON.parse(body);
-                //console.log(json);
                 var pick = random.integer(0, json.length-1);
                 xyzzy = json[pick].word;
-                //console.log("==> magicword:", xyzzy);
+                console.log("==> magicword:", xyzzy);
                 resolve(xyzzy);
-                //defineFromAPI(xyzzy);
 
                 // FIXME
                 console.log(reject);
@@ -164,7 +162,7 @@ function startServer() {
 }
 
 //FUnction to update DB after User Login
-function putToDB(socket, username, groupname){
+function putToDB(socket, username, groupname) {
     var usernames = {};
     //put users to db
     if (db) {
@@ -178,7 +176,7 @@ function putToDB(socket, username, groupname){
                     });
                     var grp = "G"+ groupname;
 
-                    redisClient.sadd(grp, username, function(){
+                    redisClient.sadd(grp, username, function() {
 
                         redisClient.smembers(grp, function(err, items) {
                             if (err) {
@@ -187,16 +185,16 @@ function putToDB(socket, username, groupname){
                             var i = 0;
                             items.forEach(function(item) {
                                 console.log(items);
-                               redisClient.hget(item, "wins", function(err, data){
+                               redisClient.hget(item, "wins", function(err, data) {
                                 i ++;
-                                if(err){
+                                if(err) {
                                     console.log(err);
                                 }
                                 else{
                                     usernames[item] =  data;
                                 }
 
-                                if(i === items.length){
+                                if(i === items.length) {
                                     // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
                             // echo globally (all clients) that a person has connected
@@ -216,26 +214,26 @@ function putToDB(socket, username, groupname){
 function recordDraw(roomname) {
     var room = roomname;
     line_history.length = 0;
-    redisClient.lrange(room, 0, -1, function(err, items){
+    redisClient.lrange(room, 0, -1, function(err, items) {
         if (err) {
-                    console.log("Error in getting elements of user list");
+            console.log("Error in getting elements of user list");
+        }
+
+        if(items !== null) {
+
+            items.forEach(function(item) {
+                line_history.push(JSON.parse(item));
+            });
+
+            for (var i in line_history) {
+                if (line_history[i] !== null) {
+                    guesswhat.to(room).emit("draw_line", line_history[i]);
                 }
-                if(items !== null){
-                    items.forEach(function(item) {
-                   line_history.push(JSON.parse(item));
-                });
-
-                    for (var i in line_history) {
-                        if (line_history[i] !== null) {
-
-                            guesswhat.to(room).emit("draw_line", line_history[i]);
-
-                            }
-                         else {
-                            console.log("Drawing null");
-                        }
-                    }
+                else {
+                    console.log("Drawing null");
                 }
+            }
+        }
     });
 }
 
@@ -267,7 +265,7 @@ function userLogin(socket) {
         // sanitize username
         username = xssFilters.inHTMLData(username);
 
-        if(username === null){
+        if(username === null) {
             username = "unknown";
         }
 
@@ -331,7 +329,7 @@ function userLogin(socket) {
     });
 }
 
-function removeFromDb(socket){
+function removeFromDb(socket) {
     if (db) {
             var cgrp = "G" + socket.room;
             console.log(cgrp);
@@ -345,11 +343,11 @@ function removeFromDb(socket){
             redisClient.hdel(socket.username, "groupname");
             redisClient.hdel(socket.username, "socketid");
 
-            redisClient.exists(cgrp, function(err, object){
+            redisClient.exists(cgrp, function(err, object) {
 
                 if (object === 0 && typeof socket.room !== "undefined") {
-                    redisClient.ltrim(socket.room, -1 ,0, function(err){
-                        if(!err){
+                    redisClient.ltrim(socket.room, -1 ,0, function(err) {
+                        if(!err) {
                             console.log(socket.room + " Room deleted !");
                             map.delete(socket.room + "");
                         }
@@ -366,16 +364,16 @@ function removeFromDb(socket){
                             var i = 0;
                             items.forEach(function(item) {
                                 console.log(items);
-                               redisClient.hget(item, "wins", function(err, data){
+                               redisClient.hget(item, "wins", function(err, data) {
                                 i ++;
-                                if(err){
+                                if(err) {
                                     console.log(err);
                                 }
                                 else{
                                     usernames[item] =  data;
                                 }
 
-                                if(i === items.length){
+                                if(i === items.length) {
                                     // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
                                 }
@@ -393,7 +391,7 @@ function userDisconnect(socket) {
         // when the user disconnects.. perform this
     socket.on("disconnect", function() {
 
-        if(socket.username !== undefined){
+        if(socket.username !== undefined) {
         console.log("User:", socket.username, "Disconnected");
 
         // remove username from Redis database and update users
@@ -407,9 +405,9 @@ function userDisconnect(socket) {
 }
 
 
-function userLogout(socket){
+function userLogout(socket) {
     socket.on("logout", function() {
-        if(socket.username !== undefined){
+        if(socket.username !== undefined) {
             console.log("User:", socket.username, "Disconnected");
 
             // remove username from Redis database and update users
@@ -424,8 +422,8 @@ function userLogout(socket){
 
 function transmitDraw(socket) {
     socket.on("draw_line", function(data) {
-         if(db){
-            redisClient.exists(socket.room, function(err, object) {
+         if(db) {
+            redisClient.exists(socket.room, function() {
                 if (typeof socket.room !== "undefined") {
                    redisClient.rpush(socket.room, JSON.stringify(data));
                 }
@@ -435,12 +433,12 @@ function transmitDraw(socket) {
     });
 }
 
-function updatewin(socket, winuser){
-    if(db){
-        redisClient.hincrby(winuser, "wins", 1, function(err){
-            if(!err){
+function updatewin(socket, winuser) {
+    if(db) {
+        redisClient.hincrby(winuser, "wins", 1, function(err) {
+            if(!err) {
                 console.log("Data Updated !");
-                redisClient.hget(winuser, "wins", function(err, data){
+                redisClient.hget(winuser, "wins", function(err, data) {
                     console.log(data);
                 });
             }
@@ -455,16 +453,16 @@ function updatewin(socket, winuser){
                             var i = 0;
                             items.forEach(function(item) {
                                 console.log(items);
-                               redisClient.hget(item, "wins", function(err, data){
+                               redisClient.hget(item, "wins", function(err, data) {
                                 i ++;
-                                if(err){
+                                if(err) {
                                     console.log(err);
                                 }
                                 else{
                                     usernames[item] =  data;
                                 }
 
-                                if(i === items.length){
+                                if(i === items.length) {
                                     // update the list of users in chat, client-side
                             guesswhat.to(socket.room).emit("updateusers", usernames);
 
@@ -479,8 +477,8 @@ function updatewin(socket, winuser){
 
 function clearCanvas(socket) {
     socket.on("clearcanvas", function() {
-        redisClient.ltrim(socket.room, -1 ,0, function(err){
-            if(!err){
+        redisClient.ltrim(socket.room, -1 ,0, function(err) {
+            if(!err) {
                 console.log(socket.room + " Room deleted !");
                 map.delete(socket.room + "");
             }
@@ -499,8 +497,8 @@ function winner(socket) {
     guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");
 
-    redisClient.ltrim(socket.room, -1 ,0, function(err){
-            if(!err){
+    redisClient.ltrim(socket.room, -1 ,0, function(err) {
+            if(!err) {
                 console.log(socket.room + " Room deleted !");
                 map.delete(socket.room + "");
             }
@@ -517,8 +515,8 @@ function loser(socket) {
     guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "No one guessed it!");
 
-    redisClient.ltrim(socket.room, -1 ,0, function(err){
-            if(!err){
+    redisClient.ltrim(socket.room, -1 ,0, function(err) {
+            if(!err) {
                 console.log(socket.room + " Room deleted !");
                 map.delete(socket.room + "");
             }
@@ -537,7 +535,7 @@ function parseChat(socket, data) {
     console.log(xyzzy);
 
     var line = Array.prototype.join.call(data, "");
-    if(line !== ""){
+    if(line !== "") {
         var words = line.split(" ");
 
         for (var i = 0; i < words.length; ++i) {
@@ -545,7 +543,7 @@ function parseChat(socket, data) {
             console.log("guess:" + guess, "magic:" + xyzzy);
             var diffchar = Math.abs(xyzzy.length - guess.length);
 
-            if(room_player[socket.room] !== socket.id){
+            if(room_player[socket.room] !== socket.id) {
                 if (guess === xyzzy) {
                     winner(socket);
                 }
@@ -597,11 +595,11 @@ function transmitChat(socket) {
     });
 }
 
-function startTimer(socket, player){
+function startTimer(socket, player) {
     var count = 90;
     var counter = null;
 
-    function timer(){
+    function timer() {
         count = count - 1;
 
         // loser
@@ -627,12 +625,12 @@ function startTimer(socket, player){
     counter = setInterval(timer, 1000); //1000 will  run it every 1 second
 }
 
-function sendMagicword(socket){
+function sendMagicword(socket) {
 
-    socket.on("getmagicword", function(){
-            wordsFromAPI().then(function(data){
+    socket.on("getmagicword", function() {
+            wordsFromAPI().then(function(data) {
             var magicwrd = data;
-            defineFromAPI(data).then(function(datadefinition){
+            defineFromAPI(data).then(function(datadefinition) {
                 var magicwrdmeaning = datadefinition;
 
                 var puzzle = {
@@ -649,8 +647,8 @@ function sendMagicword(socket){
 }
 
 
-function startGame(socket){
-    socket.on("startgame", function(player){
+function startGame(socket) {
+    socket.on("startgame", function(player) {
         console.log("player", player);
         guesswhat.to(socket.room).emit("disablePlay");
 
@@ -666,15 +664,15 @@ function startGame(socket){
             }
         }
         var index = res.indexOf(socket.id);
-        if(index > -1){
+        if(index > -1) {
             res.splice(index, 1);
         }
         var msg = socket.username + " has initiated the game";
-		startTimer(socket, player);
-		res.forEach(function(val){
-		    console.log(val, msg);
-		        guesswhat.to(val).emit("gameStarted", msg);
-		});
+        startTimer(socket, player);
+        res.forEach(function(val) {
+            console.log(val, msg);
+                guesswhat.to(val).emit("gameStarted", msg);
+        });
 
     });
 }

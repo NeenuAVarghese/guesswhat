@@ -211,14 +211,11 @@ var main = function() {
     }
 
     // login success
-    function formSuccess(mode, user, group) {
+    function formSuccess() {
         $(gw.landpage.section.content.playCard.status).removeClass("toggleshow");
         $(gw.landpage.section.content.playCard.status).removeClass("alert-danger").addClass("alert-success");
         $(gw.landpage.section.content.playCard.status).html("<strong>Success!</strong> Joining a game");
-        $(gw.landpage.section.content.playCard.status).show().fadeOut(500, function() {
-            console.log("connect socket #" + mode);
-            //socket.emit("adduser", mode, user, group);
-        });
+        $(gw.landpage.section.content.playCard.status).show().fadeOut(500);
 
         $(gw.landpage.section.content.playCard.handle).modal("hide");
         reconnect = false;
@@ -265,7 +262,7 @@ var main = function() {
     });
 
     // get a word
-    $(gw.landpage.section.navbar.startGame).on("click", function(){
+    $(gw.landpage.section.navbar.startGame).on("click", function() {
         socket.emit("getmagicword");
         $(gw.landpage.action.handle).prop("disabled", false);
         $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", true);
@@ -273,12 +270,12 @@ var main = function() {
     });
 
     // get another word
-    $(gw.landpage.section.content.hintCard.changeWord).on("click", function(){
+    $(gw.landpage.section.content.hintCard.changeWord).on("click", function() {
         socket.emit("getmagicword");
     });
 
     // start the game
-    $(gw.landpage.section.content.hintCard.startDrawing).on("click", function(){
+    $(gw.landpage.section.content.hintCard.startDrawing).on("click", function() {
         console.log("player", socket.id);
         socket.emit("startgame", socket.id);
     });
@@ -356,7 +353,8 @@ var main = function() {
                         console.log(err);
                         if (msg === "SUCCESS") {
                             if (reconnect) {
-                                formSuccess(1, newuser, "");
+                                console.log("connect socket #1");
+                                formSuccess();
                             }
                         }
                         else {
@@ -382,7 +380,8 @@ var main = function() {
                         console.log(err);
                         if (msg === "SUCCESS") {
                             if (reconnect) {
-                                formSuccess(2, newuser, grpname);
+                                console.log("connect socket #2");
+                                formSuccess();
                             }
                         }
                         else {
@@ -456,7 +455,7 @@ var main = function() {
 
     socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
-        $.each(data, function(key, value){
+        $.each(data, function(key, value) {
             $(gw.landpage.section.content.activeusersList).append("<p>" + key + "    <span class='badge'>" + value + "</span></p><div>");
         });
     });
@@ -465,7 +464,7 @@ var main = function() {
         clearCanvas();
     });
 
-    socket.on("incTimer", function(data, userid){
+    socket.on("incTimer", function(data, userid) {
         if (loggedin) {
             $(gw.landpage.section.navbar.showTime).text("  " + data);
         }
@@ -481,7 +480,7 @@ var main = function() {
         }
     });
 
-    socket.on("message", function(data){
+    socket.on("message", function(data) {
         console.log(data.magicwrdmeaning, data.magicwrd);
         $(gw.landpage.section.content.hintCard.definition).text(data.magicwrdmeaning);
         $(gw.landpage.section.content.hintCard.word).text(data.magicwrd);
@@ -491,11 +490,11 @@ var main = function() {
         console.log("painting", painting);
     });
 
-    socket.on("disablePlay", function(data){
+    socket.on("disablePlay", function() {
         $(gw.landpage.section.navbar.startGame).hide();
     });
 
-    socket.on("enablePlay", function(){
+    socket.on("enablePlay", function() {
         $(gw.landpage.section.navbar.startGame).show();
         $(gw.landpage.action.handle).prop("disabled", false);
         $(gw.landpage.section.content.chatform.field.sendButton).prop("disabled", false);
@@ -503,7 +502,7 @@ var main = function() {
         painting = true;
     });
 
-    socket.on("gameStarted", function(data){
+    socket.on("gameStarted", function(data) {
         $(gw.landpage.section.content.startCard.message).text(data);
          $(gw.landpage.section.content.startCard.handle).modal("show");
     });

@@ -253,7 +253,7 @@ function recordDraw(roomname) {
 function newUser(groupname, username) {
     if (map.has(groupname)) {
         var members = map.get(groupname);
-        if (members.toLowerCase().indexOf(username) !== -1) {
+        if (members.indexOf(username.toLowerCase()) !== -1) {
             console.log("===> " + username, "already exists in", groupname);
             return false;
         }

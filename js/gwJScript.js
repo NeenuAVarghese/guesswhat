@@ -234,6 +234,11 @@ var main = function() {
         $(gw.landpage.section.content.playCard.status).html("<strong>Error!</strong> " + error).show().fadeOut(2000);
     }
 
+    // autofocus
+    $(gw.landpage.section.content.playCard.handle).on("shown.bs.modal", function () {
+        $(gw.landpage.section.content.playCard.username).focus();
+    });
+
     // handle expand button toggle
     $(gw.landpage.section.content.playCard.expand).on("click", function() {
         if ($(this).hasClass("glyphicon-chevron-down")) {

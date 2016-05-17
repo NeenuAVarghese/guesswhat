@@ -261,7 +261,7 @@ function newUser(groupname, username) {
 
 function userLogin(socket) {
     // when the client emits "adduser", this listens and executes
-    socket.on("adduser", function(mode, username, groupname) {
+    socket.on("adduser", function(mode, username, groupname, callback) {
         //console.log(mode, username, groupname);
 
         // sanitize username
@@ -279,6 +279,7 @@ function userLogin(socket) {
 
             // users cannot have same name in a room
             if (newUser(groupname, username)) {
+                callback("", "SUCCESS");
                 //we store the room information in the socket session
                 socket.room = "freeforall";
                 socket.join(socket.room);
@@ -303,6 +304,7 @@ function userLogin(socket) {
 
             // users cannot have same name in a room
             if (newUser(groupname, username)) {
+                callback("", "SUCCESS");
                 //we store the room information in the socket session
                 socket.room = groupname;
                 socket.join(groupname);
@@ -323,6 +325,8 @@ function userLogin(socket) {
         else {
             console.log("Invalid mode", mode);
         }
+
+        callback("foobar", "FAILED");
 
     });
 }

@@ -217,7 +217,7 @@ var main = function() {
         $(gw.landpage.section.content.playCard.status).html("<strong>Success!</strong> Joining a game");
         $(gw.landpage.section.content.playCard.status).show().fadeOut(500, function() {
             console.log("connect socket #" + mode);
-            socket.emit("adduser", mode, user, group);
+            //socket.emit("adduser", mode, user, group);
         });
 
         $(gw.landpage.section.content.playCard.handle).modal("hide");
@@ -350,24 +350,48 @@ var main = function() {
             }
 
             if ($(gw.landpage.section.content.playCard.btn1).hasClass("active")) {
+
                 if (newuser.length > 2) {
-                    if (reconnect) {
-                        formSuccess(1, newuser, "");
-                    }
-                    return false;
+                    socket.emit("adduser", 1, newuser, "", function(err, msg) {
+                        console.log(err);
+                        if (msg === "SUCCESS") {
+                            if (reconnect) {
+                                formSuccess(1, newuser, "");
+                            }
+                        }
+                        else {
+                            formFailure("Username already taken");
+                            $(gw.landpage.section.content.playCard.username).val("");
+                            event.preventDefault();
+                        }
+
+                    });
                 }
                 else {
                     formFailure("Invalid username");
                     $(gw.landpage.section.content.playCard.username).val("");
                     event.preventDefault();
                 }
+
+                return false;
             }
             else if ($(gw.landpage.section.content.playCard.btn2).hasClass("active")) {
-                if (grpname.length > 2 && newuser.length > 2) {
-                    if (reconnect) {
-                        formSuccess(2, newuser, grpname);
-                    }
-                    return false;
+
+                if (newuser.length > 2 && grpname.length > 2) {
+                    socket.emit("adduser", 2, newuser, grpname, function(err, msg) {
+                        console.log(err);
+                        if (msg === "SUCCESS") {
+                            if (reconnect) {
+                                formSuccess(2, newuser, grpname);
+                            }
+                        }
+                        else {
+                            formFailure("Username already taken in room");
+                            $(gw.landpage.section.content.playCard.username).val("");
+                            event.preventDefault();
+                        }
+
+                    });
                 }
                 else if (newuser.length > 2) {
                     formFailure("Invalid group name");
@@ -379,10 +403,13 @@ var main = function() {
                     $(gw.landpage.section.content.playCard.username).val("");
                     event.preventDefault();
                 }
+
+                return false;
             }
             else {
                 formFailure("Unable to join game");
                 $(gw.landpage.section.content.playCard.username).val("");
+                $(gw.landpage.section.content.playCard.groupname).val("");
                 event.preventDefault();
             }
         });

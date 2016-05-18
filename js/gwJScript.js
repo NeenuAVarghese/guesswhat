@@ -234,6 +234,16 @@ var main = function() {
         $(gw.landpage.section.content.playCard.status).html("<strong>Error!</strong> " + error).show().fadeOut(2000);
     }
 
+    // autofocus modal input
+    $(gw.landpage.section.content.playCard.handle).on("shown.bs.modal", function () {
+        $(gw.landpage.section.content.playCard.username).focus();
+    });
+
+    // autofocus chat input
+    $(gw.landpage.section.content.playCard.handle).on("hidden.bs.modal", function () {
+       $(gw.landpage.section.content.chatform.field.sendText).focus();
+    });
+
     // handle expand button toggle
     $(gw.landpage.section.content.playCard.expand).on("click", function() {
         if ($(this).hasClass("glyphicon-chevron-down")) {

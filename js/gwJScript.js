@@ -11,6 +11,7 @@ var main = function() {
     var painting = true;
     var loggedin = false;
 
+    //Declaring handles for elements in UI
     var gw = {
         landpage: {
             section: {
@@ -88,10 +89,12 @@ var main = function() {
         color: "#000000"
     };
 
+    //Initializing variables for Canvas
     var context = $(gw.canvas.handle)[0].getContext("2d");
     var width = $(gw.landpage.section.content.canvasDiv).width();
     var height = $(gw.landpage.section.content.canvasDiv).height();
 
+    //Function to clear canvas
     function clearCanvas() {
         context.clearRect(0, 0, width, height);
         console.log("canvas cleared");
@@ -124,6 +127,7 @@ var main = function() {
         // check if the user is drawing
         if (painting && gw.mouse.click && gw.mouse.move) {
             socket.emit("draw_line", {
+                //Previous and current x and y coordinates are transmiited.
                 x: gw.mouse.pos.x,
                 y: gw.mouse.pos.y,
                 prevX: gw.mouse.pos_prev.x,
@@ -132,14 +136,20 @@ var main = function() {
             });
             gw.mouse.move = false;
         }
-
+        //the socket emit happens after every 5 milliseconds to have a smoother pencil
         setTimeout(handleSocketEmit, 5);
     }
 
+
+    //Function to handle draw events on canvas
     function drawCanvas(x, y, pX, pY, c) {
+        //Begin drawing
         context.beginPath();
+        //Set linewidth
         context.lineWidth = 5;
+        //linecap for next joining the coordinates
         context.lineJoin = context.lineCap = "round";
+        //defines the color of pencil
         context.strokeStyle = c;
         context.moveTo(pX, pY);
         context.lineTo(x, y);
@@ -152,6 +162,7 @@ var main = function() {
         $(gw.canvas.handle)[0].width = width;
         $(gw.canvas.handle)[0].height = height;
 
+        //Handles touchstart event on canvas
         touchcanvas.addEventListener("touchstart", function(e) {
             gw.mouse.click = true;
             if (e) {
@@ -159,6 +170,7 @@ var main = function() {
             }
         }, false);
 
+        //Hanlde event on touch move
         touchcanvas.addEventListener("touchmove", function(e) {
             if (e) {
                 console.log("error", "ontouchmove", e);
@@ -173,14 +185,17 @@ var main = function() {
             gw.mouse.move = true;
         }, false);
 
+        //Handles mouse down event - Traces are recorded
         $(gw.canvas.handle)[0].onmousedown = function() {
             gw.mouse.click = true;
         };
 
+        //Handles mouse up evenet - Traces are not monitored
         $(gw.canvas.handle)[0].onmouseup = function() {
             gw.mouse.click = false;
         };
 
+        //Hanles mouse move event
         $(gw.canvas.handle)[0].onmousemove = function(e) {
             gw.mouse.pos_prev.x = gw.mouse.pos.x;
             gw.mouse.pos_prev.y = gw.mouse.pos.y;
@@ -191,7 +206,7 @@ var main = function() {
             gw.mouse.move = true;
         };
 
-
+        //Drawcanvas function is called when 'draw_line' event is captured
         socket.on("draw_line", function(data) {
             drawCanvas(data.x, data.y, data.prevX, data.prevY, data.color);
         });
@@ -199,6 +214,7 @@ var main = function() {
         handleSocketEmit();
     }
 
+    //Function to handle the scroll down of the Chat Panel
     function autoScroll() {
         // get height of chat box
         var h = 0;
@@ -220,7 +236,6 @@ var main = function() {
         $(gw.landpage.section.content.playCard.handle).modal("hide");
         reconnect = false;
         loggedin = true;
-
         // Confirm leaving webapp
         window.onbeforeunload = function() {
             return "";
@@ -244,7 +259,7 @@ var main = function() {
        $(gw.landpage.section.content.chatform.field.sendText).focus();
     });
 
-    // handle expand button toggle
+    // handle expand button toggle in the start Modal
     $(gw.landpage.section.content.playCard.expand).on("click", function() {
         if ($(this).hasClass("glyphicon-chevron-down")) {
             $(gw.landpage.section.content.playCard.welcome).removeClass("fitonmodal");
@@ -279,18 +294,18 @@ var main = function() {
         $(gw.landpage.section.content.chatform.field.sendText).prop("disabled", true);
     });
 
-    // get another word
+    // get another word if user wants to change the hint
     $(gw.landpage.section.content.hintCard.changeWord).on("click", function() {
         socket.emit("getmagicword");
     });
 
-    // start the game
+    // Start game and emit this message to others in the room
     $(gw.landpage.section.content.hintCard.startDrawing).on("click", function() {
         console.log("player", socket.id);
         socket.emit("startgame", socket.id);
     });
 
-    // logout
+    // Handles logout event
     $(gw.landpage.section.navbar.logout).on("click", function() {
         console.log("logging out");
         clearCanvas();
@@ -317,6 +332,8 @@ var main = function() {
         return false;
     });
 
+
+    //handles disconnect event
     socket.on("disconnect", function() {
         reconnect = true;
         console.log("server down");
@@ -424,6 +441,7 @@ var main = function() {
         });
     });
 
+    //handle bubble in chat panel
     function chatBubble(username, content, userid, timestamp) {
         var chatmsg = "";
 
@@ -463,6 +481,7 @@ var main = function() {
         autoScroll();
     });
 
+    //Update the list of active users when new users join the room
     socket.on("updateusers", function(data) {
         $(gw.landpage.section.content.activeusersList).empty();
         $.each(data, function(key, value) {
@@ -470,10 +489,12 @@ var main = function() {
         });
     });
 
+    //Handles the clear canvas event
     socket.on("clearcanvas", function() {
         clearCanvas();
     });
 
+    //Handles timer  during and after the game
     socket.on("incTimer", function(data, userid) {
         if (loggedin) {
             $(gw.landpage.section.navbar.showTime).text("  " + data);
@@ -490,6 +511,7 @@ var main = function() {
         }
     });
 
+    //SHow magic word to the user who opts to play
     socket.on("message", function(data) {
         console.log(data.magicwrdmeaning, data.magicwrd);
         $(gw.landpage.section.content.hintCard.definition).text(data.magicwrdmeaning);
@@ -500,10 +522,12 @@ var main = function() {
         console.log("painting", painting);
     });
 
+    //hides the 'Lets start the fun' button during a game
     socket.on("disablePlay", function() {
         $(gw.landpage.section.navbar.startGame).hide();
     });
 
+    //Shows the 'Lets start the Fun' after the game has finished
     socket.on("enablePlay", function() {
         $(gw.landpage.section.navbar.startGame).show();
         $(gw.landpage.action.handle).prop("disabled", false);
@@ -512,10 +536,12 @@ var main = function() {
         painting = true;
     });
 
+    //Message to be passed to other players in the socket room that game has started
     socket.on("gameStarted", function(data) {
         $(gw.landpage.section.content.startCard.message).text(data);
          $(gw.landpage.section.content.startCard.handle).modal("show");
     });
+    
     // View Model to handle typing indicator
     function TypingViewModel() {
         this.isTyping = ko.observable("");

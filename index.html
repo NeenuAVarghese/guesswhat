@@ -21,6 +21,7 @@
 
 <body>
     <div class="gwWrap"><div class="gwMain">
+        <!-- Navbar for the application -->
     <nav class="navbar navbar-inverse navbar-fixed container-fluid" style="border-radius: 0px;" id="mainnav">
         <img class="logo" src="images/logo.png" alt="logo" />
         <div class="container-fluid">
@@ -39,14 +40,17 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
+                    <!-- Clicking on this  will start a game -->
                     <li>
                         <a id="gwStart" href="#" title="Click Me!">Let's start the Fun!<span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <!-- Shows timer -->
                     <li>
                         <a><span id="showtimer">&nbsp;90</span> <i class="fa fa-clock-o" aria-hidden="true">&nbsp;</i></a>
                     </li>
+                    <!-- User can logout from the application on click -->
                     <li>
                         <a id="logoutLink" class="navbutton">Logout</a>
                     </li>
@@ -58,11 +62,13 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                <!-- Color panel for the application -->
                 <div class="btn-group" role="group" id="gwColorPicker">
                     <button id="gwBlack" type="button" class="btn btn-default picker">Black <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
                     <button id="gwRed" type="button" class="btn btn-danger picker">Red <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
                     <button id="gwGreen" type="button" class="btn btn-success picker">Green <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
                     <button id="gwBlue" type="button" class="btn btn-primary picker">Blue <i class="fa fa-pencil" aria-hidden="true">&nbsp;</i></button>
+                    <!-- Clear Canvas Button -->
                     <button id="gwClear" type="button" class="btn btn-warning picker">Clear <i class="fa fa-eraser" aria-hidden="true">&nbsp;</i></button>
                 </div>
             </div>
@@ -70,9 +76,11 @@
         <div class="col-sm-1"></div>
     </div>
 
+<!-- Contains main body of the application -->
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-2">
+                <!-- This panel shows the list of active users-->
                 <div class="panel panel-danger">
                     <div class="panel-heading"><i class="fa fa-users" aria-hidden="true">&nbsp;</i>Active Users</div>
                     <div class="panel-body">
@@ -80,16 +88,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Contains the canvas --> 
             <div class="col-md-7 gwCanvas" id="divCanvas">
                 <canvas id="gw_Canvas"></canvas>
             </div>
             <div class="col-md-3">
+                <!-- Shows the Chat panel -->
                 <div class="panel panel-success">
                     <div class="panel-heading"><i class="fa fa-comments" aria-hidden="true">&nbsp;</i>Chat board</div>
                     <div class="panel-body chatPanel">
                         <div id="gwMessages"></div>
                     </div>
                 </div>
+                <!-- Submit form for messages in the chat panel -->
                 <form action="" id="gwChatForm" data-bind="submit: reset">
                     <div class="input-group gw-input-chat">
                         <input id="gwChatText" type="text" class="form-control" data-bind="textInput: isTyping" autocomplete="off" placeholder="Message">
@@ -105,6 +117,7 @@
         </div>
     </div>
 
+<!-- Modal Shown on visiting out Website. This modal asks for username of the player and also if the user wants to play private group or in a prublic group -->
     <div id="playCard" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -180,7 +193,7 @@
         </div>
     </div>
 
-    <!-- Hint Modal -->
+    <!-- Hint Modal -  Shown to players who choose to draw on canvas during a game-->
     <div id="hintCard" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -201,7 +214,7 @@
         </div>
     </div>
 
-    <!-- Game Started -->
+    <!-- Game Started  - shown to players who will be guessing This modal shows that the game has started-->
     <div id="gameStartCard" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -221,27 +234,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Game Started -->
-    <div id="gameStartCard" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h2 class="modal-title">Start Guessing !!</h2>
-                </div>
-                <div class="modal-body">
-                    <h3 id="playerInit"></h3>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success btn-block" data-dismiss="modal">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </div>
 
     <footer role="contentinfo" class="site-footer" id="colophon">
@@ -272,17 +264,17 @@
                     <ul>
                         <li class="gwTeam">
                             <img class="avatar" src="https://avatars.githubusercontent.com/u/15176286" alt="avatar" />
-                            <a class="team" href="https://github.com/NeenuAVarghese">Neenu</a>
+                            <a class="team" href="https://github.com/NeenuAVarghese">Neenu Ann Varghese</a>
 
                             <img class="avatar" src="https://avatars.githubusercontent.com/u/4985474" alt="avatar" />
-                            <a class="team" href="https://github.com/mittman">Kevin</a>
+                            <a class="team" href="https://github.com/mittman">Kevin Mittman</a>
                         </li>
                         <li class="gwTeam">
                             <img class="avatar" src="https://avatars.githubusercontent.com/u/16931093" alt="avatar" />
-                            <a class="team" href="https://github.com/ammaralee">Ammar</a>
+                            <a class="team" href="https://github.com/ammaralee">Ammar Ali</a>
 
                             <img class="avatar" src="https://avatars.githubusercontent.com/u/11639091" alt="avatar" />
-                            <a class="team" href="https://github.com/nyxora">Megan</a>
+                            <a class="team" href="https://github.com/nyxora">Megan Bond</a>
                         </li>
                     </ul>
                 </div>

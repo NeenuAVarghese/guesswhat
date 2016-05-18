@@ -485,7 +485,6 @@ function clearCanvas(socket) {
     socket.on("clearcanvas", function() {
         redisClient.ltrim(socket.room, -1 ,0, function(err) {
             if (!err) {
-                console.log(socket.room + " Room deleted !");
                 map.delete(socket.room + "");
             }
         });
@@ -515,7 +514,6 @@ function winner(socket) {
 
     redisClient.ltrim(socket.room, -1 ,0, function(err) {
         if (!err) {
-            console.log(socket.room + " Room deleted !");
             map.delete(socket.room + "");
         }
     });
@@ -535,7 +533,6 @@ function loser(socket) {
 
     redisClient.ltrim(socket.room, -1 ,0, function(err) {
         if (!err) {
-            console.log(socket.room + " Room deleted !");
             map.delete(socket.room + "");
         }
     });

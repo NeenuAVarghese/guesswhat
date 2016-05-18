@@ -547,7 +547,7 @@ function parseChat(socket, data) {
         var words = line.split(" ");
 
         for (var i = 0; i < words.length; ++i) {
-            var guess = words[i].replace(/[^a-zA-Z]/g, "");
+            var guess = words[i].replace(/[^a-zA-Z]/g, "").toLowerCase();
             console.log("guess:" + guess, "magic:" + xyzzy);
 
             // compare length

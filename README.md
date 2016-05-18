@@ -10,8 +10,9 @@
 3. `npm install`
 
 **Note:** these node modules will be installed via [package.json](package.json) by [*npm*](https://github.com/npm/npm)
-- [nconf](https://www.npmjs.com/package/nconf)
 - [express](https://www.npmjs.com/package/express)
+- [multimap](https://www.npmjs.com/package/multimap)
+- [nconf](https://www.npmjs.com/package/nconf)
 - [random-js](https://www.npmjs.com/package/random-js)
 - [redis](https://www.npmjs.com/package/redis)
 - [request](https://www.npmjs.com/package/request)

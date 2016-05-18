@@ -22,6 +22,7 @@ nconf.defaults({
 /* Depends */
 var express = require("express");
 var io = require("socket.io");
+var multimap = require("multimap");
 var redis = require("redis");
 var request = require("request");
 var random = require("random-js")();
@@ -49,7 +50,7 @@ var define = null;
 var line_history = [];
 var room_magic = {};
 var room_player = {};
-var map = new Map();
+var map = new multimap();
 
 
 //Function to Get Definition of magic word
@@ -250,10 +251,12 @@ function recordDraw(roomname) {
     });
 }
 
-function newUser(groupname, username) {
+function newUser(groupname, newuser) {
+    var username = newuser.toLowerCase();
+
     if (map.has(groupname)) {
         var members = map.get(groupname);
-        if (members.toLowerCase().indexOf(username) !== -1) {
+        if (members.indexOf(username) !== -1) {
             console.log("===> " + username, "already exists in", groupname);
             return false;
         }

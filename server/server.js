@@ -129,7 +129,7 @@ function connectDB() {
         var rediscloud_service = JSON.parse(vcap_services)["rediscloud"][0];
         var credentials = rediscloud_service.credentials;
         redisClient = redis.createClient(credentials.port, credentials.hostname, {no_ready_check: true});
-client.auth(credentials.password);
+        redisClient.auth(credentials.password);
     }
     else{
         redisClient = redis.createClient(redisPort);vcap_services
@@ -156,7 +156,7 @@ client.auth(credentials.password);
 
 //Function to start server and make socket io listen to the connections on server
 function startServer() {
-    var httpd = io.listen(app.listen(httpPort, function() {
+    var httpd = io.listen(app.listen(process.env.PORT || httpPort, function() {
         console.log("Starting Express server on httpPort", httpPort);
     }).on("error", function(err) {
         if (err.errno === "EADDRINUSE") {

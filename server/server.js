@@ -55,7 +55,7 @@ function defineFromAPI(word) {
     var onelook = "http://www.onelook.com/?xml=1&w=";
     var url = onelook + word;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         request(url, function (error, response, body) {
             if (!error && response.statusCode === 200) {
                 var xml = Array.prototype.join.call(body, "");
@@ -89,9 +89,6 @@ function defineFromAPI(word) {
 
                 console.log("==> definition:", define);
                 resolve(define);
-
-                // FIXME
-                console.log(reject);
             }
         });
     });
@@ -99,23 +96,18 @@ function defineFromAPI(word) {
 
 
 //Function to get Magic Word
-function wordsFromAPI(salt) {
+function wordsFromAPI() {
     var colors = [ "red", "green", "blue", "yellow", "black", "pink", "white" ];
     var seed = random.integer(0, colors.length-1);
     var adjective = colors[seed];
     var limit = 50;
 
-    if (salt) {
-        console.log("salting with", salt);
-        topics.pop();
-        topics.push(salt);
-    }
     var xyzzy = null;
     var categories = topics.join(",");
     //console.log(categories);
     var datamuse = "http://api.datamuse.com/words?";
     var url = datamuse + "rel_jja=" + adjective + "&topics=" + categories + "&max=" + limit;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         request(url, function (error, response, body) {
             if (!error && response.statusCode === 200) {
                 var json = JSON.parse(body);
@@ -123,9 +115,6 @@ function wordsFromAPI(salt) {
                 xyzzy = json[pick].word;
                 console.log("==> magicword:", xyzzy);
                 resolve(xyzzy);
-
-                // FIXME
-                console.log(reject);
             }
         });
     });
@@ -494,6 +483,15 @@ function clearCanvas(socket) {
     });
 }
 
+function saltWord(socket, previous) {
+    if (previous !== "" && typeof previous !== "undefined") {
+        console.log("==> salting with", previous);
+        topics.shift();
+        topics.push(previous);
+        console.log("==> topics:", topics);
+    }
+}
+
 function winner(socket) {
     var winuser = socket.username;
     console.log("Winner", winuser);
@@ -512,6 +510,7 @@ function winner(socket) {
     });
 
     guesswhat.to(socket.room).emit("clearcanvas");
+    saltWord(socket, room_magic[socket.room]);
     room_magic[socket.room] = "";
     updatewin(socket, winuser);
 }
@@ -531,6 +530,7 @@ function loser(socket) {
     });
 
     guesswhat.to(socket.room).emit("clearcanvas");
+    saltWord(socket, room_magic[socket.room]);
     room_magic[socket.room] = "";
 }
 
@@ -541,7 +541,6 @@ function getword(room)
 
 function parseChat(socket, data) {
     var xyzzy = getword(socket.room);
-    console.log(xyzzy);
 
     var line = Array.prototype.join.call(data, "");
     if (line !== "") {

@@ -1,5 +1,5 @@
 # guesswhat
-
+Application can be accessed at: [GuessWhat](https://guesswhat.cfapps.io/)
 ###Prerequisites
 * [nodeJS](https://nodejs.org)
 * [Redis](http://redis.io/download) (NoSQL Database)

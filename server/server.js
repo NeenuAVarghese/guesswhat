@@ -366,6 +366,9 @@ function removeFromDb(socket) {
         redisClient.hdel(socket.username, "groupname");
         redisClient.hdel(socket.username, "socketid");
 
+        // remove from multimap
+        map.delete(socket.room + "", socket.username);
+
         redisClient.exists(cgrp, function(err, object) {
             if (object === 0 && typeof socket.room !== "undefined") {
                 redisClient.ltrim(socket.room, -1 ,0, function(err) {

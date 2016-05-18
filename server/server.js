@@ -4,6 +4,8 @@
 
 "use strict";
 
+// parsing rediscloud credentials
+var vcap_services = process.env.VCAP_SERVICES;
 /* Configuration */
 var nconf = require("nconf");
 // CLI and ENV
@@ -123,7 +125,16 @@ function wordsFromAPI() {
 
 //Function to connect to DB will return true if successfully connected
 function connectDB() {
-    redisClient = redis.createClient(redisPort);
+     if(vcap_services){
+        var rediscloud_service = JSON.parse(vcap_services)["rediscloud"][0];
+        var credentials = rediscloud_service.credentials;
+        redisClient = redis.createClient(credentials.port, credentials.hostname, {no_ready_check: true});
+client.auth(credentials.password);
+    }
+    else{
+        redisClient = redis.createClient(redisPort);vcap_services
+    }
+   
 
     redisClient.on("error", function(err) {
         console.error("Redis server refused connection on port", redisPort);

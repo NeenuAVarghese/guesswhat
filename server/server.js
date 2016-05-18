@@ -161,7 +161,16 @@ function connectDB() {
     // Wipe DB
     if (server.engine.clientsCount === 0 && purgeDB) {
         redisClient.flushdb(function(err, status) {
-            console.log("Purged Redis DB");
+            if (err) {
+                console.log("flushdb error:", err);
+            }
+
+            if (status === "OK") {
+                console.log("Purged Redis DB");
+            }
+            else {
+                console.log("flushdb status:", status);
+            }
         });
     }
 }

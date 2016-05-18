@@ -199,7 +199,7 @@ function startServer() {
     return httpd;
 }
 
-//FUnction to update DB after User Login
+//Function to update DB after User Login
 function putToDB(socket, username, groupname) {
     var usernames = {};
     //put users to db
@@ -398,6 +398,7 @@ function removeFromDb(socket) {
             }
         });
 
+        //Get the current list of users in the socket room
         var usernames = {};
         redisClient.smembers(cgrp, function(err, items) {
             if (err) {
@@ -463,6 +464,7 @@ function transmitDraw(socket) {
          if (db) {
             redisClient.exists(socket.room, function() {
                 if (typeof socket.room !== "undefined") {
+                    //line history is passed stored for each socket room
                    redisClient.rpush(socket.room, JSON.stringify(data));
                 }
             });
@@ -472,7 +474,9 @@ function transmitDraw(socket) {
 }
 
 function updatewin(socket, winuser) {
+    //Checks if server is connected to db
     if (db) {
+        //increase the win count of a user
         redisClient.hincrby(winuser, "wins", 1, function(err) {
             if (!err) {
                 console.log("Data Updated !");
@@ -481,7 +485,7 @@ function updatewin(socket, winuser) {
                 });
             }
         });
-
+        //Get the current list of users in a room 
         var cgrp = "G" + socket.room;
         var usernames = {};
         redisClient.smembers(cgrp, function(err, items) {
@@ -489,6 +493,7 @@ function updatewin(socket, winuser) {
                 console.log("Error in getting elements of user list");
             }
 
+            //get current win count for users in the socket room
             var i = 0;
             items.forEach(function(item) {
                 console.log(items);
@@ -502,7 +507,7 @@ function updatewin(socket, winuser) {
                     }
 
                     if (i === items.length) {
-                        // update the list of users in chat, client-side
+                        // update the list of users and their scores in chat, client-side
                         guesswhat.to(socket.room).emit("updateusers", usernames);
                     }
                 });
@@ -514,6 +519,7 @@ function updatewin(socket, winuser) {
 
 function clearCanvas(socket) {
     socket.on("clearcanvas", function() {
+        //Removes the line history for the room
         redisClient.ltrim(socket.room, -1 ,0, function(err) {
             if (!err) {
                 map.delete(socket.room + "");
@@ -542,13 +548,13 @@ function winner(socket) {
     // echo globally (all clients) that a person has won
     guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "Player '" + winuser + "' was the winner");
-
+    //Removes the line history for the room
     redisClient.ltrim(socket.room, -1 ,0, function(err) {
         if (!err) {
             map.delete(socket.room + "");
         }
     });
-
+    //handles clear canvas event
     guesswhat.to(socket.room).emit("clearcanvas");
     saltWord(socket, room_magic[socket.room]);
     room_magic[socket.room] = "";
@@ -561,23 +567,25 @@ function loser(socket) {
     // echo globally (all clients) that a person has won
     guesswhat.to(socket.room).emit("updateword", "The word was '" + room_magic[socket.room] + "'");
     guesswhat.to(socket.room).emit("updateword", "No one guessed it!");
-
+    //For removing the line history of the socket room
     redisClient.ltrim(socket.room, -1 ,0, function(err) {
         if (!err) {
             map.delete(socket.room + "");
         }
     });
-
+    //handles clear canvas
     guesswhat.to(socket.room).emit("clearcanvas");
     saltWord(socket, room_magic[socket.room]);
     room_magic[socket.room] = "";
 }
 
+//Gets magic word set for the room. Used for comparison in the parse chat function
 function getword(room)
 {
     return room_magic[room];
 }
 
+//This function uses fuzzy logic and looks for matching word in the chat. This is used to find winner for the game
 function parseChat(socket, data) {
     var xyzzy = getword(socket.room);
 
@@ -587,7 +595,7 @@ function parseChat(socket, data) {
 
         for (var i = 0; i < words.length; ++i) {
             var guess = words[i].replace(/[^a-zA-Z]/g, "").toLowerCase();
-            console.log("guess:" + guess, "magic:" + xyzzy);
+            //console.log("guess:" + guess, "magic:" + xyzzy);
 
             // compare length
             var diffchar = xyzzy.length - guess.length;
@@ -602,27 +610,27 @@ function parseChat(socket, data) {
                 }
                 // fuzzy matching
                 else if (guess === xyzzy + "s") {
-                    console.log("appended 's'");
+                    //console.log("appended 's'");
                     winner(socket);
                 }
                 else if (guess + "s" === xyzzy) {
-                    console.log("trimmed 's'");
+                    //console.log("trimmed 's'");
                     winner(socket);
                 }
                 else if (guess.replace(/y$/, "ies") === xyzzy) {
-                    console.log("expanded 'ies'");
+                    //console.log("expanded 'ies'");
                     winner(socket);
                 }
                 else if (guess.replace(/ies$/, "y") === xyzzy) {
-                    console.log("compressed 'ies'");
+                    //console.log("compressed 'ies'");
                     winner(socket);
                 }
                 else if (xyzzy.indexOf(guess) !== -1 && diffchar < 3) {
-                    console.log("contains guess within " + diffchar + " chars");
+                    //console.log("contains guess within " + diffchar + " chars");
                     winner(socket);
                 }
                 else if (guess.indexOf(xyzzy) !== -1 && diffchar < 3) {
-                    console.log("contained inside guess within " + diffchar + " chars");
+                   // console.log("contained inside guess within " + diffchar + " chars");
                     winner(socket);
                 }
             }
@@ -630,6 +638,7 @@ function parseChat(socket, data) {
     }
 }
 
+//Function to handle transmit chat to everyone in the room 
 function transmitChat(socket) {
     // when the client emits "sendchat", this listens and executes
     socket.on("sendchat", function(userid, data) {
@@ -648,14 +657,14 @@ function transmitChat(socket) {
     });
 }
 
+//Function to handle the timer ticks
 function startTimer(socket, player) {
     var count = 90;
     var counter = null;
 
     function timer() {
         count = count - 1;
-
-        // loser
+        // Counter will stop when time ends
         if (count < 0) {
             clearInterval(counter);
             guesswhat.to(socket.room).emit("incTimer", "Game Over !", null);
@@ -663,7 +672,7 @@ function startTimer(socket, player) {
             loser(socket);
             return;
         }
-        // winner
+        // COunter will stop when some one in the room wins
         else if (room_magic[socket.room] === "") {
             clearInterval(counter);
             guesswhat.to(socket.room).emit("incTimer", "Game Over !", null);
@@ -671,18 +680,20 @@ function startTimer(socket, player) {
             return;
         }
 
-        //Do code for showing the number of seconds here
+        //Emit timer to everyone in the room
         guesswhat.to(socket.room).emit("incTimer", count, player);
     }
 
     counter = setInterval(timer, 1000); //1000 will  run it every 1 second
 }
 
+//Function to send Magic word to a player who starts Game
 function sendMagicword(socket) {
     socket.on("getmagicword", function() {
+        //Get word from the function
         wordsFromAPI().then(function(data) {
             var magicwrd = data;
-
+            //get definition of the word
             defineFromAPI(data).then(function(datadefinition) {
                 var magicwrdmeaning = datadefinition;
 
@@ -690,24 +701,28 @@ function sendMagicword(socket) {
                     magicwrd : magicwrd,
                     magicwrdmeaning: magicwrdmeaning
                 };
-
+                //set the magic word for the room. This is for parsing the chat
                 room_magic[socket.room] = magicwrd;
+                //set the socket id of the player who starts the game
                 room_player[socket.room] = socket.id;
+                //Magic word and its definition is passed to the player who initiates the game.
                 guesswhat.to(socket.id).emit("message", puzzle);
             });
         });
     });
 }
 
+
+//function handle Startgame
 function startGame(socket) {
     socket.on("startgame", function(player) {
-        console.log("player", player);
+        // When game starts, 'Let's Start the Fun' button is disabled.
+        //Socket to handle disable play in the socket room
         guesswhat.to(socket.room).emit("disablePlay");
 
         var res = [];
         //get the list of socket id in room
         var room = guesswhat.adapter.rooms[socket.room];
-
         if (room) {
             for (var key in room.sockets) {
                 if (key) {
@@ -715,16 +730,17 @@ function startGame(socket) {
                 }
             }
         }
-
+        //Remove the Socket id who initiated the game
         var index = res.indexOf(socket.id);
         if (index > -1) {
             res.splice(index, 1);
         }
 
         var msg = socket.username + " has initiated the game";
+        //Start Timer
         startTimer(socket, player);
+        //palyers in the game are sent the message that the game has been initiated by a player in the socket rrom
         res.forEach(function(val) {
-            console.log(val, msg);
             guesswhat.to(val).emit("gameStarted", msg);
         });
 
@@ -734,11 +750,13 @@ function startGame(socket) {
 
 // Run server
 server = startServer();
+//Connect to Redis Database
 connectDB();
+//Define namespace for the connection
 guesswhat = server.of("/guesswhat");
 
 
-// Main
+// Main 
 guesswhat.on("connection", function(socket) {
     console.log("Connected: %s", socket.id);
     userLogin(socket);

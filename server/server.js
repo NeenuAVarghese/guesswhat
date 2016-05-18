@@ -14,6 +14,7 @@ nconf.file({ file: "config.json" });
 nconf.defaults({
     "httpPort": 3000,
     "redisPort": 6379,
+    "purgeDB": false,
     "topics": ["bird", "mammal", "fish", "machine" ]
 });
 
@@ -29,6 +30,7 @@ var xssFilters = require("xss-filters");
 /* Initialize */
 var httpPort = nconf.get("httpPort");
 var redisPort = nconf.get("redisPort");
+var purgeDB = nconf.get("purgeDB");
 var topics = nconf.get("topics");
 // variable to handle express
 var app = express();
@@ -155,6 +157,13 @@ function connectDB() {
         console.log("Connected to Redis Server on port", redisPort);
         db = true;
     });
+
+    // Wipe DB
+    if (server.engine.clientsCount === 0 && purgeDB) {
+        redisClient.flushdb(function(err, status) {
+            console.log("Purged Redis DB");
+        });
+    }
 }
 
 

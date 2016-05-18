@@ -67,6 +67,18 @@
 1. `redis-server --port <number>`
 2. `node server/server.js --redisPort <number>`
 
+**Problem:** Redis DB has junk data
+
+**Option 1:** Set an environmental variable
+```
+export purgeDB=true
+```
+
+**Option 2:** Use CLI interface
+
+1. `redis-server`
+2. `redis-cli flushdb`
+
 **Problem:** API for socket.io has changed
 
 **Option 1:** Print all properties of object "guesswhat"

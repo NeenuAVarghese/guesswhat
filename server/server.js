@@ -156,7 +156,7 @@ function connectDB() {
 
 //Function to start server and make socket io listen to the connections on server
 function startServer() {
-    var httpd = io.listen(app.listen(process.env.PORT || httpPort, function() {
+    var httpd = io.listen(app.listen(httpPort || process.env.PORT, function() {
         console.log("Starting Express server on httpPort", httpPort);
     }).on("error", function(err) {
         if (err.errno === "EADDRINUSE") {

@@ -84,7 +84,7 @@ DEBUG=socket.io-parser node server/server.js
 - [jQuery](https://jquery.com) - simplify ~~life~~ Javascript
 - [Knockout](http://knockoutjs.com) - observe user typing with MVVM
 - [LiveStamp](https://mattbradley.github.io/livestampjs/) - auto-update elapsed times in chat
-- [Moment](https://mattbradley.github.io/livestampjs/) - convert UNIX timestamps to human-readable
+- [Moment](http://momentjs.com/) - convert UNIX timestamps to human-readable
 - [Montserrat](https://www.google.com/fonts/specimen/Montserrat) - web font
 - [xss-filters](https://github.com/yahoo/xss-filters) - sanitize user input
 

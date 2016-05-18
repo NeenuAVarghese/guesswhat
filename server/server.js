@@ -1,11 +1,9 @@
 // Server-side code
 /* jshint node: true, curly: true, eqeqeq: true, forin: true, immed: true, indent: 4, latedef: true, newcap: true, nonew: true, quotmark: double, undef: true, unused: true, strict: true, trailing: true */
-/* global Promise: true, Map: true */
+/* global Promise: true */
 
 "use strict";
 
-// parsing rediscloud credentials
-var vcap_services = process.env.VCAP_SERVICES;
 /* Configuration */
 var nconf = require("nconf");
 // CLI and ENV
@@ -22,7 +20,7 @@ nconf.defaults({
 /* Depends */
 var express = require("express");
 var io = require("socket.io");
-var multimap = require("multimap");
+var Multimap = require("multimap");
 var redis = require("redis");
 var request = require("request");
 var random = require("random-js")();
@@ -39,6 +37,8 @@ app.use(express.static("./"));
 var server = null;
 // variable to handle db connection
 var redisClient = null;
+// parsing rediscloud credentials
+var vcap_services = process.env.VCAP_SERVICES;
 // namespace for the socket connection
 var guesswhat = null;
 // if connected to db
@@ -50,7 +50,7 @@ var define = null;
 var line_history = [];
 var room_magic = {};
 var room_player = {};
-var map = new multimap();
+var map = new Multimap();
 
 
 //Function to Get Definition of magic word
@@ -126,16 +126,19 @@ function wordsFromAPI() {
 
 //Function to connect to DB will return true if successfully connected
 function connectDB() {
-     if(vcap_services){
-        var rediscloud_service = JSON.parse(vcap_services)["rediscloud"][0];
+    // cloud foundry
+    if (vcap_services) {
+        console.log("===> redis cloud", vcap_services);
+        var rediscloud_service = JSON.parse(vcap_services).rediscloud[0];
         var credentials = rediscloud_service.credentials;
         redisClient = redis.createClient(credentials.port, credentials.hostname, {no_ready_check: true});
         redisClient.auth(credentials.password);
     }
-    else{
-        redisClient = redis.createClient(redisPort);vcap_services
+    else {
+        console.log("===> local redis");
+        redisClient = redis.createClient(redisPort);
     }
-   
+
 
     redisClient.on("error", function(err) {
         console.error("Redis server refused connection on port", redisPort);
@@ -157,7 +160,11 @@ function connectDB() {
 
 //Function to start server and make socket io listen to the connections on server
 function startServer() {
-    var httpd = io.listen(app.listen(httpPort || process.env.PORT, function() {
+    if (typeof vcap_services !== "undefined") {
+        httpPort = process.env.PORT;
+    }
+
+    var httpd = io.listen(app.listen(httpPort, function() {
         console.log("Starting Express server on httpPort", httpPort);
     }).on("error", function(err) {
         if (err.errno === "EADDRINUSE") {

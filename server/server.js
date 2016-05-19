@@ -485,7 +485,7 @@ function updatewin(socket, winuser) {
                 });
             }
         });
-        //Get the current list of users in a room 
+        //Get the current list of users in a room
         var cgrp = "G" + socket.room;
         var usernames = {};
         redisClient.smembers(cgrp, function(err, items) {
@@ -638,7 +638,7 @@ function parseChat(socket, data) {
     }
 }
 
-//Function to handle transmit chat to everyone in the room 
+//Function to handle transmit chat to everyone in the room
 function transmitChat(socket) {
     // when the client emits "sendchat", this listens and executes
     socket.on("sendchat", function(userid, data) {
@@ -756,7 +756,7 @@ connectDB();
 guesswhat = server.of("/guesswhat");
 
 
-// Main 
+// Main
 guesswhat.on("connection", function(socket) {
     console.log("Connected: %s", socket.id);
     userLogin(socket);

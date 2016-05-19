@@ -541,7 +541,7 @@ var main = function() {
         $(gw.landpage.section.content.startCard.message).text(data);
          $(gw.landpage.section.content.startCard.handle).modal("show");
     });
-    
+
     // View Model to handle typing indicator
     function TypingViewModel() {
         this.isTyping = ko.observable("");
